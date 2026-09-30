@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# 실행 결과물 (필요한 그림은 docs/로 옮겨서 커밋)
+outputs/
+
+# 개인정보: 웹캠 영상·사진은 절대 커밋하지 않는다
+*.mp4
+*.avi
+*.mov
+webcam_captures/
+
+# 대용량 데이터·체크포인트는 Hugging Face Hub에 올린다
+data/
+checkpoints/

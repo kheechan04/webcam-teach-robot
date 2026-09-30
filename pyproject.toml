@@ -1,0 +1,18 @@
+[project]
+name = "webcam-teach-robot"
+version = "0.1.0"
+description = "Teach a simulated SO-101 arm from webcam demonstrations and measure how webcam depth error affects imitation learning"
+authors = [
+    { name = "HC KIM", email = "kheechan04@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "mediapipe>=1.0.1",
+    "mujoco>=3.14.0",
+    "numpy>=2.5.3",
+    "pillow>=12.3.0",
+]
+
+[build-system]
+requires = ["uv_build>=0.12.21,<0.13.0"]
+build-backend = "uv_build"
