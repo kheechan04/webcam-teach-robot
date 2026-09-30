@@ -782,6 +782,7 @@ name = "webcam-teach-robot"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
+    { name = "matplotlib" },
     { name = "mediapipe" },
     { name = "mujoco" },
     { name = "numpy" },
@@ -790,6 +791,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
+    { name = "matplotlib", specifier = ">=3.11.2" },
     { name = "mediapipe", specifier = ">=1.0.1" },
     { name = "mujoco", specifier = ">=3.14.0" },
     { name = "numpy", specifier = ">=2.5.3" },
