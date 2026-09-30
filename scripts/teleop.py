@@ -38,7 +38,9 @@ ROOT = Path(__file__).resolve().parent.parent
 SCENE = ROOT / "third_party" / "robotstudio_so101" / "scene.xml"
 LOG_DIR = ROOT / "measurements" / "teleop"
 
-HOME_Q = np.array([0.0, -0.5, 0.8, 1.2, 0.0, 0.0])  # 팔을 굽힌 처음 자세 (집게 끝 약 x=19, z=4 cm)
+# 처음 자세: 집게 끝이 작업 상자 앞뒤 가운데(x=22, z=6 cm)에서 아래를 향하게 IK로 구함.
+# 처음엔 x=19 cm라서 몸 쪽 여유가 5 cm뿐이었고, 세 번째 조종에서 몸 쪽 한계에 붙은 시간이 45%였다.
+HOME_Q = np.array([0.0, -0.21, 0.346, 1.434, 0.0, 0.0])
 # 목표 위치를 이 상자 안으로 제한 (m). IK로 y=0 단면을 2 cm 간격으로 훑어서 집게를 아래로 향한 채
 # 위치 오차 2 mm 안에 닿는 영역을 보고 정했다(x 14~30 cm, z 1~15 cm). 처음 값(x 최대 35 cm)은 팔이 안 닿아서
 # 첫 조종 기록에서 목표가 x 상한에 막힌 프레임이 36%, IK 오차 10 mm 넘는 프레임이 46%였다.
