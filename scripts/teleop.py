@@ -14,7 +14,8 @@
     손을 카메라 쪽으로 밀기  → 로봇 집게가 앞으로
     손을 오른쪽으로          → 로봇도 (너 기준) 오른쪽으로
     손을 위로                → 로봇도 위로
-    엄지와 검지를 붙이기      → 집게 닫기
+    엄지와 검지를 붙이기      → 집게 닫기 (딸깍 스위치: 붙이면 닫히고, 충분히 벌려야 열린다)
+    손목 돌리기(roll)는 연결하지 않았다. 과제를 물체가 항상 같은 방향으로 놓이게 짜서 깊이 외 오차 원인을 줄인다.
 """
 
 import argparse
@@ -28,8 +29,10 @@ import mujoco
 import mujoco.viewer
 import numpy as np
 
-from webcam_teach_robot.hand_tracking import HAND_CONNECTIONS, HandTracker, focal_length_px
+from webcam_teach_robot.hand_tracking import HAND_CONNECTIONS, HandTracker
 from webcam_teach_robot.ik import SO101IK
+from webcam_teach_robot.teleop_mapping import (GripperSwitch, HandFilter, camera_delta_to_robot,
+                                               hand_point_camera)
 
 ROOT = Path(__file__).resolve().parent.parent
 SCENE = ROOT / "third_party" / "robotstudio_so101" / "scene.xml"
@@ -41,27 +44,6 @@ HOME_Q = np.array([0.0, -0.5, 0.8, 1.2, 0.0, 0.0])  # 팔을 굽힌 처음 자�
 # 첫 조종 기록에서 목표가 x 상한에 막힌 프레임이 36%, IK 오차 10 mm 넘는 프레임이 46%였다.
 WORKSPACE_LO = np.array([0.14, -0.15, 0.01])
 WORKSPACE_HI = np.array([0.30, 0.15, 0.15])
-GRIPPER_CLOSED, GRIPPER_OPEN = -0.17, 1.0  # 집게 관절 각도(rad)
-PINCH_CLOSED, PINCH_OPEN = 0.35, 1.2  # 엄지-검지 거리 / 손바닥 너비. 이 사이를 선형으로 이어 준다
-
-
-def hand_point_camera(obs, frame_w: int, frame_h: int, fov_deg: float) -> np.ndarray:
-    """손바닥 중심을 카메라 좌표(m)로: x 오른쪽, y 아래, z 카메라에서 멀어지는 쪽."""
-    f = focal_length_px(frame_w, fov_deg)
-    u, v = obs.palm_center_px
-    z = obs.depth_m
-    return np.array([(u - frame_w / 2) * z / f, (v - frame_h / 2) * z / f, z])
-
-
-def camera_delta_to_robot(d: np.ndarray) -> np.ndarray:
-    """카메라 좌표의 손 이동량 → 로봇 좌표(x 앞, y 왼쪽, z 위)의 이동량. 화면은 좌우 반전된 상태."""
-    dx_cam, dy_cam, dz_cam = d
-    return np.array([-dz_cam, -dx_cam, -dy_cam])
-
-
-def pinch_to_gripper(pinch: float) -> float:
-    t = np.clip((pinch - PINCH_CLOSED) / (PINCH_OPEN - PINCH_CLOSED), 0.0, 1.0)
-    return GRIPPER_CLOSED + t * (GRIPPER_OPEN - GRIPPER_CLOSED)
 
 
 def add_marker(viewer, pos: np.ndarray, rgba) -> None:
@@ -106,13 +88,16 @@ def main() -> None:
         log_file = open(log_path, "w", newline="", encoding="utf-8")
         writer = csv.writer(log_file)
         writer.writerow(["t_s", "engaged", "hand_found", "detect_ms", "ik_ms", "loop_ms",
-                         "hand_x", "hand_y", "hand_z", "depth_len_m", "depth_width_m", "pinch",
+                         "hand_x", "hand_y", "hand_z", "depth_len_m", "depth_width_m", "pinch", "gated", "gripper_closed",
                          "target_x", "target_y", "target_z", "tip_x", "tip_y", "tip_z",
                          "ik_pos_err_mm", "ik_dir_err_deg"] + [f"q{i}" for i in range(6)] + [f"ctrl{i}" for i in range(6)])
 
     engaged = False
     hand_ref = tip_ref = None
     hand_smooth = None
+    hand_filter = HandFilter(smooth=args.smooth)
+    gripper_switch = GripperSwitch()
+    gated = False
     target = ik.tip(data.qpos.copy())[0]
     q_ik = data.qpos.copy()
     gripper = 0.0
@@ -139,9 +124,13 @@ def main() -> None:
 
             ik_ms = 0.0
             ik_res = None
-            if obs is not None and np.isfinite(obs.depth_m):
-                hand = hand_point_camera(obs, w, h, args.fov)
-                hand_smooth = hand if hand_smooth is None else args.smooth * hand + (1 - args.smooth) * hand_smooth
+            gated = False
+            if obs is None or not np.isfinite(obs.depth_m):
+                hand_filter.lost()
+            else:
+                hand_filter.found()
+                hand = hand_point_camera(obs.palm_center_px, obs.depth_m, w, h, args.fov)
+                hand_smooth, gated = hand_filter.update(hand)
                 if engaged:
                     scale = np.array([args.scale_depth, args.scale, args.scale])  # 로봇 x(앞뒤), y, z
                     target = tip_ref + scale * camera_delta_to_robot(hand_smooth - hand_ref)
@@ -150,7 +139,7 @@ def main() -> None:
                     ik_res = ik.solve(target, q_ik)
                     ik_ms = (time.perf_counter() - t_ik) * 1000
                     q_ik = ik_res.q
-                    gripper = pinch_to_gripper(obs.pinch)
+                    gripper = gripper_switch.update(obs.pinch)
                     data.ctrl[:5] = q_ik[:5]
                     data.ctrl[5] = gripper
 
@@ -172,7 +161,7 @@ def main() -> None:
                 for a, b in HAND_CONNECTIONS:
                     cv2.line(frame, tuple(pts[a]), tuple(pts[b]), (0, 200, 0), 2)
                 cv2.circle(frame, tuple(obs.palm_center_px.astype(int)), 7, (0, 0, 255), -1)
-            status = "ENGAGED" if engaged else "PAUSED (space)"
+            status = ("ENGAGED" if engaged else "PAUSED (space)") + ("  CLOSED" if gripper_switch.closed else "  open")
             lines = [f"{status}  loop {(time.perf_counter() - t_loop) * 1000:4.0f} ms",
                      f"depth {obs.depth_m * 100:5.1f} cm  pinch {obs.pinch:4.2f}" if obs else "hand: not found",
                      f"target ({target[0]*100:4.1f}, {target[1]*100:4.1f}, {target[2]*100:4.1f}) cm"]
@@ -189,7 +178,7 @@ def main() -> None:
                                  f"{detect_ms:.2f}", f"{ik_ms:.2f}", f"{loop_ms:.2f}",
                                  *[f"{v:.5f}" for v in hs],
                                  f"{obs.depth_len_m:.5f}" if obs else "", f"{obs.depth_width_m:.5f}" if obs else "",
-                                 f"{obs.pinch:.4f}" if obs else "",
+                                 f"{obs.pinch:.4f}" if obs else "", int(gated), int(gripper_switch.closed),
                                  *[f"{v:.5f}" for v in target], *[f"{v:.5f}" for v in tip],
                                  f"{ik_res.pos_err_m * 1000:.2f}" if ik_res else "",
                                  f"{ik_res.dir_err_deg:.2f}" if ik_res else "",
@@ -199,8 +188,9 @@ def main() -> None:
             if key in (ord("q"), 27):
                 break
             if key == ord(" "):
-                if not engaged and hand_smooth is not None:
-                    hand_ref = hand_smooth.copy()
+                ref = hand_filter.reference()
+                if not engaged and ref is not None:
+                    hand_ref = ref
                     tip_ref = ik.tip(data.qpos.copy())[0]
                     q_ik = data.qpos.copy()
                     engaged = True
