@@ -10,7 +10,10 @@
 
 어느 구간 길이를 쓰느냐에 따라 오차가 다르다 (docs/01-depth-measurement.md).
     "length": 손목~가운뎃손가락 뿌리. 손바닥을 앞뒤로 기울이면 크게 틀린다(예비 측정 평균 +12.7 cm)
-    "width" : 검지 뿌리~새끼 뿌리. 앞뒤 기울기에 덜 민감하다(같은 측정 +4.9 cm). 기본값
+    "width" : 검지 뿌리~새끼 뿌리. 앞뒤 기울기에 덜 민감하다(같은 측정 +4.9 cm).
+              대신 손을 옆으로 돌리면 너비가 짧아 보여서 크게 틀린다(첫 조종 기록에서 2.4% 프레임이 100 cm 넘음)
+    "min"   : 둘 중 작은 값. 기울이거나 돌리면 사진 속 길이가 짧아져서 항상 "멀다" 쪽으로 틀리므로,
+              덜 짧아진 구간(= 더 가깝게 나온 값)을 고른다. 기본값
 """
 
 from dataclasses import dataclass
@@ -70,7 +73,7 @@ class HandObservation:
 
 
 class HandTracker:
-    def __init__(self, horizontal_fov_deg: float = 60.0, depth_segment: str = "width"):
+    def __init__(self, horizontal_fov_deg: float = 60.0, depth_segment: str = "min"):
         options = vision.HandLandmarkerOptions(
             base_options=BaseOptions(model_asset_path=str(ensure_model())),
             running_mode=vision.RunningMode.VIDEO,
@@ -101,7 +104,7 @@ class HandTracker:
 
         palm_px, palm_m, depth_len = seg_depth(*DEPTH_SEGMENTS["length"])
         width_px, width_m, depth_width = seg_depth(*DEPTH_SEGMENTS["width"])
-        depth_m = depth_width if self.depth_segment == "width" else depth_len
+        depth_m = {"width": depth_width, "length": depth_len}.get(self.depth_segment, min(depth_len, depth_width))
         pinch = float(np.linalg.norm(world[THUMB_TIP] - world[INDEX_TIP]) / max(width_m, 1e-6))
 
         return HandObservation(

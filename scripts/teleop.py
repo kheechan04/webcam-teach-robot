@@ -36,8 +36,11 @@ SCENE = ROOT / "third_party" / "robotstudio_so101" / "scene.xml"
 LOG_DIR = ROOT / "measurements" / "teleop"
 
 HOME_Q = np.array([0.0, -0.5, 0.8, 1.2, 0.0, 0.0])  # 팔을 굽힌 처음 자세 (집게 끝 약 x=19, z=4 cm)
-WORKSPACE_LO = np.array([0.10, -0.20, 0.01])  # 목표 위치를 이 상자 안으로 제한 (m)
-WORKSPACE_HI = np.array([0.35, 0.20, 0.25])
+# 목표 위치를 이 상자 안으로 제한 (m). IK로 y=0 단면을 2 cm 간격으로 훑어서 집게를 아래로 향한 채
+# 위치 오차 2 mm 안에 닿는 영역을 보고 정했다(x 14~30 cm, z 1~15 cm). 처음 값(x 최대 35 cm)은 팔이 안 닿아서
+# 첫 조종 기록에서 목표가 x 상한에 막힌 프레임이 36%, IK 오차 10 mm 넘는 프레임이 46%였다.
+WORKSPACE_LO = np.array([0.14, -0.15, 0.01])
+WORKSPACE_HI = np.array([0.30, 0.15, 0.15])
 GRIPPER_CLOSED, GRIPPER_OPEN = -0.17, 1.0  # 집게 관절 각도(rad)
 PINCH_CLOSED, PINCH_OPEN = 0.35, 1.2  # 엄지-검지 거리 / 손바닥 너비. 이 사이를 선형으로 이어 준다
 
@@ -74,8 +77,10 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--camera", type=int, default=0)
     parser.add_argument("--fov", type=float, default=60.0, help="웹캠 가로 화각 가정값(도)")
-    parser.add_argument("--depth", choices=["width", "length"], default="width", help="깊이 추정에 쓸 손바닥 구간")
-    parser.add_argument("--scale", type=float, default=0.7, help="손 이동량 → 로봇 이동량 배율")
+    parser.add_argument("--depth", choices=["min", "width", "length"], default="min", help="깊이 추정에 쓸 손바닥 구간")
+    parser.add_argument("--scale", type=float, default=0.7, help="손 이동량 → 로봇 이동량 배율 (좌우·위아래)")
+    parser.add_argument("--scale-depth", type=float, default=0.5,
+                        help="앞뒤(카메라 쪽) 배율. 깊이는 범위가 넓고 흔들려서 좌우·위아래보다 작게")
     parser.add_argument("--smooth", type=float, default=0.5,
                         help="손 위치 지수평활 계수(0~1). 1이면 평활 없음, 작을수록 부드럽지만 늦게 따라온다")
     parser.add_argument("--log", action="store_true", help="프레임별 숫자를 CSV로 저장")
@@ -117,7 +122,7 @@ def main() -> None:
             mujoco.viewer.launch_passive(model, data, show_left_ui=False, show_right_ui=False) as viewer:
         viewer.cam.lookat[:] = [0.2, 0.0, 0.08]
         viewer.cam.distance = 0.75
-        viewer.cam.azimuth = 180  # 로봇 뒤에서 앞을 보는 시점: 너와 같은 방향
+        viewer.cam.azimuth = 0  # 로봇 뒤에서 앞(+x)을 보는 시점: 너와 같은 방향. (처음에 180으로 해서 좌우가 거울처럼 뒤집혀 보였다)
         viewer.cam.elevation = -25
 
         while viewer.is_running():
@@ -138,7 +143,8 @@ def main() -> None:
                 hand = hand_point_camera(obs, w, h, args.fov)
                 hand_smooth = hand if hand_smooth is None else args.smooth * hand + (1 - args.smooth) * hand_smooth
                 if engaged:
-                    target = tip_ref + args.scale * camera_delta_to_robot(hand_smooth - hand_ref)
+                    scale = np.array([args.scale_depth, args.scale, args.scale])  # 로봇 x(앞뒤), y, z
+                    target = tip_ref + scale * camera_delta_to_robot(hand_smooth - hand_ref)
                     target = np.clip(target, WORKSPACE_LO, WORKSPACE_HI)
                     t_ik = time.perf_counter()
                     ik_res = ik.solve(target, q_ik)
