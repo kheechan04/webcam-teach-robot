@@ -24,4 +24,5 @@ uv run python scripts/view_so101.py
 
 - SO-101 모델: [MuJoCo Menagerie](https://github.com/google-deepmind/mujoco_menagerie) `robotstudio_so101` (Apache-2.0). 자세한 내용은 [third_party/README.md](third_party/README.md).
 - 사용 라이브러리: MuJoCo, MediaPipe (Apache-2.0).
+- 손 추적 모델: MediaPipe Hand Landmarker `hand_landmarker.task` (Apache-2.0, 모델 카드에 명시). 실행 시 자동으로 내려받고 저장소에는 넣지 않는다.
 - 이 프로젝트는 Claude Code와 함께 만들고 있다.
