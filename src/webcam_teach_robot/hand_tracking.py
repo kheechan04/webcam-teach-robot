@@ -7,6 +7,10 @@
 그래서 카메라까지 거리(깊이)는 따로 추정해야 한다. 여기서는 핀홀 카메라 관계를 쓴다.
     깊이 = 초점거리(픽셀) × 실제 길이(m) / 사진 속 길이(픽셀)
 멀리 있는 물체가 작게 보이는 원리다. 실제 길이는 월드 좌표에서, 사진 속 길이는 화면 좌표에서 가져온다.
+
+어느 구간 길이를 쓰느냐에 따라 오차가 다르다 (docs/01-depth-measurement.md).
+    "length": 손목~가운뎃손가락 뿌리. 손바닥을 앞뒤로 기울이면 크게 틀린다(예비 측정 평균 +12.7 cm)
+    "width" : 검지 뿌리~새끼 뿌리. 앞뒤 기울기에 덜 민감하다(같은 측정 +4.9 cm). 기본값
 """
 
 from dataclasses import dataclass
@@ -26,7 +30,13 @@ MODEL_URL = (
 MODEL_PATH = Path(__file__).resolve().parents[2] / "models" / "hand_landmarker.task"
 
 WRIST = 0
+THUMB_TIP = 4
+INDEX_MCP = 5  # 검지 뿌리 마디
+INDEX_TIP = 8
 MIDDLE_MCP = 9  # 가운뎃손가락 뿌리 마디
+PINKY_MCP = 17  # 새끼 뿌리 마디
+PALM_POINTS = [0, 5, 9, 13, 17]  # 손바닥 중심을 구할 때 쓰는 점들
+DEPTH_SEGMENTS = {"length": (WRIST, MIDDLE_MCP), "width": (INDEX_MCP, PINKY_MCP)}
 
 HAND_CONNECTIONS = [(c.start, c.end) for c in vision.HandLandmarksConnections.HAND_CONNECTIONS]
 
@@ -52,11 +62,15 @@ class HandObservation:
     handedness: str  # "Left" / "Right" (MediaPipe 기준)
     palm_px: float  # 손목~가운뎃손가락 뿌리, 사진 속 길이(픽셀)
     palm_m: float  # 같은 구간의 실제 길이(미터, 월드 좌표에서)
-    depth_m: float  # 핀홀로 추정한 카메라~손 거리(미터)
+    depth_len_m: float  # 손바닥 길이로 추정한 카메라~손 거리(미터)
+    depth_width_m: float  # 손바닥 너비로 추정한 거리(미터)
+    depth_m: float  # 둘 중 선택한 방법의 값
+    palm_center_px: np.ndarray  # (2,) 손바닥 중심, 사진 위 픽셀
+    pinch: float  # 엄지 끝~검지 끝 거리 / 손바닥 너비 (월드 좌표, 거리와 무관). 작을수록 집은 상태
 
 
 class HandTracker:
-    def __init__(self, horizontal_fov_deg: float = 60.0):
+    def __init__(self, horizontal_fov_deg: float = 60.0, depth_segment: str = "width"):
         options = vision.HandLandmarkerOptions(
             base_options=BaseOptions(model_asset_path=str(ensure_model())),
             running_mode=vision.RunningMode.VIDEO,
@@ -64,6 +78,7 @@ class HandTracker:
         )
         self._landmarker = vision.HandLandmarker.create_from_options(options)
         self.horizontal_fov_deg = horizontal_fov_deg
+        self.depth_segment = depth_segment
 
     def detect(self, frame_rgb: np.ndarray, timestamp_ms: int) -> HandObservation | None:
         h, w = frame_rgb.shape[:2]
@@ -77,10 +92,17 @@ class HandTracker:
         rel_z = np.array([p.z for p in lms])
         world = np.array([[p.x, p.y, p.z] for p in result.hand_world_landmarks[0]])
 
-        palm_px = float(np.linalg.norm(pixels[MIDDLE_MCP] - pixels[WRIST]))
-        palm_m = float(np.linalg.norm(world[MIDDLE_MCP] - world[WRIST]))
         f = focal_length_px(w, self.horizontal_fov_deg)
-        depth_m = f * palm_m / palm_px if palm_px > 1 else float("nan")
+
+        def seg_depth(a: int, b: int) -> tuple[float, float, float]:
+            l_px = float(np.linalg.norm(pixels[a] - pixels[b]))
+            l_m = float(np.linalg.norm(world[a] - world[b]))
+            return l_px, l_m, (f * l_m / l_px if l_px > 1 else float("nan"))
+
+        palm_px, palm_m, depth_len = seg_depth(*DEPTH_SEGMENTS["length"])
+        width_px, width_m, depth_width = seg_depth(*DEPTH_SEGMENTS["width"])
+        depth_m = depth_width if self.depth_segment == "width" else depth_len
+        pinch = float(np.linalg.norm(world[THUMB_TIP] - world[INDEX_TIP]) / max(width_m, 1e-6))
 
         return HandObservation(
             pixels=pixels,
@@ -89,7 +111,11 @@ class HandTracker:
             handedness=result.handedness[0][0].category_name,
             palm_px=palm_px,
             palm_m=palm_m,
+            depth_len_m=depth_len,
+            depth_width_m=depth_width,
             depth_m=depth_m,
+            palm_center_px=pixels[PALM_POINTS].mean(axis=0),
+            pinch=pinch,
         )
 
     def close(self) -> None:
