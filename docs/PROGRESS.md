@@ -8,6 +8,7 @@
 - 완료
   - 0단계 조사, 방향 결정 (`docs/00-research.md`)
   - 개발 환경: uv + Python 3.12 (`.python-version`), mujoco 3.14.0, mediapipe 1.0.1 설치 확인
+  - GitHub 공개 저장소: https://github.com/kheechan04/webcam-teach-robot
   - SO-101 모델(MuJoCo Menagerie) 가져와서 `third_party/`에 두고 렌더링 확인 (`scripts/view_so101.py`)
 - 진행 중인 것: 없음 (깨끗한 상태)
 
