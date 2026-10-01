@@ -5,6 +5,8 @@ description = "Teach a simulated SO-101 arm from webcam demonstrations and measu
 authors = [
     { name = "HC KIM", email = "kheechan04@gmail.com" }
 ]
+license = "MIT"
+license-files = ["LICENSE"]
 requires-python = ">=3.12"
 dependencies = [
     "matplotlib>=3.11.2",
