@@ -13,25 +13,11 @@ import numpy as np
 from PIL import Image
 
 from webcam_teach_robot.ik import SO101IK
-from webcam_teach_robot.scene import TARGET_HALF, build_model, cube_pos, place, task_ids
-from webcam_teach_robot.scripted import CONTROL_HZ, cube_on_table, plan, trajectory
+from webcam_teach_robot.scene import build_model, cube_pos, in_target, place, sample_layout, task_ids
+from webcam_teach_robot.scripted import CONTROL_HZ, plan, trajectory
 
 ROOT = Path(__file__).resolve().parent.parent
 HOME_Q = np.array([0.0, -0.21, 0.346, 1.434, 0.0, 1.0])
-
-
-def sample_layout(rng: np.random.Generator) -> tuple[np.ndarray, np.ndarray]:
-    """큐브는 오른쪽(y<0), 목표는 왼쪽(y>0) 영역에서 무작위. 둘 다 작업 범위(x 16~28, y ±15 cm) 안."""
-    cube = np.array([rng.uniform(0.18, 0.26), rng.uniform(-0.12, -0.04)])
-    target = np.array([rng.uniform(0.18, 0.26), rng.uniform(0.04, 0.12)])
-    return cube, target
-
-
-def in_target(cube_xyz: np.ndarray, target_xy: np.ndarray) -> bool:
-    yaw = np.arctan2(target_xy[1], target_xy[0])
-    d = cube_xyz[:2] - target_xy
-    local = np.array([np.cos(yaw) * d[0] + np.sin(yaw) * d[1], -np.sin(yaw) * d[0] + np.cos(yaw) * d[1]])
-    return bool(np.all(np.abs(local) <= TARGET_HALF) and cube_on_table(cube_xyz[2]))
 
 
 def run(model, data, ids, ik, cube_xy, target_xy, renderer=None, frames=None):

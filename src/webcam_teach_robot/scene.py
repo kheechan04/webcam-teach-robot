@@ -97,3 +97,22 @@ def place(model: mujoco.MjModel, data: mujoco.MjData, ids: TaskIds,
 
 def cube_pos(data: mujoco.MjData, ids: TaskIds) -> np.ndarray:
     return data.qpos[ids.cube_qadr:ids.cube_qadr + 3].copy()
+
+
+def sample_layout(rng: np.random.Generator) -> tuple[np.ndarray, np.ndarray]:
+    """큐브는 오른쪽(y<0), 목표는 왼쪽(y>0) 영역에서 무작위. 둘 다 조종 작업 범위(x 16~28, y ±15 cm) 안."""
+    cube = np.array([rng.uniform(0.18, 0.26), rng.uniform(-0.12, -0.04)])
+    target = np.array([rng.uniform(0.18, 0.26), rng.uniform(0.04, 0.12)])
+    return cube, target
+
+
+def cube_on_table(cube_z: float) -> bool:
+    return abs(cube_z - CUBE_HALF) < 0.005
+
+
+def in_target(cube_xyz: np.ndarray, target_xy: np.ndarray) -> bool:
+    """성공 판정: 큐브 중심이 목표 사각형(목표 방향 기준) 안에 있고 바닥에 놓여 있다."""
+    yaw = yaw_facing_robot(target_xy)
+    d = cube_xyz[:2] - target_xy
+    local = np.array([np.cos(yaw) * d[0] + np.sin(yaw) * d[1], -np.sin(yaw) * d[0] + np.cos(yaw) * d[1]])
+    return bool(np.all(np.abs(local) <= TARGET_HALF) and cube_on_table(cube_xyz[2]))

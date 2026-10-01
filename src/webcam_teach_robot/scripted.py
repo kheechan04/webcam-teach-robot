@@ -9,7 +9,6 @@ from dataclasses import dataclass
 
 import numpy as np
 
-from webcam_teach_robot.scene import CUBE_HALF
 from webcam_teach_robot.teleop_mapping import GRIPPER_CLOSED, GRIPPER_OPEN
 
 CONTROL_HZ = 30
@@ -64,7 +63,3 @@ def trajectory(waypoints: list[Waypoint]) -> list[tuple[np.ndarray, float]]:
             out.append((a.pos + (b.pos - a.pos) * k / n, b.gripper))
         out += [(b.pos.copy(), b.gripper)] * int(round(b.wait_s / dt))
     return out
-
-
-def cube_on_table(cube_z: float) -> bool:
-    return abs(cube_z - CUBE_HALF) < 0.005

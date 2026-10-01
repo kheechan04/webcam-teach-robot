@@ -1,4 +1,4 @@
-"""웹캠 손 추적으로 시뮬레이션 SO-101을 조종한다. 영상은 저장하지 않는다.
+"""웹캠 손 추적으로 시뮬레이션 SO-101을 조종해 큐브를 목표(초록 사각형)로 옮긴다. 영상은 저장하지 않는다.
 
 실행:
     uv run python scripts/teleop.py
@@ -8,6 +8,7 @@
 웹캠 창을 클릭해서 선택한 상태에서:
     스페이스  조종 시작/멈춤 (클러치). 시작하는 순간의 손 위치 = 로봇의 지금 위치로 맞춘다
     h         로봇을 처음 자세로
+    r         새 배치(큐브·목표 위치를 무작위로 다시)로 처음부터
     q / Esc   끝내기
 
 손 → 로봇 방향 (로봇이 너와 같은 쪽, 카메라 쪽을 보고 서 있다고 생각하면 된다):
@@ -31,16 +32,16 @@ import numpy as np
 
 from webcam_teach_robot.hand_tracking import HAND_CONNECTIONS, HandTracker
 from webcam_teach_robot.ik import SO101IK
+from webcam_teach_robot.scene import build_model, cube_pos, in_target, place, sample_layout, task_ids
 from webcam_teach_robot.teleop_mapping import (GripperSwitch, HandFilter, camera_delta_to_robot,
                                                hand_point_camera)
 
 ROOT = Path(__file__).resolve().parent.parent
-SCENE = ROOT / "third_party" / "robotstudio_so101" / "scene.xml"
 LOG_DIR = ROOT / "measurements" / "teleop"
 
 # 처음 자세: 집게 끝이 작업 상자 앞뒤 가운데(x=22, z=6 cm)에서 아래를 향하게 IK로 구함.
 # 처음엔 x=19 cm라서 몸 쪽 여유가 5 cm뿐이었고, 세 번째 조종에서 몸 쪽 한계에 붙은 시간이 45%였다.
-HOME_Q = np.array([0.0, -0.21, 0.346, 1.434, 0.0, 0.0])
+HOME_Q = np.array([0.0, -0.21, 0.346, 1.434, 0.0, 1.0])  # 집게는 열린 채로 시작
 # 목표 위치를 이 상자 안으로 제한 (m): 집게를 아래로 향한 채(방향 오차 <10°) 위치 오차 2 mm 안에 닿는 영역.
 #   1차: x 10~35, z 1~25 cm → 팔이 안 닿아 x 상한에 막힌 프레임 36%, IK 오차 >10 mm 46%
 #   2차: x 14~30, z 1~15 cm (y=0 단면만 봄) → 재생해 보니 몸 가까이·높은 곳에서 어깨가 한계(-100°)까지 젖혀지고
@@ -70,14 +71,27 @@ def main() -> None:
     parser.add_argument("--smooth", type=float, default=0.5,
                         help="손 위치 지수평활 계수(0~1). 1이면 평활 없음, 작을수록 부드럽지만 늦게 따라온다")
     parser.add_argument("--log", action="store_true", help="프레임별 숫자를 CSV로 저장")
+    parser.add_argument("--seed", type=int, default=None, help="배치 무작위 시드 (기본: 매번 다름)")
     args = parser.parse_args()
 
-    model = mujoco.MjModel.from_xml_path(str(SCENE))
+    model = build_model()
     data = mujoco.MjData(model)
+    ids = task_ids(model)
     ik = SO101IK(model)
-    data.qpos[:6] = HOME_Q
-    data.ctrl[:6] = HOME_Q
-    mujoco.mj_forward(model, data)
+    rng = np.random.default_rng(args.seed)
+
+    def reset_layout():
+        mujoco.mj_resetData(model, data)
+        data.qpos[:6] = HOME_Q
+        data.ctrl[:6] = HOME_Q
+        cube_xy, target_xy = sample_layout(rng)
+        place(model, data, ids, cube_xy, target_xy)
+        return target_xy
+
+    target_xy = reset_layout()
+    layout_id = 0
+    successes = 0
+    success_now = False
 
     cap = cv2.VideoCapture(args.camera, cv2.CAP_DSHOW)
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
@@ -94,7 +108,8 @@ def main() -> None:
         writer.writerow(["t_s", "engaged", "hand_found", "detect_ms", "ik_ms", "loop_ms",
                          "hand_x", "hand_y", "hand_z", "depth_len_m", "depth_width_m", "pinch", "gated", "gripper_closed",
                          "target_x", "target_y", "target_z", "tip_x", "tip_y", "tip_z",
-                         "ik_pos_err_mm", "ik_dir_err_deg"] + [f"q{i}" for i in range(6)] + [f"ctrl{i}" for i in range(6)])
+                         "ik_pos_err_mm", "ik_dir_err_deg"] + [f"q{i}" for i in range(6)] + [f"ctrl{i}" for i in range(6)]
+                        + ["layout", "cube_x", "cube_y", "cube_z", "goal_x", "goal_y", "in_target"])
 
     engaged = False
     hand_ref = tip_ref = None
@@ -106,6 +121,7 @@ def main() -> None:
     q_ik = data.qpos.copy()
     gripper = 0.0
     t0 = time.perf_counter()
+    t_sim0 = t0  # 시뮬레이션 시각 0에 해당하는 실제 시각. 배치를 새로 하면 다시 맞춘다
 
     with HandTracker(horizontal_fov_deg=args.fov, depth_segment=args.depth) as tracker, \
             mujoco.viewer.launch_passive(model, data, show_left_ui=False, show_right_ui=False) as viewer:
@@ -148,9 +164,14 @@ def main() -> None:
                     data.ctrl[5] = gripper
 
             # 물리 시뮬레이션을 실제 시간에 맞춰 진행
-            sim_target_time = time.perf_counter() - t0
+            sim_target_time = time.perf_counter() - t_sim0
             while data.time < sim_target_time:
                 mujoco.mj_step(model, data)
+            cube = cube_pos(data, ids)
+            done = in_target(cube, target_xy) and not gripper_switch.closed
+            if done and not success_now:
+                successes += 1
+            success_now = done
 
             tip = ik.tip(data.qpos.copy())[0]
             with viewer.lock():
@@ -167,6 +188,7 @@ def main() -> None:
                 cv2.circle(frame, tuple(obs.palm_center_px.astype(int)), 7, (0, 0, 255), -1)
             status = ("ENGAGED" if engaged else "PAUSED (space)") + ("  CLOSED" if gripper_switch.closed else "  open")
             lines = [f"{status}  loop {(time.perf_counter() - t_loop) * 1000:4.0f} ms",
+                     f"layout {layout_id}  {'SUCCESS (r: next)' if success_now else 'move cube to green'}  total {successes}",
                      f"depth {obs.depth_m * 100:5.1f} cm  pinch {obs.pinch:4.2f}" if obs else "hand: not found",
                      f"target ({target[0]*100:4.1f}, {target[1]*100:4.1f}, {target[2]*100:4.1f}) cm"]
             for i, text in enumerate(lines):
@@ -186,7 +208,8 @@ def main() -> None:
                                  *[f"{v:.5f}" for v in target], *[f"{v:.5f}" for v in tip],
                                  f"{ik_res.pos_err_m * 1000:.2f}" if ik_res else "",
                                  f"{ik_res.dir_err_deg:.2f}" if ik_res else "",
-                                 *[f"{v:.5f}" for v in data.qpos[:6]], *[f"{v:.5f}" for v in data.ctrl[:6]]])
+                                 *[f"{v:.5f}" for v in data.qpos[:6]], *[f"{v:.5f}" for v in data.ctrl[:6]],
+                                 layout_id, *[f"{v:.5f}" for v in cube], *[f"{v:.5f}" for v in target_xy], int(success_now)])
 
             key = cv2.waitKey(1) & 0xFF
             if key in (ord("q"), 27):
@@ -200,6 +223,15 @@ def main() -> None:
                     engaged = True
                 else:
                     engaged = False
+            if key == ord("r"):
+                engaged = False
+                gripper_switch.closed = False
+                target_xy = reset_layout()
+                q_ik = data.qpos.copy()
+                target = ik.tip(data.qpos.copy())[0]
+                t_sim0 = time.perf_counter()
+                layout_id += 1
+                success_now = False
             if key == ord("h"):
                 engaged = False
                 data.ctrl[:6] = HOME_Q
