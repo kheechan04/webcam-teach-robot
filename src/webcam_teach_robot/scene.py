@@ -1,0 +1,99 @@
+"""큐브 옮기기 과제 장면.
+
+Menagerie SO-101 장면(third_party, 수정하지 않음)을 불러와서 코드로 덧붙인다.
+    - cube   : 3 cm 정육면체, 자유롭게 움직임(freejoint)
+    - target : 목표 표시. 바닥에 그린 초록 사각형(충돌 없음). 에피소드마다 옮기려고 mocap 몸체로 둔다
+    - front  : 정책이 볼 고정 카메라 (로봇 뒤 위쪽에서 작업 공간을 내려다봄)
+    - wrist_cam : 원래 모델에 있던 손목 카메라
+
+집게는 로봇 앞뒤 방향(집게 기준 x축)으로 닫힌다. 손목 돌리기를 고정했으므로,
+큐브는 면이 로봇 쪽을 정면으로 보게(yaw = atan2(y, x)) 놓는다.
+"""
+
+from dataclasses import dataclass
+from pathlib import Path
+
+import mujoco
+import numpy as np
+
+ROOT = Path(__file__).resolve().parents[2]
+BASE_SCENE = ROOT / "third_party" / "robotstudio_so101" / "scene.xml"
+
+CUBE_HALF = 0.015  # 3 cm 정육면체
+CUBE_MASS = 0.03  # kg
+TARGET_HALF = 0.03  # 목표 표시 6 cm × 6 cm
+
+
+FRONT_CAM_POS = np.array([0.50, -0.30, 0.38])
+FRONT_CAM_LOOKAT = np.array([0.20, 0.0, 0.03])
+
+
+def lookat_xyaxes(pos: np.ndarray, target: np.ndarray) -> list[float]:
+    """카메라가 target을 보게 하는 xyaxes. MuJoCo 카메라는 자기 -z 방향을 본다."""
+    f = target - pos
+    f = f / np.linalg.norm(f)
+    x = np.cross(f, [0.0, 0.0, 1.0])
+    x = x / np.linalg.norm(x)
+    y = np.cross(x, f)
+    return [*x, *y]
+
+
+@dataclass
+class TaskIds:
+    cube_body: int
+    cube_qadr: int  # freejoint qpos 시작 위치 (x, y, z, qw, qx, qy, qz)
+    cube_dadr: int
+    target_mocap: int
+    tip_site: int
+
+
+def build_model() -> mujoco.MjModel:
+    spec = mujoco.MjSpec.from_file(str(BASE_SCENE))
+    world = spec.worldbody
+
+    cube = world.add_body(name="cube", pos=[0.22, -0.06, CUBE_HALF])
+    cube.add_freejoint(name="cube_free")
+    cube.add_geom(name="cube", type=mujoco.mjtGeom.mjGEOM_BOX, size=[CUBE_HALF] * 3,
+                  mass=CUBE_MASS, rgba=[0.85, 0.25, 0.2, 1], condim=4,
+                  friction=[1.0, 0.03, 0.003], solref=[0.01, 1])
+
+    target = world.add_body(name="target", mocap=True, pos=[0.22, 0.08, 0.0])
+    target.add_geom(name="target", type=mujoco.mjtGeom.mjGEOM_BOX, size=[TARGET_HALF, TARGET_HALF, 0.0005],
+                    rgba=[0.2, 0.75, 0.35, 0.6], contype=0, conaffinity=0, group=1)
+
+    # 작업 공간 앞쪽 비스듬한 위에서 로봇 쪽을 보는 카메라. (로봇 뒤 위에서 보면 팔이 큐브를 가렸다)
+    world.add_camera(name="front", pos=FRONT_CAM_POS, xyaxes=lookat_xyaxes(FRONT_CAM_POS, FRONT_CAM_LOOKAT), fovy=55)
+    return spec.compile()
+
+
+def task_ids(model: mujoco.MjModel) -> TaskIds:
+    jid = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, "cube_free")
+    return TaskIds(
+        cube_body=mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, "cube"),
+        cube_qadr=model.jnt_qposadr[jid],
+        cube_dadr=model.jnt_dofadr[jid],
+        target_mocap=model.body_mocapid[mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, "target")],
+        tip_site=mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_SITE, "gripperframe"),
+    )
+
+
+def yaw_facing_robot(xy: np.ndarray) -> float:
+    return float(np.arctan2(xy[1], xy[0]))
+
+
+def place(model: mujoco.MjModel, data: mujoco.MjData, ids: TaskIds,
+          cube_xy: np.ndarray, target_xy: np.ndarray) -> None:
+    """큐브와 목표를 놓는다. 큐브는 면이 로봇을 향하게."""
+    yaw = yaw_facing_robot(cube_xy)
+    q = ids.cube_qadr
+    data.qpos[q:q + 3] = [cube_xy[0], cube_xy[1], CUBE_HALF]
+    data.qpos[q + 3:q + 7] = [np.cos(yaw / 2), 0, 0, np.sin(yaw / 2)]
+    data.qvel[ids.cube_dadr:ids.cube_dadr + 6] = 0
+    tyaw = yaw_facing_robot(target_xy)
+    data.mocap_pos[ids.target_mocap] = [target_xy[0], target_xy[1], 0.0005]
+    data.mocap_quat[ids.target_mocap] = [np.cos(tyaw / 2), 0, 0, np.sin(tyaw / 2)]
+    mujoco.mj_forward(model, data)
+
+
+def cube_pos(data: mujoco.MjData, ids: TaskIds) -> np.ndarray:
+    return data.qpos[ids.cube_qadr:ids.cube_qadr + 3].copy()
