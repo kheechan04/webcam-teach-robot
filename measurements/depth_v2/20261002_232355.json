@@ -1,0 +1,981 @@
+{
+ "created": "20261002_232355",
+ "geometry": {
+  "cam_back_cm": 0.0,
+  "cam_height_cm": 24.4,
+  "tilt_deg": 0.0
+ },
+ "inputs": {
+  "tilt_deg": 0.0,
+  "screen_cm": 22.9,
+  "base_cm": 1.5,
+  "low_cm": 15.0
+ },
+ "hand_height_cm": {
+  "cam": 24.4,
+  "low": 15.0
+ },
+ "seed": 20261002,
+ "frames_per_step": 60,
+ "mirror": true,
+ "resolution": [
+  640,
+  480
+ ],
+ "steps": [
+  {
+   "block": "main",
+   "distance_cm": 35,
+   "pose": "pinch_flat",
+   "height": "cam",
+   "lateral": "center",
+   "rep": 0,
+   "step": 0
+  },
+  {
+   "block": "main",
+   "distance_cm": 65,
+   "pose": "open_tilt",
+   "height": "low",
+   "lateral": "center",
+   "rep": 0,
+   "step": 1
+  },
+  {
+   "block": "main",
+   "distance_cm": 45,
+   "pose": "pinch_flat",
+   "height": "low",
+   "lateral": "center",
+   "rep": 0,
+   "step": 2
+  },
+  {
+   "block": "main",
+   "distance_cm": 35,
+   "pose": "open_tilt",
+   "height": "cam",
+   "lateral": "center",
+   "rep": 0,
+   "step": 3
+  },
+  {
+   "block": "main",
+   "distance_cm": 65,
+   "pose": "pinch_flat",
+   "height": "low",
+   "lateral": "center",
+   "rep": 0,
+   "step": 4
+  },
+  {
+   "block": "main",
+   "distance_cm": 65,
+   "pose": "open_flat",
+   "height": "cam",
+   "lateral": "center",
+   "rep": 0,
+   "step": 5
+  },
+  {
+   "block": "main",
+   "distance_cm": 45,
+   "pose": "open_tilt",
+   "height": "low",
+   "lateral": "center",
+   "rep": 0,
+   "step": 6
+  },
+  {
+   "block": "main",
+   "distance_cm": 55,
+   "pose": "pinch_tilt",
+   "height": "cam",
+   "lateral": "center",
+   "rep": 0,
+   "step": 7
+  },
+  {
+   "block": "main",
+   "distance_cm": 55,
+   "pose": "open_flat",
+   "height": "cam",
+   "lateral": "center",
+   "rep": 0,
+   "step": 8
+  },
+  {
+   "block": "main",
+   "distance_cm": 45,
+   "pose": "open_tilt",
+   "height": "cam",
+   "lateral": "center",
+   "rep": 0,
+   "step": 9
+  },
+  {
+   "block": "main",
+   "distance_cm": 35,
+   "pose": "pinch_tilt",
+   "height": "cam",
+   "lateral": "center",
+   "rep": 0,
+   "step": 10
+  },
+  {
+   "block": "main",
+   "distance_cm": 55,
+   "pose": "pinch_tilt",
+   "height": "low",
+   "lateral": "center",
+   "rep": 0,
+   "step": 11
+  },
+  {
+   "block": "main",
+   "distance_cm": 55,
+   "pose": "open_tilt",
+   "height": "cam",
+   "lateral": "center",
+   "rep": 0,
+   "step": 12
+  },
+  {
+   "block": "main",
+   "distance_cm": 35,
+   "pose": "pinch_tilt",
+   "height": "low",
+   "lateral": "center",
+   "rep": 0,
+   "step": 13
+  },
+  {
+   "block": "main",
+   "distance_cm": 65,
+   "pose": "pinch_tilt",
+   "height": "cam",
+   "lateral": "center",
+   "rep": 0,
+   "step": 14
+  },
+  {
+   "block": "main",
+   "distance_cm": 65,
+   "pose": "open_tilt",
+   "height": "cam",
+   "lateral": "center",
+   "rep": 0,
+   "step": 15
+  },
+  {
+   "block": "main",
+   "distance_cm": 35,
+   "pose": "open_flat",
+   "height": "cam",
+   "lateral": "center",
+   "rep": 0,
+   "step": 16
+  },
+  {
+   "block": "main",
+   "distance_cm": 45,
+   "pose": "open_flat",
+   "height": "low",
+   "lateral": "center",
+   "rep": 0,
+   "step": 17
+  },
+  {
+   "block": "main",
+   "distance_cm": 45,
+   "pose": "open_flat",
+   "height": "cam",
+   "lateral": "center",
+   "rep": 0,
+   "step": 18
+  },
+  {
+   "block": "main",
+   "distance_cm": 65,
+   "pose": "pinch_tilt",
+   "height": "low",
+   "lateral": "center",
+   "rep": 0,
+   "step": 19
+  },
+  {
+   "block": "main",
+   "distance_cm": 65,
+   "pose": "pinch_flat",
+   "height": "cam",
+   "lateral": "center",
+   "rep": 0,
+   "step": 20
+  },
+  {
+   "block": "main",
+   "distance_cm": 55,
+   "pose": "pinch_flat",
+   "height": "cam",
+   "lateral": "center",
+   "rep": 0,
+   "step": 21
+  },
+  {
+   "block": "main",
+   "distance_cm": 35,
+   "pose": "open_flat",
+   "height": "low",
+   "lateral": "center",
+   "rep": 0,
+   "step": 22
+  },
+  {
+   "block": "main",
+   "distance_cm": 55,
+   "pose": "open_tilt",
+   "height": "low",
+   "lateral": "center",
+   "rep": 0,
+   "step": 23
+  },
+  {
+   "block": "main",
+   "distance_cm": 45,
+   "pose": "pinch_tilt",
+   "height": "cam",
+   "lateral": "center",
+   "rep": 0,
+   "step": 24
+  },
+  {
+   "block": "main",
+   "distance_cm": 65,
+   "pose": "open_flat",
+   "height": "low",
+   "lateral": "center",
+   "rep": 0,
+   "step": 25
+  },
+  {
+   "block": "main",
+   "distance_cm": 55,
+   "pose": "pinch_flat",
+   "height": "low",
+   "lateral": "center",
+   "rep": 0,
+   "step": 26
+  },
+  {
+   "block": "main",
+   "distance_cm": 35,
+   "pose": "open_tilt",
+   "height": "low",
+   "lateral": "center",
+   "rep": 0,
+   "step": 27
+  },
+  {
+   "block": "main",
+   "distance_cm": 45,
+   "pose": "pinch_flat",
+   "height": "cam",
+   "lateral": "center",
+   "rep": 0,
+   "step": 28
+  },
+  {
+   "block": "main",
+   "distance_cm": 35,
+   "pose": "pinch_flat",
+   "height": "low",
+   "lateral": "center",
+   "rep": 0,
+   "step": 29
+  },
+  {
+   "block": "main",
+   "distance_cm": 45,
+   "pose": "pinch_tilt",
+   "height": "low",
+   "lateral": "center",
+   "rep": 0,
+   "step": 30
+  },
+  {
+   "block": "main",
+   "distance_cm": 55,
+   "pose": "open_flat",
+   "height": "low",
+   "lateral": "center",
+   "rep": 0,
+   "step": 31
+  },
+  {
+   "block": "main",
+   "distance_cm": 45,
+   "pose": "open_tilt",
+   "height": "cam",
+   "lateral": "center",
+   "rep": 1,
+   "step": 32
+  },
+  {
+   "block": "main",
+   "distance_cm": 35,
+   "pose": "pinch_tilt",
+   "height": "low",
+   "lateral": "center",
+   "rep": 1,
+   "step": 33
+  },
+  {
+   "block": "main",
+   "distance_cm": 35,
+   "pose": "pinch_flat",
+   "height": "cam",
+   "lateral": "center",
+   "rep": 1,
+   "step": 34
+  },
+  {
+   "block": "main",
+   "distance_cm": 65,
+   "pose": "pinch_flat",
+   "height": "cam",
+   "lateral": "center",
+   "rep": 1,
+   "step": 35
+  },
+  {
+   "block": "main",
+   "distance_cm": 55,
+   "pose": "open_flat",
+   "height": "low",
+   "lateral": "center",
+   "rep": 1,
+   "step": 36
+  },
+  {
+   "block": "main",
+   "distance_cm": 65,
+   "pose": "pinch_tilt",
+   "height": "low",
+   "lateral": "center",
+   "rep": 1,
+   "step": 37
+  },
+  {
+   "block": "main",
+   "distance_cm": 65,
+   "pose": "open_flat",
+   "height": "low",
+   "lateral": "center",
+   "rep": 1,
+   "step": 38
+  },
+  {
+   "block": "main",
+   "distance_cm": 65,
+   "pose": "pinch_flat",
+   "height": "low",
+   "lateral": "center",
+   "rep": 1,
+   "step": 39
+  },
+  {
+   "block": "main",
+   "distance_cm": 45,
+   "pose": "open_tilt",
+   "height": "low",
+   "lateral": "center",
+   "rep": 1,
+   "step": 40
+  },
+  {
+   "block": "main",
+   "distance_cm": 35,
+   "pose": "open_flat",
+   "height": "low",
+   "lateral": "center",
+   "rep": 1,
+   "step": 41
+  },
+  {
+   "block": "main",
+   "distance_cm": 45,
+   "pose": "pinch_tilt",
+   "height": "cam",
+   "lateral": "center",
+   "rep": 1,
+   "step": 42
+  },
+  {
+   "block": "main",
+   "distance_cm": 35,
+   "pose": "pinch_tilt",
+   "height": "cam",
+   "lateral": "center",
+   "rep": 1,
+   "step": 43
+  },
+  {
+   "block": "main",
+   "distance_cm": 55,
+   "pose": "pinch_tilt",
+   "height": "low",
+   "lateral": "center",
+   "rep": 1,
+   "step": 44
+  },
+  {
+   "block": "main",
+   "distance_cm": 55,
+   "pose": "open_tilt",
+   "height": "cam",
+   "lateral": "center",
+   "rep": 1,
+   "step": 45
+  },
+  {
+   "block": "main",
+   "distance_cm": 55,
+   "pose": "pinch_flat",
+   "height": "low",
+   "lateral": "center",
+   "rep": 1,
+   "step": 46
+  },
+  {
+   "block": "main",
+   "distance_cm": 55,
+   "pose": "pinch_flat",
+   "height": "cam",
+   "lateral": "center",
+   "rep": 1,
+   "step": 47
+  },
+  {
+   "block": "main",
+   "distance_cm": 55,
+   "pose": "open_tilt",
+   "height": "low",
+   "lateral": "center",
+   "rep": 1,
+   "step": 48
+  },
+  {
+   "block": "main",
+   "distance_cm": 55,
+   "pose": "open_flat",
+   "height": "cam",
+   "lateral": "center",
+   "rep": 1,
+   "step": 49
+  },
+  {
+   "block": "main",
+   "distance_cm": 45,
+   "pose": "pinch_flat",
+   "height": "low",
+   "lateral": "center",
+   "rep": 1,
+   "step": 50
+  },
+  {
+   "block": "main",
+   "distance_cm": 65,
+   "pose": "pinch_tilt",
+   "height": "cam",
+   "lateral": "center",
+   "rep": 1,
+   "step": 51
+  },
+  {
+   "block": "main",
+   "distance_cm": 35,
+   "pose": "open_tilt",
+   "height": "low",
+   "lateral": "center",
+   "rep": 1,
+   "step": 52
+  },
+  {
+   "block": "main",
+   "distance_cm": 35,
+   "pose": "open_flat",
+   "height": "cam",
+   "lateral": "center",
+   "rep": 1,
+   "step": 53
+  },
+  {
+   "block": "main",
+   "distance_cm": 45,
+   "pose": "pinch_flat",
+   "height": "cam",
+   "lateral": "center",
+   "rep": 1,
+   "step": 54
+  },
+  {
+   "block": "main",
+   "distance_cm": 65,
+   "pose": "open_tilt",
+   "height": "low",
+   "lateral": "center",
+   "rep": 1,
+   "step": 55
+  },
+  {
+   "block": "main",
+   "distance_cm": 45,
+   "pose": "pinch_tilt",
+   "height": "low",
+   "lateral": "center",
+   "rep": 1,
+   "step": 56
+  },
+  {
+   "block": "main",
+   "distance_cm": 45,
+   "pose": "open_flat",
+   "height": "low",
+   "lateral": "center",
+   "rep": 1,
+   "step": 57
+  },
+  {
+   "block": "main",
+   "distance_cm": 65,
+   "pose": "open_tilt",
+   "height": "cam",
+   "lateral": "center",
+   "rep": 1,
+   "step": 58
+  },
+  {
+   "block": "main",
+   "distance_cm": 45,
+   "pose": "open_flat",
+   "height": "cam",
+   "lateral": "center",
+   "rep": 1,
+   "step": 59
+  },
+  {
+   "block": "main",
+   "distance_cm": 65,
+   "pose": "open_flat",
+   "height": "cam",
+   "lateral": "center",
+   "rep": 1,
+   "step": 60
+  },
+  {
+   "block": "main",
+   "distance_cm": 35,
+   "pose": "pinch_flat",
+   "height": "low",
+   "lateral": "center",
+   "rep": 1,
+   "step": 61
+  },
+  {
+   "block": "main",
+   "distance_cm": 55,
+   "pose": "pinch_tilt",
+   "height": "cam",
+   "lateral": "center",
+   "rep": 1,
+   "step": 62
+  },
+  {
+   "block": "main",
+   "distance_cm": 35,
+   "pose": "open_tilt",
+   "height": "cam",
+   "lateral": "center",
+   "rep": 1,
+   "step": 63
+  },
+  {
+   "block": "lateral",
+   "distance_cm": 50,
+   "pose": "open_flat",
+   "height": "cam",
+   "lateral": "left",
+   "rep": 0,
+   "step": 64
+  },
+  {
+   "block": "lateral",
+   "distance_cm": 50,
+   "pose": "open_flat",
+   "height": "cam",
+   "lateral": "center",
+   "rep": 0,
+   "step": 65
+  },
+  {
+   "block": "lateral",
+   "distance_cm": 50,
+   "pose": "open_flat",
+   "height": "cam",
+   "lateral": "right",
+   "rep": 0,
+   "step": 66
+  },
+  {
+   "block": "lateral",
+   "distance_cm": 50,
+   "pose": "open_flat",
+   "height": "cam",
+   "lateral": "center",
+   "rep": 1,
+   "step": 67
+  },
+  {
+   "block": "lateral",
+   "distance_cm": 50,
+   "pose": "open_flat",
+   "height": "cam",
+   "lateral": "left",
+   "rep": 1,
+   "step": 68
+  },
+  {
+   "block": "lateral",
+   "distance_cm": 50,
+   "pose": "open_flat",
+   "height": "cam",
+   "lateral": "right",
+   "rep": 1,
+   "step": 69
+  }
+ ],
+ "done": [
+  {
+   "step": 1,
+   "take": 1
+  },
+  {
+   "step": 3,
+   "take": 1
+  },
+  {
+   "step": 5,
+   "take": 1
+  },
+  {
+   "step": 6,
+   "take": 1
+  },
+  {
+   "step": 8,
+   "take": 0
+  },
+  {
+   "step": 9,
+   "take": 0
+  },
+  {
+   "step": 12,
+   "take": 0
+  },
+  {
+   "step": 15,
+   "take": 1
+  },
+  {
+   "step": 0,
+   "take": 1
+  },
+  {
+   "step": 2,
+   "take": 1
+  },
+  {
+   "step": 4,
+   "take": 1
+  },
+  {
+   "step": 7,
+   "take": 1
+  },
+  {
+   "step": 10,
+   "take": 1
+  },
+  {
+   "step": 11,
+   "take": 1
+  },
+  {
+   "step": 13,
+   "take": 1
+  },
+  {
+   "step": 14,
+   "take": 1
+  },
+  {
+   "step": 16,
+   "take": 0
+  },
+  {
+   "step": 17,
+   "take": 0
+  },
+  {
+   "step": 18,
+   "take": 0
+  },
+  {
+   "step": 19,
+   "take": 0
+  },
+  {
+   "step": 20,
+   "take": 0
+  },
+  {
+   "step": 21,
+   "take": 0
+  },
+  {
+   "step": 22,
+   "take": 0
+  },
+  {
+   "step": 23,
+   "take": 0
+  },
+  {
+   "step": 24,
+   "take": 0
+  },
+  {
+   "step": 25,
+   "take": 0
+  },
+  {
+   "step": 26,
+   "take": 0
+  },
+  {
+   "step": 27,
+   "take": 0
+  },
+  {
+   "step": 28,
+   "take": 0
+  },
+  {
+   "step": 29,
+   "take": 0
+  },
+  {
+   "step": 30,
+   "take": 0
+  },
+  {
+   "step": 31,
+   "take": 0
+  },
+  {
+   "step": 32,
+   "take": 0
+  },
+  {
+   "step": 33,
+   "take": 0
+  },
+  {
+   "step": 34,
+   "take": 0
+  },
+  {
+   "step": 35,
+   "take": 0
+  },
+  {
+   "step": 36,
+   "take": 0
+  },
+  {
+   "step": 37,
+   "take": 0
+  },
+  {
+   "step": 38,
+   "take": 0
+  },
+  {
+   "step": 39,
+   "take": 0
+  },
+  {
+   "step": 40,
+   "take": 0
+  },
+  {
+   "step": 41,
+   "take": 0
+  },
+  {
+   "step": 42,
+   "take": 0
+  },
+  {
+   "step": 43,
+   "take": 0
+  },
+  {
+   "step": 44,
+   "take": 0
+  },
+  {
+   "step": 45,
+   "take": 0
+  },
+  {
+   "step": 46,
+   "take": 0
+  },
+  {
+   "step": 47,
+   "take": 0
+  },
+  {
+   "step": 48,
+   "take": 0
+  },
+  {
+   "step": 49,
+   "take": 0
+  },
+  {
+   "step": 50,
+   "take": 0
+  },
+  {
+   "step": 51,
+   "take": 0
+  },
+  {
+   "step": 52,
+   "take": 0
+  },
+  {
+   "step": 53,
+   "take": 0
+  },
+  {
+   "step": 54,
+   "take": 0
+  },
+  {
+   "step": 55,
+   "take": 0
+  },
+  {
+   "step": 56,
+   "take": 0
+  },
+  {
+   "step": 57,
+   "take": 0
+  },
+  {
+   "step": 58,
+   "take": 0
+  },
+  {
+   "step": 59,
+   "take": 0
+  },
+  {
+   "step": 60,
+   "take": 0
+  },
+  {
+   "step": 61,
+   "take": 0
+  },
+  {
+   "step": 62,
+   "take": 0
+  },
+  {
+   "step": 63,
+   "take": 1
+  },
+  {
+   "step": 64,
+   "take": 0
+  },
+  {
+   "step": 65,
+   "take": 0
+  },
+  {
+   "step": 66,
+   "take": 0
+  },
+  {
+   "step": 67,
+   "take": 0
+  },
+  {
+   "step": 68,
+   "take": 0
+  },
+  {
+   "step": 69,
+   "take": 0
+  }
+ ],
+ "invalidated": [
+  {
+   "step": 0,
+   "take": 4,
+   "reason": "집은 손인데 엄지-검지 비율 1.09 (손가락을 안 붙임)"
+  },
+  {
+   "step": 2,
+   "take": 1,
+   "reason": "집은 손인데 엄지-검지 비율 1.03 (손가락을 안 붙임)"
+  },
+  {
+   "step": 4,
+   "take": 1,
+   "reason": "집은 손인데 엄지-검지 비율 0.90 (손가락을 안 붙임)"
+  },
+  {
+   "step": 7,
+   "take": 0,
+   "reason": "집은 손인데 엄지-검지 비율 0.82 (손가락을 안 붙임)"
+  },
+  {
+   "step": 10,
+   "take": 0,
+   "reason": "집은 손인데 엄지-검지 비율 0.82 (손가락을 안 붙임)"
+  },
+  {
+   "step": 11,
+   "take": 0,
+   "reason": "집은 손인데 엄지-검지 비율 0.91 (손가락을 안 붙임)"
+  },
+  {
+   "step": 13,
+   "take": 0,
+   "reason": "집은 손인데 엄지-검지 비율 0.89 (손가락을 안 붙임)"
+  },
+  {
+   "step": 14,
+   "take": 2,
+   "reason": "집은 손인데 엄지-검지 비율 0.91 (손가락을 안 붙임)"
+  }
+ ]
+}
