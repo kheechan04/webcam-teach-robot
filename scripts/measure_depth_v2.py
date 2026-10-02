@@ -9,7 +9,8 @@
     --tilt      화면이 수직에서 뒤로 기운 각도(도). 휴대폰 수평계를 화면에 대고 잰다
     --screen    화면 아래 경첩(키보드와 만나는 선)에서 웹캠까지 화면을 따라 잰 길이(cm)
     --base      책상에서 경첩까지 높이(cm), 노트북 본체 두께 정도
-    --low       "낮게" 자세에서 손바닥 가운데의 책상 위 높이(cm). 손목을 책상에 댄 채 손바닥을 세운 높이를 자로 잰다
+    --low       "낮게" 자세에서 손바닥 가운데의 책상 위 높이(cm). 책·상자 위에 손목을 올려 약 15 cm로 맞추고 자로 잰다.
+                (손목을 책상에 바로 대면 가까운 거리에서 손 아래쪽이 화면 밖으로 잘렸다 — 웹캠 약 24 cm 높이, 위아래 화각 약 ±23°)
 줄자: 0 눈금을 경첩 선에 맞추고 앞쪽(사람 쪽)으로 펼친다. 거리는 경첩 선에서 손바닥 가운데까지.
 
 실행:
@@ -45,7 +46,8 @@ POSES = {
     "pinch_flat": "집은 손(엄지·검지 붙임) · 정면",
     "pinch_tilt": "집은 손(엄지·검지 붙임) · 45° 기울임",
 }
-HEIGHTS = {"cam": "웹캠 높이", "low": "낮게(손목 책상에)"}
+HEIGHTS = {"cam": "웹캠 높이", "low": "낮게(책 위에 손목)"}
+EDGE_PX = 6  # 손 마디가 화면 가장자리에서 이만큼 안쪽에 없으면 "잘림"으로 보고 측정하지 않는다
 LATERAL = {"left": "· 화면 왼쪽 끝", "center": "· 화면 가운데", "right": "· 화면 오른쪽 끝"}
 LATERAL_DIST = 50
 
@@ -180,12 +182,15 @@ def main() -> None:
             infer_ms = (time.perf_counter() - t_inf) * 1000
             s = queue[i]
             hh = meta["hand_height_cm"][s["height"]]
+            clipped = obs is not None and bool(
+                (obs.pixels[:, 0] < EDGE_PX).any() or (obs.pixels[:, 0] > 640 - EDGE_PX).any()
+                or (obs.pixels[:, 1] < EDGE_PX).any() or (obs.pixels[:, 1] > 480 - EDGE_PX).any())
             if obs is not None:
                 pts = obs.pixels.astype(int)
                 for a, b in HAND_CONNECTIONS:
                     cv2.line(frame, tuple(pts[a]), tuple(pts[b]), (0, 200, 0), 2)
             if collecting:
-                if obs is not None:
+                if obs is not None and not clipped:
                     truth = true_camera_depth_cm(s["distance_cm"], hh, geo)
                     row = [s["step"], takes[s["step"]], s["rep"], s["block"], s["distance_cm"], s["pose"], s["height"],
                            s["lateral"], hh, f"{truth:.2f}", len(buffer), f"{t:.4f}", f"{infer_ms:.2f}",
@@ -207,13 +212,14 @@ def main() -> None:
                 lines = [f"{len(meta['done']) + 1}/{len(steps)} · 줄자 {s['distance_cm']} cm {where}",
                          f"손: {POSES[s['pose']]}",
                          f"높이: {HEIGHTS[s['height']]} = 책상에서 {hh} cm",
-                         "손 인식됨 → 스페이스" if obs is not None else "손이 안 보여요",
+                         ("손이 화면 가장자리에서 잘려요 — 손을 안쪽으로" if clipped else "손 인식됨 → 스페이스")
+                         if obs is not None else "손이 안 보여요",
                          "r 이전 다시 · q 끝내기"]
             cv2.imshow("depth measurement v2 (not recorded)", draw_text(frame, lines))
             key = cv2.waitKey(1) & 0xFF
             if key in (ord("q"), 27):
                 break
-            if key == ord(" ") and not collecting and obs is not None:
+            if key == ord(" ") and not collecting and obs is not None and not clipped:
                 collecting, buffer = True, []
             if key == ord("r") and not collecting and meta["done"]:
                 last = meta["done"].pop()  # 파일 행은 남기고 take 번호를 올려 다시 잰다. 분석은 마지막 take만 쓴다
