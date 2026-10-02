@@ -26,7 +26,8 @@
   9. RunPod 학습 스크립트 `runpod/train_act.sh` (uv로 Python 3.12, lerobot[dataset,training]==0.6.1, 끝나면 기록 업로드 + 서버 자동 종료), 평가 스크립트 `scripts/eval_policy.py` (eval 배치, PlacementTracker, 윌슨 95% 구간, 같은 SceneRenderer). **로컬 CPU 20스텝 학습 → 평가까지 한 바퀴 점검 완료**(Windows에선 checkpoints/last 바로가기 권한 오류만, 리눅스 무관).
     10. **시험 학습 완료 (M4)**: RunPod RTX 3090 982초(약 $0.07), loss 0.065 → **평가 88/100 (95% 80~93%)** (`docs/05-training.md`). 모델 카드 자동 라이선스 제거, 학습 스크립트도 수정. Pod는 사용자가 Terminate.
   **M5 정식 깊이 측정 준비 완료** `scripts/measure_depth_v2.py`: 거리 4 × 손 모양·기울기 4 × 높이 2 = 32자세 × 2번(순서 섞음) + 가로 위치 3 × 2 = 70단계. 화면 기울기·경첩~웹캠 길이·본체 두께로 카메라 깊이 참값 계산. 손 마디 원래 좌표 저장, --resume로 이어서. 가짜 카메라로 끊고 잇기까지 점검. **측정 완료·분석 완료 (M5)** → `docs/06-depth-formal.md`. 지금 방식 평균 절대 오차 5.8 cm, **집은 손·기울임 +10~12 cm(항상 멀다)**, 65 cm +9.6, 오른쪽 끝 −4.7. 피드백 후보 2개는 지금 방식을 뚜렷이 못 이김 → ③은 자세별 치우침을 빼는 회귀 보정(1회차로 맞추고 2회차로 평가)으로 방향 수정.
-  **다음: M6 관련 연구 재조사(CVPR/ICCV/ECCV 손 깊이, CoRL/RSS/ICRA/IROS) → M7 ③ 보정·④ 데이터** → 되면 조건 ② 녹화 규칙(시범 수, 시간 제한 등) 정하기
+  **M6 재조사 완료** (`docs/07-related-work-v2.md`): RootNet(ICCV 2019)의 "핀홀 거리 × 학습한 보정" 구조를 ③에 적용, AnyTeleop RGB vs RGB-D 조종 비교(정책 학습 비교 없음), SO-101 손 추적 IK 2026(RGB-D, 손 시범 학습 없음). 차별점 유지.
+  **다음: M7 ③ 보정(손 자세 특징 → 거리 보정, M5 1회차로 맞추고 2회차로 평가)·④ 데이터** → 되면 조건 ② 녹화 규칙(시범 수, 시간 제한 등) 정하기
   남은 1단계 일: 참값 있는 정식 깊이·지연 측정 (조건 ④의 근거)
   ③ 보정 만들기 전: 단안 손 깊이 추정 관련 연구를 CVPR/ICCV/ECCV 중심으로, 원격 조종·모방 학습은 CoRL/RSS/ICRA/IROS 중심으로 재조사 (피드백 반영, `docs/04-feedback-log.md`)
 
