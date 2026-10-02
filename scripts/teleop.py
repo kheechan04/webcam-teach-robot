@@ -3,6 +3,7 @@
 실행:
     uv run python scripts/teleop.py
     uv run python scripts/teleop.py --log        # 숫자 기록을 measurements/teleop/에 저장
+    uv run python scripts/teleop.py --depth-correction   # 조건 ③: 손 자세에 따른 깊이 치우침 보정
 
 창이 두 개 뜬다: 웹캠 창(손 추적 상태)과 MuJoCo 창(로봇).
 웹캠 창을 클릭해서 선택한 상태에서:
@@ -32,6 +33,7 @@ import mujoco
 import mujoco.viewer
 import numpy as np
 
+from webcam_teach_robot.depth_correction import DepthCorrection
 from webcam_teach_robot.hand_tracking import HAND_CONNECTIONS, HandTracker
 from webcam_teach_robot.ik import SO101IK
 from webcam_teach_robot.scene import PlacementTracker, build_model, cube_pos, place, sample_layout, task_ids
@@ -90,7 +92,12 @@ def main() -> None:
                         help="손 위치 지수평활 계수(0~1). 1이면 평활 없음, 작을수록 부드럽지만 늦게 따라온다")
     parser.add_argument("--log", action="store_true", help="프레임별 숫자를 CSV로 저장")
     parser.add_argument("--seed", type=int, default=None, help="배치 무작위 시드 (기본: 매번 다름)")
+    parser.add_argument("--depth-correction", action="store_true",
+                        help="조건 ③: 손 자세 특징으로 깊이 치우침 보정 (계수: src/webcam_teach_robot/depth_correction.json)")
     args = parser.parse_args()
+    correction = DepthCorrection() if args.depth_correction else None
+    if correction and (args.fov != 60.0 or args.depth != "min"):
+        raise SystemExit("보정 계수는 화각 60°, --depth min 기준으로 맞춘 것이에요.")
 
     model = build_model()
     data = mujoco.MjData(model)
@@ -127,7 +134,7 @@ def main() -> None:
         writer.writerow(["t_s", "engaged", "hand_found", "detect_ms", "ik_ms", "loop_ms",
                          "hand_x", "hand_y", "hand_z", "depth_len_m", "depth_width_m", "pinch", "gated", "gripper_closed",
                          "target_x", "target_y", "target_z", "tip_x", "tip_y", "tip_z",
-                         "ik_pos_err_mm", "ik_dir_err_deg"] + [f"q{i}" for i in range(6)] + [f"ctrl{i}" for i in range(6)]
+                         "ik_pos_err_mm", "ik_dir_err_deg", "depth_used_m"] + [f"q{i}" for i in range(6)] + [f"ctrl{i}" for i in range(6)]
                         + ["layout", "cube_x", "cube_y", "cube_z", "goal_x", "goal_y", "placed_success"]
                         + ["cube_qw", "cube_qx", "cube_qy", "cube_qz", "handedness", "grasp_locked"] + LANDMARK_COLUMNS)
         # 실행 설정을 같이 남긴다(나중에 같은 조건인지 확인하려고). 영상은 저장하지 않는다.
@@ -138,6 +145,8 @@ def main() -> None:
             "workspace_hi": WORKSPACE_HI.tolist(), "home_q": HOME_Q.tolist(),
             "frame_size": [int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))],
             "mirror": True,
+            "condition": 3 if correction else 2,
+            "depth_correction": json.loads(DepthCorrection.coef_text()) if correction else None,
         }, ensure_ascii=False, indent=2), encoding="utf-8")
 
     engaged = False
@@ -177,11 +186,13 @@ def main() -> None:
             ik_ms = 0.0
             ik_res = None
             gated = False
+            depth_used = float("nan")
             if obs is None or not np.isfinite(obs.depth_m):
                 hand_filter.lost()
             else:
                 hand_filter.found()
-                hand = hand_point_camera(obs.palm_center_px, obs.depth_m, w, h, args.fov)
+                depth_used = correction(obs.pixels, obs.world, obs.depth_m, w, h) if correction else obs.depth_m
+                hand = hand_point_camera(obs.palm_center_px, depth_used, w, h, args.fov)
                 hand_smooth, gated = hand_filter.update(hand)
                 if engaged:
                     was_closed = gripper_switch.closed
@@ -238,7 +249,8 @@ def main() -> None:
                       + ("  LOCK" if locked and engaged else ""))
             lines = [f"{status}  loop {(time.perf_counter() - t_loop) * 1000:4.0f} ms",
                      f"layout {layout_id}  {'SUCCESS (r: next)' if success_now else 'move cube to green'}  total {successes}",
-                     f"depth {obs.depth_m * 100:5.1f} cm  pinch {obs.pinch:4.2f}" if obs else "hand: not found",
+                     (f"depth {depth_used * 100:5.1f} cm" + (f" (raw {obs.depth_m * 100:4.1f})" if correction else "")
+                      + f"  pinch {obs.pinch:4.2f}") if obs else "hand: not found",
                      f"target ({target[0]*100:4.1f}, {target[1]*100:4.1f}, {target[2]*100:4.1f}) cm"]
             for i, text in enumerate(lines):
                 cv2.putText(frame, text, (10, 28 + 26 * i), cv2.FONT_HERSHEY_SIMPLEX, 0.65, (0, 0, 0), 4)
@@ -256,7 +268,7 @@ def main() -> None:
                                  f"{obs.pinch:.4f}" if obs else "", int(gated), int(gripper_switch.closed),
                                  *[f"{v:.5f}" for v in target], *[f"{v:.5f}" for v in tip],
                                  f"{ik_res.pos_err_m * 1000:.2f}" if ik_res else "",
-                                 f"{ik_res.dir_err_deg:.2f}" if ik_res else "",
+                                 f"{ik_res.dir_err_deg:.2f}" if ik_res else "", f"{depth_used:.5f}",
                                  *[f"{v:.5f}" for v in data.qpos[:6]], *[f"{v:.5f}" for v in data.ctrl[:6]],
                                  layout_id, *[f"{v:.5f}" for v in cube], *[f"{v:.5f}" for v in target_xy], int(success_now),
                                  *[f"{v:.5f}" for v in data.qpos[ids.cube_qadr + 3:ids.cube_qadr + 7]],
