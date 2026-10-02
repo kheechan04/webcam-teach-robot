@@ -4,6 +4,9 @@
     uv run python scripts/build_dataset.py scripted --name cond1_scripted
 조건 ② 웹캠 시범 (조종 기록 CSV들에서 성공한 배치만):
     uv run python scripts/build_dataset.py webcam --name cond2_webcam measurements/teleop/2026100*.csv
+M8 녹화(record_demos.py)에서 조건별로 (progress.json에서 성공으로 끝난 시도만):
+    uv run python scripts/build_dataset.py webcam --name cond2_webcam --condition 2 measurements/demos_m8/u*.csv
+    uv run python scripts/build_dataset.py webcam --name cond3_webcam_corrected --condition 3 measurements/demos_m8/u*.csv
 
 웹캠 기록 처리:
     - 배치(layout)마다 한 에피소드. 처음 조종을 건 순간부터, 성공 판정 1초 뒤(또는 배치 끝)까지
@@ -67,8 +70,20 @@ def scripted_episodes(model, split: str, n: int | None):
                             "cube_xy": cube_xy.tolist(), "goal_xy": goal_xy.tolist()})
 
 
-def webcam_episodes(paths: list[Path]):
+def webcam_episodes(paths: list[Path], condition: int | None = None):
+    progress_cache = {}
     for path in paths:
+        meta_path = path.with_suffix(".json")
+        meta = json.loads(meta_path.read_text(encoding="utf-8")) if meta_path.exists() else {}
+        if condition is not None and meta.get("condition", 2) != condition:
+            continue
+        if "plan_unit" in meta:  # record_demos.py 녹화: 녹화 화면이 성공으로 끝낸 시도만
+            prog_path = path.parent / "progress.json"
+            if prog_path not in progress_cache:
+                progress_cache[prog_path] = json.loads(prog_path.read_text(encoding="utf-8"))
+            tries = progress_cache[prog_path]["units"][str(meta["plan_unit"]["unit"])]["tries"]
+            if not any(t["file"] == path.name and t["result"] == "success" for t in tries):
+                continue
         rows = list(csv.DictReader(open(path, encoding="utf-8")))
         if not rows or "layout" not in rows[0]:
             print(f"건너뜀(과제 장면 이전 기록): {path.name}")
@@ -111,6 +126,7 @@ def webcam_episodes(paths: list[Path]):
             v = resample(t[1:], {"qpos": qpos[:-1], "action": ctrl[1:], "cube_pos": cube[:-1], "cube_quat": quat[:-1]})
             yield Episode(**v, goal_xy=goal, success=True,
                           info={"source": "webcam", "log": path.name, "layout": layout,
+                                "condition": meta.get("condition", 2), "plan_unit": meta.get("plan_unit"),
                                 "cube_quat": quat_note, "raw_rows": len(Rk)})
 
 
@@ -122,6 +138,7 @@ def main() -> None:
     p.add_argument("--split", default="train", help="고정 배치 목록 (train/eval)")
     p.add_argument("--n", type=int, default=None, help="배치 앞에서 n개만 (시험용)")
     p.add_argument("--overwrite", action="store_true")
+    p.add_argument("--condition", type=int, choices=[2, 3], default=None, help="웹캠 기록 중 이 조건만 (기록 JSON 기준)")
     args = p.parse_args()
 
     from lerobot.datasets.lerobot_dataset import LeRobotDataset
@@ -136,7 +153,7 @@ def main() -> None:
                                robot_type="so101_sim", use_videos=True)
     renderer = SceneRenderer(model, task_ids(model))
     episodes = (scripted_episodes(model, args.split, args.n) if args.source == "scripted"
-                else webcam_episodes(sorted(args.logs)))
+                else webcam_episodes(sorted(args.logs), args.condition))
     infos, skipped = [], 0
     for ep in episodes:
         if not ep.success:
