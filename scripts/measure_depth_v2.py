@@ -164,7 +164,9 @@ def main() -> None:
     steps = meta["steps"]
     done_ids = {d["step"] for d in meta["done"]}
     queue = [s for s in steps if s["step"] not in done_ids]
-    takes = {s["step"]: sum(1 for d in meta["done"] if d["step"] == s["step"]) for s in steps}
+    # 다시 할 단계는 meta["invalidated"]로 옮겨 둔다(행은 파일에 남기고 분석에서 뺀다). take 번호는 그것까지 세서 겹치지 않게.
+    invalid = meta.get("invalidated", [])
+    takes = {s["step"]: sum(1 for d in meta["done"] + invalid if d["step"] == s["step"]) for s in steps}
     f = open(csv_path, "a", newline="", encoding="utf-8")
     writer = csv.writer(f)
     t0 = time.perf_counter()
