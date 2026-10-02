@@ -156,3 +156,23 @@ class PlacementTracker:
         if self.ok_time >= STABLE_S:
             self.succeeded = True
         return self.succeeded
+
+
+LAYOUTS_FILE = ROOT / "experiments" / "layouts_v1.json"
+
+
+def make_layouts(seed: int, n: int) -> list[dict]:
+    rng = np.random.default_rng(seed)
+    out = []
+    for i in range(n):
+        cube, goal = sample_layout(rng)
+        out.append({"id": i, "cube_xy": [round(float(v), 4) for v in cube],
+                    "goal_xy": [round(float(v), 4) for v in goal]})
+    return out
+
+
+def load_layouts(split: str) -> list[tuple[np.ndarray, np.ndarray]]:
+    """고정 배치 목록. split = "train"(시범용) 또는 "eval"(학습한 정책 평가용, 시범에 안 씀)."""
+    import json
+    data = json.loads(LAYOUTS_FILE.read_text(encoding="utf-8"))
+    return [(np.array(d["cube_xy"]), np.array(d["goal_xy"])) for d in data[split]]

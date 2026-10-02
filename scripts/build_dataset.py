@@ -1,7 +1,7 @@
 """시범을 LeRobot 데이터셋으로 만든다. 데이터셋은 data/lerobot/<이름>/ 에 생긴다(git에는 안 올림).
 
-조건 ① 스크립트 시범:
-    uv run python scripts/build_dataset.py scripted --name cond1_scripted --n 50 --seed 0
+조건 ① 스크립트 시범 (고정 배치 experiments/layouts_v1.json의 train 50개):
+    uv run python scripts/build_dataset.py scripted --name cond1_scripted
 조건 ② 웹캠 시범 (조종 기록 CSV들에서 성공한 배치만):
     uv run python scripts/build_dataset.py webcam --name cond2_webcam measurements/teleop/2026100*.csv
 
@@ -24,7 +24,7 @@ import numpy as np
 from webcam_teach_robot.dataset import (FPS, Episode, SceneRenderer, default_cube_quat, features, resample,
                                         write_episode)
 from webcam_teach_robot.ik import SO101IK
-from webcam_teach_robot.scene import PlacementTracker, build_model, cube_pos, place, sample_layout, task_ids
+from webcam_teach_robot.scene import PlacementTracker, build_model, cube_pos, load_layouts, place, task_ids
 from webcam_teach_robot.scripted import CONTROL_HZ, plan, trajectory
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -34,14 +34,13 @@ TAIL_S = 1.0  # 성공 뒤 남길 시간
 assert CONTROL_HZ == FPS
 
 
-def scripted_episodes(model, n: int, seed: int):
+def scripted_episodes(model, split: str, n: int | None):
     data = mujoco.MjData(model)
     ids = task_ids(model)
     ik = SO101IK(model)
-    rng = np.random.default_rng(seed)
     steps = int(round(1 / (FPS * model.opt.timestep)))
-    for i in range(n):
-        cube_xy, goal_xy = sample_layout(rng)
+    layouts = load_layouts(split)[:n]
+    for i, (cube_xy, goal_xy) in enumerate(layouts):
         mujoco.mj_resetData(model, data)
         data.qpos[:6] = HOME_Q
         data.ctrl[:6] = HOME_Q
@@ -64,7 +63,7 @@ def scripted_episodes(model, n: int, seed: int):
             tracker.update(cube_pos(data, ids), goal_xy, grip < 0.5, 1 / FPS)
         ok = tracker.succeeded
         yield Episode(**{k: np.array(v) for k, v in rec.items()}, goal_xy=goal_xy, success=ok,
-                      info={"source": "scripted", "seed": seed, "index": i,
+                      info={"source": "scripted", "split": split, "layout": i,
                             "cube_xy": cube_xy.tolist(), "goal_xy": goal_xy.tolist()})
 
 
@@ -120,8 +119,8 @@ def main() -> None:
     p.add_argument("source", choices=["scripted", "webcam"])
     p.add_argument("logs", nargs="*", type=Path)
     p.add_argument("--name", required=True)
-    p.add_argument("--n", type=int, default=50)
-    p.add_argument("--seed", type=int, default=0)
+    p.add_argument("--split", default="train", help="고정 배치 목록 (train/eval)")
+    p.add_argument("--n", type=int, default=None, help="배치 앞에서 n개만 (시험용)")
     p.add_argument("--overwrite", action="store_true")
     args = p.parse_args()
 
@@ -136,7 +135,7 @@ def main() -> None:
     ds = LeRobotDataset.create(repo_id=f"local/{args.name}", fps=FPS, features=features(), root=root,
                                robot_type="so101_sim", use_videos=True)
     renderer = SceneRenderer(model, task_ids(model))
-    episodes = (scripted_episodes(model, args.n, args.seed) if args.source == "scripted"
+    episodes = (scripted_episodes(model, args.split, args.n) if args.source == "scripted"
                 else webcam_episodes(sorted(args.logs)))
     infos, skipped = [], 0
     for ep in episodes:
