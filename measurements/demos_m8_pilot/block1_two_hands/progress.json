@@ -136,7 +136,14 @@
   },
   "10": {
    "status": "todo",
-   "tries": []
+   "tries": [
+    {
+     "file": "u010_try1_20261003_015721.csv",
+     "result": "interrupted",
+     "seconds_from_engage": 0.0,
+     "seconds_total": 790.99
+    }
+   ]
   },
   "11": {
    "status": "todo",
