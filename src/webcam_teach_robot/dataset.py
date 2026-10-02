@@ -70,6 +70,10 @@ class SceneRenderer:
         # 카메라 위치는 mj_kinematics가 아니라 mj_camlight에서 계산된다. 빼먹으면 카메라가 원점(로봇 받침대 안)에
         # 있는 것으로 그려진다(첫 시험 데이터셋에서 실제로 그랬다). mj_forward는 둘 다 한다.
         mujoco.mj_forward(self.model, d)
+        return self.render_data(d)
+
+    def render_data(self, d: mujoco.MjData) -> dict[str, np.ndarray]:
+        """지금 장면 상태 그대로 카메라 화면을 그린다. 데이터셋 만들 때와 정책 평가 때 같은 함수를 쓴다."""
         out = {}
         for key, cam in CAMERAS.items():
             self.r.update_scene(d, camera=cam)
