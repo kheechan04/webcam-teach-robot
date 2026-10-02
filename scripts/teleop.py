@@ -107,7 +107,7 @@ def main() -> None:
         return target_xy
 
     target_xy = reset_layout()
-    tracker = PlacementTracker()
+    placement = PlacementTracker()
     layout_id = 0
     successes = 0
     success_now = False
@@ -203,7 +203,7 @@ def main() -> None:
                 mujoco.mj_step(model, data)
                 sim_dt += model.opt.timestep
             cube = cube_pos(data, ids)
-            done = tracker.update(cube, target_xy, gripper_switch.closed, sim_dt)
+            done = placement.update(cube, target_xy, gripper_switch.closed, sim_dt)
             if done and not success_now:
                 successes += 1
             success_now = done
@@ -266,7 +266,7 @@ def main() -> None:
                 engaged = False
                 gripper_switch.closed = False
                 target_xy = reset_layout()
-                tracker = PlacementTracker()
+                placement = PlacementTracker()
                 q_ik = data.qpos.copy()
                 target = ik.tip(data.qpos.copy())[0]
                 t_sim0 = time.perf_counter()
