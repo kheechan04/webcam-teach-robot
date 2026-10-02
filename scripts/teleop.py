@@ -21,6 +21,8 @@
 
 import argparse
 import csv
+import json
+import subprocess
 import time
 from datetime import datetime
 from pathlib import Path
@@ -50,6 +52,19 @@ HOME_Q = np.array([0.0, -0.21, 0.346, 1.434, 0.0, 1.0])  # 집게는 열린 채�
 #   3차(지금): 3D 격자로 확인한 x 16~28, y ±15, z 1~8 cm
 WORKSPACE_LO = np.array([0.16, -0.15, 0.01])
 WORKSPACE_HI = np.array([0.28, 0.15, 0.08])
+
+
+# MediaPipe가 찾은 손 마디 21개 원래 값. 나중에 조건 ③ 보정을 만들 때 ② 시범의 손 자세를 다시 분석하려고 남긴다.
+# (화면 픽셀 u·v, 손목 기준 상대 z, 손 중심 기준 월드 좌표 x·y·z) — measure_depth.py와 같은 열 이름.
+LANDMARK_COLUMNS = ([f"px{i}_{a}" for i in range(21) for a in ("u", "v")] + [f"relz{i}" for i in range(21)]
+                    + [f"w{i}_{a}" for i in range(21) for a in ("x", "y", "z")])
+
+
+def landmark_values(obs) -> list[str]:
+    if obs is None:
+        return [""] * len(LANDMARK_COLUMNS)
+    return ([f"{v:.2f}" for v in obs.pixels.ravel()] + [f"{v:.5f}" for v in obs.rel_z]
+            + [f"{v:.5f}" for v in obs.world.ravel()])
 
 
 def add_marker(viewer, pos: np.ndarray, rgba) -> None:
@@ -112,7 +127,17 @@ def main() -> None:
                          "hand_x", "hand_y", "hand_z", "depth_len_m", "depth_width_m", "pinch", "gated", "gripper_closed",
                          "target_x", "target_y", "target_z", "tip_x", "tip_y", "tip_z",
                          "ik_pos_err_mm", "ik_dir_err_deg"] + [f"q{i}" for i in range(6)] + [f"ctrl{i}" for i in range(6)]
-                        + ["layout", "cube_x", "cube_y", "cube_z", "goal_x", "goal_y", "in_target"])
+                        + ["layout", "cube_x", "cube_y", "cube_z", "goal_x", "goal_y", "in_target"]
+                        + ["cube_qw", "cube_qx", "cube_qy", "cube_qz", "handedness"] + LANDMARK_COLUMNS)
+        # 실행 설정을 같이 남긴다(나중에 같은 조건인지 확인하려고). 영상은 저장하지 않는다.
+        commit = subprocess.run(["git", "rev-parse", "--short", "HEAD"], capture_output=True, text=True,
+                                cwd=ROOT).stdout.strip()
+        log_path.with_suffix(".json").write_text(json.dumps({
+            "args": vars(args), "git_commit": commit, "workspace_lo": WORKSPACE_LO.tolist(),
+            "workspace_hi": WORKSPACE_HI.tolist(), "home_q": HOME_Q.tolist(),
+            "frame_size": [int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))],
+            "mirror": True,
+        }, ensure_ascii=False, indent=2), encoding="utf-8")
 
     engaged = False
     hand_ref = tip_ref = None
@@ -218,7 +243,9 @@ def main() -> None:
                                  f"{ik_res.pos_err_m * 1000:.2f}" if ik_res else "",
                                  f"{ik_res.dir_err_deg:.2f}" if ik_res else "",
                                  *[f"{v:.5f}" for v in data.qpos[:6]], *[f"{v:.5f}" for v in data.ctrl[:6]],
-                                 layout_id, *[f"{v:.5f}" for v in cube], *[f"{v:.5f}" for v in target_xy], int(success_now)])
+                                 layout_id, *[f"{v:.5f}" for v in cube], *[f"{v:.5f}" for v in target_xy], int(success_now),
+                                 *[f"{v:.5f}" for v in data.qpos[ids.cube_qadr + 3:ids.cube_qadr + 7]],
+                                 obs.handedness if obs else "", *landmark_values(obs)])
 
             key = cv2.waitKey(1) & 0xFF
             if key in (ord("q"), 27):
