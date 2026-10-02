@@ -153,6 +153,7 @@ def main() -> None:
     gripper = 0.0
     t0 = time.perf_counter()
     t_sim0 = t0  # 시뮬레이션 시각 0에 해당하는 실제 시각. 배치를 새로 하면 다시 맞춘다
+    last_flush = t0
 
     with HandTracker(horizontal_fov_deg=args.fov, depth_segment=args.depth) as tracker, \
             mujoco.viewer.launch_passive(model, data, show_left_ui=False, show_right_ui=False) as viewer:
@@ -260,6 +261,9 @@ def main() -> None:
                                  layout_id, *[f"{v:.5f}" for v in cube], *[f"{v:.5f}" for v in target_xy], int(success_now),
                                  *[f"{v:.5f}" for v in data.qpos[ids.cube_qadr + 3:ids.cube_qadr + 7]],
                                  obs.handedness if obs else "", int(locked and engaged), *landmark_values(obs)])
+                if time.perf_counter() - last_flush > 1.0:  # 갑자기 꺼져도 잃는 건 최대 1초
+                    log_file.flush()
+                    last_flush = time.perf_counter()
 
             key = cv2.waitKey(1) & 0xFF
             if key in (ord("q"), 27):
@@ -274,6 +278,8 @@ def main() -> None:
                 else:
                     engaged = False
             if key == ord("r"):
+                if log_file:
+                    log_file.flush()
                 engaged = False
                 gripper_switch.closed = False
                 target_xy = reset_layout()
