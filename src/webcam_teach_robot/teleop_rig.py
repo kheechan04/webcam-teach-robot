@@ -240,6 +240,27 @@ def landmark_values(obs) -> list[str]:
             + [f"{v:.5f}" for v in obs.world.ravel()])
 
 
+# 손바닥 법선의 카메라 방향 성분이 이보다 작으면(손바닥이 옆으로 돌아감) 화면에 경고. M5 측정은 거의 다 0.64 이상
+# (1% 백분위)이라 ③ 보정이 맞춰진 범위 밖이고, M8 첫날 이 값이 0.77 → 0.40으로 떨어지면서 깊이 튐이 1.4 → 25 cm로 커졌다.
+PALM_FACING_MIN = 0.6
+
+
+def palm_facing(obs: HandObservation | None) -> float:
+    if obs is None:
+        return float("nan")
+    w = obs.world
+    n = np.cross(w[5] - w[0], w[17] - w[0])
+    return float(abs(n[2]) / max(np.linalg.norm(n), 1e-9))
+
+
+def warn_palm(frame, obs: HandObservation | None) -> None:
+    """손바닥이 카메라를 정면으로 보지 않으면 아래쪽에 빨간 경고. 표시만 하고 조종 처리는 바꾸지 않는다."""
+    if palm_facing(obs) < PALM_FACING_MIN:
+        h = frame.shape[0]
+        cv2.putText(frame, "TURN PALM TO CAMERA", (10, h - 20), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 0), 5)
+        cv2.putText(frame, "TURN PALM TO CAMERA", (10, h - 20), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)
+
+
 def put_lines(frame, lines: list[str], color=(80, 255, 80), y0: int = 28) -> None:
     for i, text in enumerate(lines):
         cv2.putText(frame, text, (10, y0 + 26 * i), cv2.FONT_HERSHEY_SIMPLEX, 0.65, (0, 0, 0), 4)

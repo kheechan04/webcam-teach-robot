@@ -34,7 +34,7 @@ import numpy as np
 from webcam_teach_robot.depth_correction import DepthCorrection
 from webcam_teach_robot.hand_tracking import HandTracker
 from webcam_teach_robot.scene import sample_layout
-from webcam_teach_robot.teleop_rig import (LOG_COLUMNS, RigSettings, TeleopRig, put_lines, run_meta,
+from webcam_teach_robot.teleop_rig import (LOG_COLUMNS, RigSettings, TeleopRig, put_lines, run_meta, warn_palm,
                                            setup_viewer_camera)
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -106,6 +106,7 @@ def main() -> None:
             rig.draw_viewer(viewer)
 
             rig.draw_frame(frame, obs)
+            warn_palm(frame, obs)
             depth_text = (f"depth {rig.depth_used * 100:5.1f} cm" + (f" (raw {obs.depth_m * 100:4.1f})" if correction else "")
                           + f"  pinch {obs.pinch:4.2f}") if obs else "hand: not found"
             put_lines(frame, [f"{rig.status()}  loop {(time.perf_counter() - t_loop) * 1000:4.0f} ms",

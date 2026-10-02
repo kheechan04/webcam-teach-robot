@@ -33,7 +33,8 @@ import numpy as np
 from webcam_teach_robot.depth_correction import DepthCorrection
 from webcam_teach_robot.hand_tracking import HandTracker
 from webcam_teach_robot.scene import load_layouts
-from webcam_teach_robot.teleop_rig import LOG_COLUMNS, RigSettings, TeleopRig, put_lines, run_meta, setup_viewer_camera
+from webcam_teach_robot.teleop_rig import (LOG_COLUMNS, RigSettings, TeleopRig, put_lines, run_meta,
+                                           setup_viewer_camera, warn_palm)
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT_DIR = ROOT / "measurements" / "demos_m8"
@@ -211,6 +212,7 @@ def main() -> None:
 
             # ---- 화면 ----
             rig.draw_frame(frame, obs)
+            warn_palm(frame, obs)
             u = st["unit"]
             n_units = len(plan["units"])
             head = f"block {u['block'] + 1}/{n_units // (2 * BLOCK)}  demo {u['unit'] + 1}/{n_units}  try {st['try_no']}/{plan['max_tries']}"

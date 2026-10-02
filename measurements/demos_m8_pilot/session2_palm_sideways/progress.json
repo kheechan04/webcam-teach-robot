@@ -1,0 +1,425 @@
+{
+ "units": {
+  "0": {
+   "status": "success",
+   "tries": [
+    {
+     "file": "u000_try1_20261003_021302.csv",
+     "result": "success",
+     "seconds_from_engage": 43.3,
+     "seconds_total": 63.35
+    }
+   ]
+  },
+  "1": {
+   "status": "success",
+   "tries": [
+    {
+     "file": "u001_try1_20261003_021407.csv",
+     "result": "success",
+     "seconds_from_engage": 60.6,
+     "seconds_total": 65.84
+    }
+   ]
+  },
+  "2": {
+   "status": "todo",
+   "tries": [
+    {
+     "file": "u002_try1_20261003_021524.csv",
+     "result": "interrupted",
+     "seconds_from_engage": 24.66,
+     "seconds_total": 26.89
+    }
+   ]
+  },
+  "3": {
+   "status": "todo",
+   "tries": []
+  },
+  "4": {
+   "status": "todo",
+   "tries": []
+  },
+  "5": {
+   "status": "todo",
+   "tries": []
+  },
+  "6": {
+   "status": "todo",
+   "tries": []
+  },
+  "7": {
+   "status": "todo",
+   "tries": []
+  },
+  "8": {
+   "status": "todo",
+   "tries": []
+  },
+  "9": {
+   "status": "todo",
+   "tries": []
+  },
+  "10": {
+   "status": "todo",
+   "tries": []
+  },
+  "11": {
+   "status": "todo",
+   "tries": []
+  },
+  "12": {
+   "status": "todo",
+   "tries": []
+  },
+  "13": {
+   "status": "todo",
+   "tries": []
+  },
+  "14": {
+   "status": "todo",
+   "tries": []
+  },
+  "15": {
+   "status": "todo",
+   "tries": []
+  },
+  "16": {
+   "status": "todo",
+   "tries": []
+  },
+  "17": {
+   "status": "todo",
+   "tries": []
+  },
+  "18": {
+   "status": "todo",
+   "tries": []
+  },
+  "19": {
+   "status": "todo",
+   "tries": []
+  },
+  "20": {
+   "status": "todo",
+   "tries": []
+  },
+  "21": {
+   "status": "todo",
+   "tries": []
+  },
+  "22": {
+   "status": "todo",
+   "tries": []
+  },
+  "23": {
+   "status": "todo",
+   "tries": []
+  },
+  "24": {
+   "status": "todo",
+   "tries": []
+  },
+  "25": {
+   "status": "todo",
+   "tries": []
+  },
+  "26": {
+   "status": "todo",
+   "tries": []
+  },
+  "27": {
+   "status": "todo",
+   "tries": []
+  },
+  "28": {
+   "status": "todo",
+   "tries": []
+  },
+  "29": {
+   "status": "todo",
+   "tries": []
+  },
+  "30": {
+   "status": "todo",
+   "tries": []
+  },
+  "31": {
+   "status": "todo",
+   "tries": []
+  },
+  "32": {
+   "status": "todo",
+   "tries": []
+  },
+  "33": {
+   "status": "todo",
+   "tries": []
+  },
+  "34": {
+   "status": "todo",
+   "tries": []
+  },
+  "35": {
+   "status": "todo",
+   "tries": []
+  },
+  "36": {
+   "status": "todo",
+   "tries": []
+  },
+  "37": {
+   "status": "todo",
+   "tries": []
+  },
+  "38": {
+   "status": "todo",
+   "tries": []
+  },
+  "39": {
+   "status": "todo",
+   "tries": []
+  },
+  "40": {
+   "status": "todo",
+   "tries": []
+  },
+  "41": {
+   "status": "todo",
+   "tries": []
+  },
+  "42": {
+   "status": "todo",
+   "tries": []
+  },
+  "43": {
+   "status": "todo",
+   "tries": []
+  },
+  "44": {
+   "status": "todo",
+   "tries": []
+  },
+  "45": {
+   "status": "todo",
+   "tries": []
+  },
+  "46": {
+   "status": "todo",
+   "tries": []
+  },
+  "47": {
+   "status": "todo",
+   "tries": []
+  },
+  "48": {
+   "status": "todo",
+   "tries": []
+  },
+  "49": {
+   "status": "todo",
+   "tries": []
+  },
+  "50": {
+   "status": "todo",
+   "tries": []
+  },
+  "51": {
+   "status": "todo",
+   "tries": []
+  },
+  "52": {
+   "status": "todo",
+   "tries": []
+  },
+  "53": {
+   "status": "todo",
+   "tries": []
+  },
+  "54": {
+   "status": "todo",
+   "tries": []
+  },
+  "55": {
+   "status": "todo",
+   "tries": []
+  },
+  "56": {
+   "status": "todo",
+   "tries": []
+  },
+  "57": {
+   "status": "todo",
+   "tries": []
+  },
+  "58": {
+   "status": "todo",
+   "tries": []
+  },
+  "59": {
+   "status": "todo",
+   "tries": []
+  },
+  "60": {
+   "status": "todo",
+   "tries": []
+  },
+  "61": {
+   "status": "todo",
+   "tries": []
+  },
+  "62": {
+   "status": "todo",
+   "tries": []
+  },
+  "63": {
+   "status": "todo",
+   "tries": []
+  },
+  "64": {
+   "status": "todo",
+   "tries": []
+  },
+  "65": {
+   "status": "todo",
+   "tries": []
+  },
+  "66": {
+   "status": "todo",
+   "tries": []
+  },
+  "67": {
+   "status": "todo",
+   "tries": []
+  },
+  "68": {
+   "status": "todo",
+   "tries": []
+  },
+  "69": {
+   "status": "todo",
+   "tries": []
+  },
+  "70": {
+   "status": "todo",
+   "tries": []
+  },
+  "71": {
+   "status": "todo",
+   "tries": []
+  },
+  "72": {
+   "status": "todo",
+   "tries": []
+  },
+  "73": {
+   "status": "todo",
+   "tries": []
+  },
+  "74": {
+   "status": "todo",
+   "tries": []
+  },
+  "75": {
+   "status": "todo",
+   "tries": []
+  },
+  "76": {
+   "status": "todo",
+   "tries": []
+  },
+  "77": {
+   "status": "todo",
+   "tries": []
+  },
+  "78": {
+   "status": "todo",
+   "tries": []
+  },
+  "79": {
+   "status": "todo",
+   "tries": []
+  },
+  "80": {
+   "status": "todo",
+   "tries": []
+  },
+  "81": {
+   "status": "todo",
+   "tries": []
+  },
+  "82": {
+   "status": "todo",
+   "tries": []
+  },
+  "83": {
+   "status": "todo",
+   "tries": []
+  },
+  "84": {
+   "status": "todo",
+   "tries": []
+  },
+  "85": {
+   "status": "todo",
+   "tries": []
+  },
+  "86": {
+   "status": "todo",
+   "tries": []
+  },
+  "87": {
+   "status": "todo",
+   "tries": []
+  },
+  "88": {
+   "status": "todo",
+   "tries": []
+  },
+  "89": {
+   "status": "todo",
+   "tries": []
+  },
+  "90": {
+   "status": "todo",
+   "tries": []
+  },
+  "91": {
+   "status": "todo",
+   "tries": []
+  },
+  "92": {
+   "status": "todo",
+   "tries": []
+  },
+  "93": {
+   "status": "todo",
+   "tries": []
+  },
+  "94": {
+   "status": "todo",
+   "tries": []
+  },
+  "95": {
+   "status": "todo",
+   "tries": []
+  },
+  "96": {
+   "status": "todo",
+   "tries": []
+  },
+  "97": {
+   "status": "todo",
+   "tries": []
+  },
+  "98": {
+   "status": "todo",
+   "tries": []
+  },
+  "99": {
+   "status": "todo",
+   "tries": []
+  }
+ }
+}
