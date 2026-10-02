@@ -47,6 +47,7 @@ POSES = {
     "pinch_tilt": "집은 손(엄지·검지 붙임) · 45° 기울임",
 }
 HEIGHTS = {"cam": "웹캠 높이", "low": "낮게(책 위에 손목)"}
+PINCH_MAX = 0.6  # "집은 손" 단계는 엄지-검지 비율이 이보다 작아야 잰다(조종 때 집은 손 0.3~0.5). 처음 측정에서 안 붙인 채 잰 단계가 8개 나왔다
 EDGE_PX = 6  # 손 마디가 화면 가장자리에서 이만큼 안쪽에 없으면 "잘림"으로 보고 측정하지 않는다
 LATERAL = {"left": "· 화면 왼쪽 끝", "center": "· 화면 가운데", "right": "· 화면 오른쪽 끝"}
 LATERAL_DIST = 50
@@ -187,6 +188,7 @@ def main() -> None:
             clipped = obs is not None and bool(
                 (obs.pixels[:, 0] < EDGE_PX).any() or (obs.pixels[:, 0] > 640 - EDGE_PX).any()
                 or (obs.pixels[:, 1] < EDGE_PX).any() or (obs.pixels[:, 1] > 480 - EDGE_PX).any())
+            not_pinched = obs is not None and s["pose"].startswith("pinch") and obs.pinch > PINCH_MAX
             if obs is not None:
                 pts = obs.pixels.astype(int)
                 for a, b in HAND_CONNECTIONS:
@@ -214,14 +216,15 @@ def main() -> None:
                 lines = [f"{len(meta['done']) + 1}/{len(steps)} · 줄자 {s['distance_cm']} cm {where}",
                          f"손: {POSES[s['pose']]}",
                          f"높이: {HEIGHTS[s['height']]} = 책상에서 {hh} cm",
-                         ("손이 화면 가장자리에서 잘려요 — 손을 안쪽으로" if clipped else "손 인식됨 → 스페이스")
+                         ("손이 화면 가장자리에서 잘려요 — 손을 안쪽으로" if clipped
+                          else f"엄지·검지 끝을 붙여 주세요 (지금 {obs.pinch:.2f})" if not_pinched else "손 인식됨 → 스페이스")
                          if obs is not None else "손이 안 보여요",
                          "r 이전 다시 · q 끝내기"]
             cv2.imshow("depth measurement v2 (not recorded)", draw_text(frame, lines))
             key = cv2.waitKey(1) & 0xFF
             if key in (ord("q"), 27):
                 break
-            if key == ord(" ") and not collecting and obs is not None and not clipped:
+            if key == ord(" ") and not collecting and obs is not None and not clipped and not not_pinched:
                 collecting, buffer = True, []
             if key == ord("r") and not collecting and meta["done"]:
                 last = meta["done"].pop()  # 파일 행은 남기고 take 번호를 올려 다시 잰다. 분석은 마지막 take만 쓴다
