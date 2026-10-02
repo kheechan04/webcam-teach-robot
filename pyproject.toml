@@ -18,3 +18,9 @@ dependencies = [
 [build-system]
 requires = ["uv_build>=0.12.21,<0.13.0"]
 build-backend = "uv_build"
+
+[tool.uv]
+# LeRobot은 opencv-python-headless(창 띄우기 기능 없음), MediaPipe는 opencv-contrib-python을 원한다.
+# 둘 다 같은 cv2 폴더에 설치돼서 나중에 깔린 headless가 덮어쓰면 조종 창이 안 뜬다(2026-10-02 실제로 겪음).
+# headless는 빼고 창 기능까지 있는 contrib판 하나만 쓴다.
+override-dependencies = ["opencv-python-headless; sys_platform == 'never'"]
