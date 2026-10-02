@@ -66,7 +66,9 @@ def main() -> None:
     parser.add_argument("--camera", type=int, default=0)
     parser.add_argument("--fov", type=float, default=60.0, help="웹캠 가로 화각 가정값(도)")
     parser.add_argument("--depth", choices=["min", "width", "length"], default="min", help="깊이 추정에 쓸 손바닥 구간")
-    parser.add_argument("--scale", type=float, default=0.7, help="손 이동량 → 로봇 이동량 배율 (좌우·위아래)")
+    # 0.7이었는데 큐브(오른쪽)→목표(왼쪽) 최대 24 cm를 옮기려면 손을 옆으로 약 34 cm 움직여야 해서
+    # 45 cm 거리에서도 손이 웹캠 화면 밖으로 나갔다(2026-10-02 사용자 소감). 1.0이면 약 24 cm.
+    parser.add_argument("--scale", type=float, default=1.0, help="손 이동량 → 로봇 이동량 배율 (좌우·위아래)")
     parser.add_argument("--scale-depth", type=float, default=0.5,
                         help="앞뒤(카메라 쪽) 배율. 깊이는 범위가 넓고 흔들려서 좌우·위아래보다 작게")
     parser.add_argument("--smooth", type=float, default=0.5,
