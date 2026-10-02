@@ -1,0 +1,44 @@
+{
+ "plan_unit": {
+  "unit": 97,
+  "block": 9,
+  "condition": 2,
+  "layout": 43
+ },
+ "try": 1,
+ "started": "2026-10-03T03:51:57",
+ "time_limit_s": 90.0,
+ "layout_split": "train",
+ "settings": {
+  "fov": 60.0,
+  "scale": 1.0,
+  "scale_depth": 0.5,
+  "smooth": 0.5
+ },
+ "git_commit": "5267d9f",
+ "workspace_lo": [
+  0.16,
+  -0.15,
+  0.01
+ ],
+ "workspace_hi": [
+  0.28,
+  0.15,
+  0.08
+ ],
+ "home_q": [
+  0.0,
+  -0.21,
+  0.346,
+  1.434,
+  0.0,
+  1.0
+ ],
+ "frame_size": [
+  640,
+  480
+ ],
+ "mirror": true,
+ "condition": 2,
+ "depth_correction": null
+}
