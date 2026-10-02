@@ -36,7 +36,7 @@ from webcam_teach_robot.hand_tracking import HAND_CONNECTIONS, HandTracker
 from webcam_teach_robot.ik import SO101IK
 from webcam_teach_robot.scene import PlacementTracker, build_model, cube_pos, place, sample_layout, task_ids
 from webcam_teach_robot.teleop_view import draw_guides
-from webcam_teach_robot.teleop_mapping import (GripperSwitch, HandFilter, camera_delta_to_robot,
+from webcam_teach_robot.teleop_mapping import (GraspLock, GripperSwitch, HandFilter, camera_delta_to_robot,
                                                hand_point_camera)
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -129,7 +129,7 @@ def main() -> None:
                          "target_x", "target_y", "target_z", "tip_x", "tip_y", "tip_z",
                          "ik_pos_err_mm", "ik_dir_err_deg"] + [f"q{i}" for i in range(6)] + [f"ctrl{i}" for i in range(6)]
                         + ["layout", "cube_x", "cube_y", "cube_z", "goal_x", "goal_y", "placed_success"]
-                        + ["cube_qw", "cube_qx", "cube_qy", "cube_qz", "handedness"] + LANDMARK_COLUMNS)
+                        + ["cube_qw", "cube_qx", "cube_qy", "cube_qz", "handedness", "grasp_locked"] + LANDMARK_COLUMNS)
         # 실행 설정을 같이 남긴다(나중에 같은 조건인지 확인하려고). 영상은 저장하지 않는다.
         commit = subprocess.run(["git", "rev-parse", "--short", "HEAD"], capture_output=True, text=True,
                                 cwd=ROOT).stdout.strip()
@@ -145,6 +145,8 @@ def main() -> None:
     hand_smooth = None
     hand_filter = HandFilter(smooth=args.smooth)
     gripper_switch = GripperSwitch()
+    grasp_lock = GraspLock()
+    locked = False
     gated = False
     target = ik.tip(data.qpos.copy())[0]
     q_ik = data.qpos.copy()
@@ -181,8 +183,17 @@ def main() -> None:
                 hand = hand_point_camera(obs.palm_center_px, obs.depth_m, w, h, args.fov)
                 hand_smooth, gated = hand_filter.update(hand)
                 if engaged:
+                    was_closed = gripper_switch.closed
+                    gripper = gripper_switch.update(obs.pinch)
+                    locked, released = grasp_lock.update(obs.pinch, gripper_switch.closed != was_closed,
+                                                         time.perf_counter() - t0)
+                    if released:  # 집기 잠금이 풀리는 순간: 지금 손 위치 = 지금 목표로 기준을 다시 잡는다
+                        hand_ref = hand_smooth.copy()
+                        tip_ref = target.copy()
                     scale = np.array([args.scale_depth, args.scale, args.scale])  # 로봇 x(앞뒤), y, z
                     raw = tip_ref + scale * camera_delta_to_robot(hand_smooth - hand_ref)
+                    if locked:  # 손가락을 붙이거나 벌리는 중: 팔은 그대로
+                        raw = target.copy()
                     target = np.clip(raw, WORKSPACE_LO, WORKSPACE_HI)
                     # 작업 범위 밖으로 넘친 만큼은 버린다(기준점을 같이 밀어 줌). 안 그러면 손을 되돌려도
                     # 넘친 만큼 돌아올 때까지 로봇이 안 움직인다 — 큐브 옮기기 첫 시도에서 높이 상한(8 cm)에
@@ -192,7 +203,6 @@ def main() -> None:
                     ik_res = ik.solve(target, q_ik)
                     ik_ms = (time.perf_counter() - t_ik) * 1000
                     q_ik = ik_res.q
-                    gripper = gripper_switch.update(obs.pinch)
                     data.ctrl[:5] = q_ik[:5]
                     data.ctrl[5] = gripper
 
@@ -223,7 +233,8 @@ def main() -> None:
                 for a, b in HAND_CONNECTIONS:
                     cv2.line(frame, tuple(pts[a]), tuple(pts[b]), (0, 200, 0), 2)
                 cv2.circle(frame, tuple(obs.palm_center_px.astype(int)), 7, (0, 0, 255), -1)
-            status = ("ENGAGED" if engaged else "PAUSED (space)") + ("  CLOSED" if gripper_switch.closed else "  open")
+            status = (("ENGAGED" if engaged else "PAUSED (space)") + ("  CLOSED" if gripper_switch.closed else "  open")
+                      + ("  LOCK" if locked and engaged else ""))
             lines = [f"{status}  loop {(time.perf_counter() - t_loop) * 1000:4.0f} ms",
                      f"layout {layout_id}  {'SUCCESS (r: next)' if success_now else 'move cube to green'}  total {successes}",
                      f"depth {obs.depth_m * 100:5.1f} cm  pinch {obs.pinch:4.2f}" if obs else "hand: not found",
@@ -248,7 +259,7 @@ def main() -> None:
                                  *[f"{v:.5f}" for v in data.qpos[:6]], *[f"{v:.5f}" for v in data.ctrl[:6]],
                                  layout_id, *[f"{v:.5f}" for v in cube], *[f"{v:.5f}" for v in target_xy], int(success_now),
                                  *[f"{v:.5f}" for v in data.qpos[ids.cube_qadr + 3:ids.cube_qadr + 7]],
-                                 obs.handedness if obs else "", *landmark_values(obs)])
+                                 obs.handedness if obs else "", int(locked and engaged), *landmark_values(obs)])
 
             key = cv2.waitKey(1) & 0xFF
             if key in (ord("q"), 27):

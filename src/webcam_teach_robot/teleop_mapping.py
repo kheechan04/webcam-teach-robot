@@ -97,3 +97,32 @@ class HandFilter:
         if len(self.recent) < REF_WINDOW // 2:
             return None
         return np.median(np.array(self.recent), axis=0)
+
+
+GRASP_LOCK_AFTER_S = 0.4  # 집게가 딸깍 바뀐 뒤 팔을 고정해 두는 시간
+
+
+class GraspLock:
+    """집기 잠금: 손가락을 붙이거나 벌리는 동안 팔 위치를 고정한다.
+
+    손 모양이 바뀌는 순간 깊이 추정이 튀어서(2026-10-02 기록 323번의 집게 여닫기: 전후 1.2초 깊이 출렁임 중앙값
+    약 14 cm, 평소 5.1 cm) 로봇이 집기·놓기 순간에 앞뒤로 2~2.6 cm 흔들렸다. 집기 허용 오차(앞뒤 0.5~1 cm)보다 크다.
+        - 엄지-검지 비율이 히스테리시스 띠(0.8~1.0) 안에 있으면 = 손가락이 붙는/벌어지는 중 → 고정
+        - 집게가 바뀐 뒤 0.4초 동안 고정
+    고정이 풀리는 순간엔 호출하는 쪽에서 클러치처럼 기준점을 다시 잡아야 한다(풀리자마자 튀지 않게).
+    모든 웹캠 조건에 공통인 기본 처리다. 손 기울기·높이에 따른 깊이 치우침(조건 ③의 대상)은 그대로 남는다.
+    """
+
+    def __init__(self):
+        self.locked_until = -1.0
+        self.locked = False
+
+    def update(self, pinch: float, toggled: bool, now: float) -> tuple[bool, bool]:
+        """(지금 고정 중인지, 이번에 고정이 풀렸는지)."""
+        if toggled:
+            self.locked_until = now + GRASP_LOCK_AFTER_S
+        in_band = PINCH_CLOSE_BELOW <= pinch <= PINCH_OPEN_ABOVE
+        locked = in_band or now < self.locked_until
+        released = self.locked and not locked
+        self.locked = locked
+        return locked, released
