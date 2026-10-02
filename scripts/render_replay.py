@@ -1,5 +1,5 @@
-"""조종 기록(관절 각도)만으로 시뮬레이션 로봇 움직임을 다시 그려 애니메이션(webp)으로 저장한다.
-웹캠 영상은 쓰지 않으므로 얼굴·방이 나오지 않는다.
+"""조종 기록(관절 각도, 큐브 위치·자세, 목표 위치)만으로 시뮬레이션 장면을 다시 그려 애니메이션(webp)으로 저장한다.
+웹캠 영상은 쓰지 않으므로 얼굴·방이 나오지 않는다. 큐브 자세가 기록되지 않은 옛 기록은 처음 방향으로 그린다.
 
 실행:
     uv run python scripts/render_replay.py measurements/teleop/XXX.csv --start 25 --end 40
@@ -13,8 +13,10 @@ import mujoco
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
+from webcam_teach_robot.dataset import default_cube_quat
+from webcam_teach_robot.scene import build_model, task_ids, yaw_facing_robot
+
 ROOT = Path(__file__).resolve().parent.parent
-SCENE = ROOT / "third_party" / "robotstudio_so101" / "scene.xml"
 FONT = Path("C:/Windows/Fonts/malgun.ttf")
 
 
@@ -27,6 +29,8 @@ def main() -> None:
     p.add_argument("--width", type=int, default=560)
     p.add_argument("--height", type=int, default=360)
     p.add_argument("--out", type=Path, default=None)
+    p.add_argument("--azimuth", type=float, default=0.0, help="0이면 조종할 때처럼 로봇 뒤에서. 큐브가 가리면 120~150")
+    p.add_argument("--elevation", type=float, default=-22.0)
     args = p.parse_args()
 
     rows = [r for r in csv.DictReader(open(args.log, encoding="utf-8"))
@@ -37,14 +41,25 @@ def main() -> None:
     q = np.array([[float(r[f"q{i}"]) for i in range(6)] for r in rows])
     engaged = np.array([r["engaged"] == "1" for r in rows])
     closed = np.array([r.get("gripper_closed") == "1" for r in rows])
+    has_task = "cube_x" in rows[0]
+    if has_task:
+        cube = np.array([[float(r[f"cube_{a}"]) for a in "xyz"] for r in rows])
+        goal = np.array([[float(r["goal_x"]), float(r["goal_y"])] for r in rows])
+        quat = (np.array([[float(r[f"cube_q{a}"]) for a in "wxyz"] for r in rows]) if "cube_qw" in rows[0]
+                else np.tile(default_cube_quat(cube[0, :2]), (len(rows), 1)))
+        success = np.array([r.get("placed_success", r.get("in_target")) == "1" for r in rows])
 
-    model = mujoco.MjModel.from_xml_path(str(SCENE))
+    model = build_model()
+    ids = task_ids(model)
     data = mujoco.MjData(model)
+    if not has_task:  # 과제 장면 이전 기록: 큐브·목표를 화면 밖으로
+        data.qpos[ids.cube_qadr:ids.cube_qadr + 3] = [0, 0, -1]
+        data.mocap_pos[ids.target_mocap] = [0, 0, -1]
     cam = mujoco.MjvCamera()
     cam.lookat[:] = [0.2, 0.0, 0.06]
     cam.distance = 0.62
-    cam.azimuth = 0  # 조종할 때와 같은 시점(로봇 뒤)
-    cam.elevation = -22
+    cam.azimuth = args.azimuth  # 0: 조종할 때와 같은 시점(로봇 뒤)
+    cam.elevation = args.elevation
     font = ImageFont.truetype(str(FONT), 16) if FONT.exists() else ImageFont.load_default()
 
     frames = []
@@ -53,11 +68,18 @@ def main() -> None:
         for ts in times:
             i = min(np.searchsorted(t, ts), len(t) - 1)
             data.qpos[:6] = q[i]
+            if has_task:
+                data.qpos[ids.cube_qadr:ids.cube_qadr + 3] = cube[i]
+                data.qpos[ids.cube_qadr + 3:ids.cube_qadr + 7] = quat[i]
+                yaw = yaw_facing_robot(goal[i])
+                data.mocap_pos[ids.target_mocap] = [goal[i, 0], goal[i, 1], 0.0005]
+                data.mocap_quat[ids.target_mocap] = [np.cos(yaw / 2), 0, 0, np.sin(yaw / 2)]
             mujoco.mj_forward(model, data)
             renderer.update_scene(data, camera=cam)
             img = Image.fromarray(renderer.render())
             d = ImageDraw.Draw(img)
-            label = f"{ts - t[0]:4.1f}s  " + ("조종 중" if engaged[i] else "멈춤(클러치)") + ("  · 집게 닫힘" if closed[i] else "")
+            label = (f"{ts - t[0]:4.1f}s  " + ("조종 중" if engaged[i] else "멈춤(클러치)") + ("  · 집게 닫힘" if closed[i] else "")
+                     + ("  · 성공" if has_task and success[i] else ""))
             d.text((10, 8), label, font=font, fill=(255, 255, 255), stroke_width=2, stroke_fill=(0, 0, 0))
             frames.append(img)
 
