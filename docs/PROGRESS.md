@@ -26,6 +26,7 @@
   9. RunPod 학습 스크립트 `runpod/train_act.sh` (uv로 Python 3.12, lerobot[dataset,training]==0.6.1, 끝나면 기록 업로드 + 서버 자동 종료), 평가 스크립트 `scripts/eval_policy.py` (eval 배치, PlacementTracker, 윌슨 95% 구간, 같은 SceneRenderer). **로컬 CPU 20스텝 학습 → 평가까지 한 바퀴 점검 완료**(Windows에선 checkpoints/last 바로가기 권한 오류만, 리눅스 무관).
   **다음: 사용자와 RunPod Pod 만들기 → 시험 학습(20000스텝, 배치 8, 시드 1000) → 평가 100개** → 되면 조건 ② 녹화 규칙(시범 수, 시간 제한 등) 정하기
   남은 1단계 일: 참값 있는 정식 깊이·지연 측정 (조건 ④의 근거)
+  ③ 보정 만들기 전: 단안 손 깊이 추정 관련 연구를 CVPR/ICCV/ECCV 중심으로, 원격 조종·모방 학습은 CoRL/RSS/ICRA/IROS 중심으로 재조사 (피드백 반영, `docs/04-feedback-log.md`)
 
 ### 1단계 기록
 
