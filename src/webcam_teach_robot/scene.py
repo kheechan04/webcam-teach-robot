@@ -24,8 +24,11 @@ CUBE_MASS = 0.03  # kg
 TARGET_HALF = 0.03  # 목표 표시 6 cm × 6 cm
 
 
-FRONT_CAM_POS = np.array([0.50, -0.30, 0.38])
-FRONT_CAM_LOOKAT = np.array([0.20, 0.0, 0.03])
+# 정책이 볼 앞쪽 카메라. 128×128로 줄였을 때 큐브가 몇 픽셀밖에 안 돼서(처음: 위치 (0.50, −0.30, 0.38), 화각 55°)
+# 후보 4개를 같은 배치로 그려 비교한 뒤, 큐브·목표·집게가 크게 보이고 배치 끝도 화면에 들어오는 것으로 정했다.
+FRONT_CAM_POS = np.array([0.46, -0.20, 0.30])
+FRONT_CAM_LOOKAT = np.array([0.21, 0.0, 0.04])
+FRONT_CAM_FOVY = 45
 
 
 def lookat_xyaxes(pos: np.ndarray, target: np.ndarray) -> list[float]:
@@ -62,7 +65,7 @@ def build_model() -> mujoco.MjModel:
                     rgba=[0.2, 0.75, 0.35, 0.6], contype=0, conaffinity=0, group=1)
 
     # 작업 공간 앞쪽 비스듬한 위에서 로봇 쪽을 보는 카메라. (로봇 뒤 위에서 보면 팔이 큐브를 가렸다)
-    world.add_camera(name="front", pos=FRONT_CAM_POS, xyaxes=lookat_xyaxes(FRONT_CAM_POS, FRONT_CAM_LOOKAT), fovy=55)
+    world.add_camera(name="front", pos=FRONT_CAM_POS, xyaxes=lookat_xyaxes(FRONT_CAM_POS, FRONT_CAM_LOOKAT), fovy=FRONT_CAM_FOVY)
     return spec.compile()
 
 
@@ -116,3 +119,40 @@ def in_target(cube_xyz: np.ndarray, target_xy: np.ndarray) -> bool:
     d = cube_xyz[:2] - target_xy
     local = np.array([np.cos(yaw) * d[0] + np.sin(yaw) * d[1], -np.sin(yaw) * d[0] + np.cos(yaw) * d[1]])
     return bool(np.all(np.abs(local) <= TARGET_HALF) and cube_on_table(cube_xyz[2]))
+
+
+LIFT_Z = CUBE_HALF + 0.01  # 큐브 중심이 이보다 높으면 "들렸다" (바닥에서 1 cm 넘게)
+PUSH_TOL = 0.01  # 내려앉은 뒤 이만큼 넘게 움직이면 밀린 것
+STABLE_S = 0.5  # 성공 상태가 이만큼 이어져야 성공
+
+
+class PlacementTracker:
+    """성공 판정: 큐브를 "들어서 옮겨 놓았다".
+
+    in_target만 쓰면 바닥에서 밀어 넣어도 성공으로 쳤다(2026-10-02 조종 기록 4개의 "성공"이 전부 그랬다).
+    그래서 아래를 모두 만족해야 성공이다.
+        1. 큐브가 바닥에서 1 cm 넘게 들렸다가
+        2. 목표 사각형 안에 내려앉았고 (in_target)
+        3. 내려앉은 뒤 1 cm 넘게 밀리지 않았고
+        4. 집게가 열린 채로 0.5초 이어졌다
+    스크립트 시범·웹캠 조종 화면·데이터셋 만들기·학습한 정책 평가가 모두 이 판정을 쓴다.
+    """
+
+    def __init__(self):
+        self.was_lifted = False
+        self.landing_xy: np.ndarray | None = None
+        self.ok_time = 0.0
+        self.succeeded = False
+
+    def update(self, cube_xyz: np.ndarray, goal_xy: np.ndarray, gripper_closed: bool, dt: float) -> bool:
+        if cube_xyz[2] > LIFT_Z:
+            self.was_lifted = True
+            self.landing_xy = None
+        elif self.was_lifted and self.landing_xy is None and cube_on_table(cube_xyz[2]):
+            self.landing_xy = cube_xyz[:2].copy()
+        ok = (self.landing_xy is not None and not gripper_closed and in_target(cube_xyz, goal_xy)
+              and np.linalg.norm(cube_xyz[:2] - self.landing_xy) <= PUSH_TOL)
+        self.ok_time = self.ok_time + dt if ok else 0.0
+        if self.ok_time >= STABLE_S:
+            self.succeeded = True
+        return self.succeeded

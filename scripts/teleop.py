@@ -34,7 +34,7 @@ import numpy as np
 
 from webcam_teach_robot.hand_tracking import HAND_CONNECTIONS, HandTracker
 from webcam_teach_robot.ik import SO101IK
-from webcam_teach_robot.scene import build_model, cube_pos, in_target, place, sample_layout, task_ids
+from webcam_teach_robot.scene import PlacementTracker, build_model, cube_pos, place, sample_layout, task_ids
 from webcam_teach_robot.teleop_view import draw_guides
 from webcam_teach_robot.teleop_mapping import (GripperSwitch, HandFilter, camera_delta_to_robot,
                                                hand_point_camera)
@@ -107,6 +107,7 @@ def main() -> None:
         return target_xy
 
     target_xy = reset_layout()
+    tracker = PlacementTracker()
     layout_id = 0
     successes = 0
     success_now = False
@@ -127,7 +128,7 @@ def main() -> None:
                          "hand_x", "hand_y", "hand_z", "depth_len_m", "depth_width_m", "pinch", "gated", "gripper_closed",
                          "target_x", "target_y", "target_z", "tip_x", "tip_y", "tip_z",
                          "ik_pos_err_mm", "ik_dir_err_deg"] + [f"q{i}" for i in range(6)] + [f"ctrl{i}" for i in range(6)]
-                        + ["layout", "cube_x", "cube_y", "cube_z", "goal_x", "goal_y", "in_target"]
+                        + ["layout", "cube_x", "cube_y", "cube_z", "goal_x", "goal_y", "placed_success"]
                         + ["cube_qw", "cube_qx", "cube_qy", "cube_qz", "handedness"] + LANDMARK_COLUMNS)
         # 실행 설정을 같이 남긴다(나중에 같은 조건인지 확인하려고). 영상은 저장하지 않는다.
         commit = subprocess.run(["git", "rev-parse", "--short", "HEAD"], capture_output=True, text=True,
@@ -197,10 +198,12 @@ def main() -> None:
 
             # 물리 시뮬레이션을 실제 시간에 맞춰 진행
             sim_target_time = time.perf_counter() - t_sim0
+            sim_dt = 0.0
             while data.time < sim_target_time:
                 mujoco.mj_step(model, data)
+                sim_dt += model.opt.timestep
             cube = cube_pos(data, ids)
-            done = in_target(cube, target_xy) and not gripper_switch.closed
+            done = tracker.update(cube, target_xy, gripper_switch.closed, sim_dt)
             if done and not success_now:
                 successes += 1
             success_now = done
@@ -263,6 +266,7 @@ def main() -> None:
                 engaged = False
                 gripper_switch.closed = False
                 target_xy = reset_layout()
+                tracker = PlacementTracker()
                 q_ik = data.qpos.copy()
                 target = ik.tip(data.qpos.copy())[0]
                 t_sim0 = time.perf_counter()

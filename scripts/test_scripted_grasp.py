@@ -13,7 +13,7 @@ import numpy as np
 from PIL import Image
 
 from webcam_teach_robot.ik import SO101IK
-from webcam_teach_robot.scene import build_model, cube_pos, in_target, place, sample_layout, task_ids
+from webcam_teach_robot.scene import PlacementTracker, build_model, cube_pos, place, sample_layout, task_ids
 from webcam_teach_robot.scripted import CONTROL_HZ, plan, trajectory
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -29,6 +29,7 @@ def run(model, data, ids, ik, cube_xy, target_xy, renderer=None, frames=None):
     q_ik = data.qpos.copy()
     steps_per_ctrl = int(round(1 / (CONTROL_HZ * model.opt.timestep)))
     max_lift = 0.0
+    tracker = PlacementTracker()
     for pos, grip in trajectory(plan(cube_xy, target_xy, start)):
         q_ik = ik.solve(pos, q_ik).q
         data.ctrl[:5] = q_ik[:5]
@@ -36,13 +37,16 @@ def run(model, data, ids, ik, cube_xy, target_xy, renderer=None, frames=None):
         for _ in range(steps_per_ctrl):
             mujoco.mj_step(model, data)
         max_lift = max(max_lift, cube_pos(data, ids)[2])
+        tracker.update(cube_pos(data, ids), target_xy, grip < 0.5, 1 / CONTROL_HZ)
         if renderer is not None:
             renderer.update_scene(data, camera="front")
             frames.append(Image.fromarray(renderer.render()))
-    for _ in range(int(0.5 / model.opt.timestep)):  # 0.5초 더 두고 큐브가 자리 잡게
-        mujoco.mj_step(model, data)
+    for _ in range(int(1.0 * CONTROL_HZ)):  # 1초 더 두고 큐브가 자리 잡게(성공은 0.5초 이어져야 함)
+        for _ in range(steps_per_ctrl):
+            mujoco.mj_step(model, data)
+        tracker.update(cube_pos(data, ids), target_xy, False, 1 / CONTROL_HZ)
     final = cube_pos(data, ids)
-    return in_target(final, target_xy), final, max_lift
+    return tracker.succeeded, final, max_lift
 
 
 def main() -> None:
