@@ -33,6 +33,7 @@ import numpy as np
 from webcam_teach_robot.hand_tracking import HAND_CONNECTIONS, HandTracker
 from webcam_teach_robot.ik import SO101IK
 from webcam_teach_robot.scene import build_model, cube_pos, in_target, place, sample_layout, task_ids
+from webcam_teach_robot.teleop_view import draw_guides
 from webcam_teach_robot.teleop_mapping import (GripperSwitch, HandFilter, camera_delta_to_robot,
                                                hand_point_camera)
 
@@ -153,8 +154,12 @@ def main() -> None:
                 hand_smooth, gated = hand_filter.update(hand)
                 if engaged:
                     scale = np.array([args.scale_depth, args.scale, args.scale])  # 로봇 x(앞뒤), y, z
-                    target = tip_ref + scale * camera_delta_to_robot(hand_smooth - hand_ref)
-                    target = np.clip(target, WORKSPACE_LO, WORKSPACE_HI)
+                    raw = tip_ref + scale * camera_delta_to_robot(hand_smooth - hand_ref)
+                    target = np.clip(raw, WORKSPACE_LO, WORKSPACE_HI)
+                    # 작업 범위 밖으로 넘친 만큼은 버린다(기준점을 같이 밀어 줌). 안 그러면 손을 되돌려도
+                    # 넘친 만큼 돌아올 때까지 로봇이 안 움직인다 — 큐브 옮기기 첫 시도에서 높이 상한(8 cm)에
+                    # 막힌 프레임이 27%였고 "내리는 게 인식이 잘 안 된다"는 소감이 나왔다.
+                    tip_ref = tip_ref + (target - raw)
                     t_ik = time.perf_counter()
                     ik_res = ik.solve(target, q_ik)
                     ik_ms = (time.perf_counter() - t_ik) * 1000
@@ -181,6 +186,8 @@ def main() -> None:
             viewer.sync()
 
             # 웹캠 창 표시
+            draw_guides(frame, tip, gripper_switch.closed, cube, data.qpos[ids.cube_qadr + 3:ids.cube_qadr + 7],
+                        target_xy, WORKSPACE_LO, WORKSPACE_HI)
             if obs is not None:
                 pts = obs.pixels.astype(int)
                 for a, b in HAND_CONNECTIONS:
