@@ -68,3 +68,12 @@ lerobot-train \
   --seed=$SEED \
   --wandb.enable=false
 echo "학습 시간(초): $(( $(date +%s) - START ))"
+
+# LeRobot이 모델 카드에 license: apache-2.0을 자동으로 적는다. 라이선스는 공개할 때 정하므로 지운다.
+python - <<PY
+from huggingface_hub import ModelCard
+card = ModelCard.load("$POLICY")
+card.data.license = None
+card.push_to_hub("$POLICY", commit_message="Remove auto-added license (not decided yet)")
+print("모델 카드 라이선스 지움")
+PY
