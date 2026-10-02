@@ -40,16 +40,26 @@ def camera_delta_to_robot(d: np.ndarray) -> np.ndarray:
 
 
 class GripperSwitch:
-    """집게 딸깍 스위치. 닫는 기준(0.8)과 여는 기준(1.0)이 달라서 경계에서 손이 떨려도 왔다 갔다 하지 않는다."""
+    """집게 딸깍 스위치. 닫는 기준(0.8)과 여는 기준(1.0)이 달라서 경계에서 손이 떨려도 왔다 갔다 하지 않는다.
+
+    기준을 넘은 상태가 3프레임(약 0.1초) 이어져야 바꾼다. M8 첫 녹화(2026-10-03)에서 큐브를 들고 내리는 중에
+    엄지-검지 비율이 한 프레임만 1.03으로 튀어 집게가 순간 열렸고, 4 cm 높이에서 큐브가 떨어졌다. 그 시도에서
+    0.3초 안에 다시 닫힌 "깜빡 열림"이 5번 있었는데, 3프레임 확인이면 5번 다 사라지고 이전 조종 기록 두 개의
+    집게 여닫기(12번, 6번)는 그대로다.
+    """
+
+    CONFIRM_FRAMES = 3
 
     def __init__(self):
         self.closed = False
+        self._count = 0
 
     def update(self, pinch: float) -> float:
-        if self.closed and pinch > PINCH_OPEN_ABOVE:
-            self.closed = False
-        elif not self.closed and pinch < PINCH_CLOSE_BELOW:
-            self.closed = True
+        want_toggle = pinch > PINCH_OPEN_ABOVE if self.closed else pinch < PINCH_CLOSE_BELOW
+        self._count = self._count + 1 if want_toggle else 0
+        if self._count >= self.CONFIRM_FRAMES:
+            self.closed = not self.closed
+            self._count = 0
         return GRIPPER_CLOSED if self.closed else GRIPPER_OPEN
 
 
