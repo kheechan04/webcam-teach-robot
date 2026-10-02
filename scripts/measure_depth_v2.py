@@ -40,13 +40,13 @@ FRAMES_PER_STEP = 60
 
 DISTANCES = [35, 45, 55, 65]
 POSES = {
-    "open_flat": "편 손, 손바닥을 카메라 쪽으로 똑바로",
-    "open_tilt": "편 손, 손바닥을 45도쯤 아래로 기울여서 (물건 잡으러 갈 때처럼)",
-    "pinch_flat": "집은 손 (엄지·검지 끝을 붙임), 손바닥은 카메라 쪽으로",
-    "pinch_tilt": "집은 손 (엄지·검지 끝을 붙임), 45도쯤 아래로 기울여서",
+    "open_flat": "편 손 · 정면",
+    "open_tilt": "편 손 · 45° 아래로 기울임",
+    "pinch_flat": "집은 손(엄지·검지 붙임) · 정면",
+    "pinch_tilt": "집은 손(엄지·검지 붙임) · 45° 기울임",
 }
-HEIGHTS = {"cam": "웹캠 높이 (손바닥 가운데가 웹캠과 같은 높이)", "low": "낮게 (손목을 책상에 대고 손바닥을 세워서)"}
-LATERAL = {"left": "화면 왼쪽 끝 쪽 (손이 화면 안에 다 보이게)", "center": "화면 가운데", "right": "화면 오른쪽 끝 쪽 (손이 화면 안에 다 보이게)"}
+HEIGHTS = {"cam": "웹캠 높이", "low": "낮게(손목 책상에)"}
+LATERAL = {"left": "· 화면 왼쪽 끝", "center": "· 화면 가운데", "right": "· 화면 오른쪽 끝"}
 LATERAL_DIST = 50
 
 FONT_PATH = Path("C:/Windows/Fonts/malgun.ttf")
@@ -83,12 +83,25 @@ def true_camera_depth_cm(distance_cm: float, hand_height_cm: float, geo: dict) -
     return forward * math.cos(a) + up * math.sin(a)
 
 
-def draw_text(frame: np.ndarray, lines: list[str], size: int = 21) -> np.ndarray:
+def draw_text(frame: np.ndarray, lines: list[str], size: int = 20) -> np.ndarray:
+    """한글은 OpenCV 글꼴로 못 그려서 PIL로. 화면 폭(640)을 넘는 줄은 단어 단위로 다음 줄로 넘긴다."""
     font = ImageFont.truetype(str(FONT_PATH), size) if FONT_PATH.exists() else ImageFont.load_default()
     img = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
     d = ImageDraw.Draw(img)
-    for i, text in enumerate(lines):
-        d.text((12, 10 + i * (size + 9)), text, font=font, fill=(255, 255, 255), stroke_width=3, stroke_fill=(0, 0, 0))
+    max_w = img.width - 24
+    wrapped = []
+    for text in lines:
+        cur = ""
+        for word in text.split(" "):
+            trial = f"{cur} {word}".strip()
+            if cur and d.textlength(trial, font=font) > max_w:
+                wrapped.append(cur)
+                cur = word
+            else:
+                cur = trial
+        wrapped.append(cur)
+    for i, text in enumerate(wrapped):
+        d.text((12, 10 + i * (size + 8)), text, font=font, fill=(255, 255, 255), stroke_width=3, stroke_fill=(0, 0, 0))
     return cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR)
 
 
@@ -191,11 +204,11 @@ def main() -> None:
                     i += 1
             else:
                 where = LATERAL[s["lateral"]] if s["block"] == "lateral" else ""
-                lines = [f"{len(meta['done']) + 1}/{len(steps)}  ·  줄자 {s['distance_cm']} cm  {where}",
+                lines = [f"{len(meta['done']) + 1}/{len(steps)} · 줄자 {s['distance_cm']} cm {where}",
                          f"손: {POSES[s['pose']]}",
-                         f"높이: {HEIGHTS[s['height']]} — 책상에서 약 {hh} cm",
-                         "손 인식됨 · 자세 잡고 스페이스" if obs is not None else "손이 안 보여요",
-                         "r: 이전 자세 다시  ·  q: 끝내기(저장됨, --resume로 이어서)"]
+                         f"높이: {HEIGHTS[s['height']]} = 책상에서 {hh} cm",
+                         "손 인식됨 → 스페이스" if obs is not None else "손이 안 보여요",
+                         "r 이전 다시 · q 끝내기"]
             cv2.imshow("depth measurement v2 (not recorded)", draw_text(frame, lines))
             key = cv2.waitKey(1) & 0xFF
             if key in (ord("q"), 27):
