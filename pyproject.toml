@@ -7,10 +7,11 @@ authors = [
 ]
 requires-python = ">=3.12"
 dependencies = [
+    "lerobot[dataset]>=0.6.1",
     "matplotlib>=3.11.2",
     "mediapipe>=1.0.1",
     "mujoco>=3.14.0",
-    "numpy>=2.5.3",
+    "numpy>=2.0",
     "pillow>=12.3.0",
 ]
 

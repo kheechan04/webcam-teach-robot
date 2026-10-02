@@ -43,7 +43,7 @@
   - 내부 지표와 실제 성능은 뒤집힐 수 있다 → 실제 과제 성공률로 판단
   - 체크포인트 비교용 검증셋은 고정
   - 학습 재개 시 학습률이 조용히 옛 값으로 돌아갈 수 있다 → 확인. 학습을 짧게 줄이면 `scheduler_decay_steps`도 같이 줄인다(LeRobot 문서)
-- **라이선스는 새 라이브러리·모델·시뮬레이션 에셋을 쓸 때마다 확인하고 사용자에게 알린다.** 확인된 것: LeRobot, MediaPipe, MediaPipe Hand Landmarker 모델, MuJoCo, Menagerie SO-101, OpenCV (모두 Apache-2.0), NumPy (BSD-3-Clause 등), Pillow (MIT-CMU), matplotlib (PSF 계열), uv (MIT/Apache-2.0).
+- **라이선스는 새 라이브러리·모델·시뮬레이션 에셋을 쓸 때마다 확인하고 사용자에게 알린다.** 확인된 것: LeRobot, MediaPipe, MediaPipe Hand Landmarker 모델, MuJoCo, Menagerie SO-101, OpenCV (모두 Apache-2.0; LeRobot은 0.6.1 + `dataset` 옵션, PyTorch는 CPU판), NumPy (BSD-3-Clause 등), Pillow (MIT-CMU), matplotlib (PSF 계열), uv (MIT/Apache-2.0).
 - **우리 코드는 개발 중 라이선스 없음(모든 권리 보유)** (2026-10-01 결정). 끝나면 코드는 Apache-2.0 또는 MIT, 데이터셋(Hub)은 CC BY 4.0을 검토. 데이터셋을 올릴 때 라이선스를 사용자와 다시 정한다. `third_party/`와 내려받는 모델은 원래 라이선스 유지. 사용자의 다른 완성 프로젝트(손맛·Shadow Mitts·Jarvischan)는 MIT 유지.
 - **데이터셋에는 웹캠 영상(얼굴·방) 대신 관절 좌표만 넣는다.** "영상은 기기 밖으로 안 나간다" 원칙.
 - **수치는 실제로 잰 것만 쓴다.** 예시 계산이면 예시라고 표시한다.
