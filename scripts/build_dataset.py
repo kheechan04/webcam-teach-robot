@@ -138,7 +138,7 @@ def main() -> None:
     p.add_argument("--split", default="train", help="고정 배치 목록 (train/eval)")
     p.add_argument("--n", type=int, default=None, help="배치 앞에서 n개만 (시험용)")
     p.add_argument("--overwrite", action="store_true")
-    p.add_argument("--condition", type=int, choices=[2, 3], default=None, help="웹캠 기록 중 이 조건만 (기록 JSON 기준)")
+    p.add_argument("--condition", type=int, choices=[2, 3, 4, 40], default=None, help="웹캠·가상 조작자 기록 중 이 조건만 (기록 JSON 기준, 40 = ④0)")
     args = p.parse_args()
 
     from lerobot.datasets.lerobot_dataset import LeRobotDataset
