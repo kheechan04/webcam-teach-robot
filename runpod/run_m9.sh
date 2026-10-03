@@ -61,7 +61,7 @@ uv run hf auth login --token "$HF_TOKEN"
 [ -d /workspace/.venv-train ] || uv venv -q -p 3.12 /workspace/.venv-train
 # --no-config: 프로젝트의 [tool.uv] 설정(opencv-python-headless 빼기)이 학습 환경에 적용되면 cv2가 없어 학습이 안 뜬다
 # (2026-10-03 두 번째 시도에서 실제로 그랬다).
-VIRTUAL_ENV=/workspace/.venv-train uv pip install -q --no-config "lerobot[dataset,training]==0.6.1"
+VIRTUAL_ENV=/workspace/.venv-train uv pip install -q --no-config "lerobot[dataset,training]==0.6.1" opencv-python-headless
 TRAIN=/workspace/.venv-train/bin
 $TRAIN/python -c "import torch, cv2, lerobot.scripts.lerobot_train; print('train env torch', torch.__version__, 'cuda', torch.cuda.is_available(), 'cv2', cv2.__version__)"   || { echo "!!! 학습 환경이 안 뜸 — 멈춤"; exit 1; }
 uv run hf repo create "$RESULTS" --repo-type dataset --private --exist-ok || true
