@@ -36,7 +36,8 @@
   **M8 녹화 완료 100/100** (`docs/09-recording.md` 결과): 104번 시도, 본 녹화 66.3분(시행착오 포함 약 100분). 녹화 중 ②·③ 차이 없음(짝 비교 p=0.42). 소감: 다시 시작 직후 잠김(집기 잠금, 9%), 빠른 움직임 지연.
   **조건 ④·④0 완료** (`docs/10-cond4.md`): 가상 조작자(②·③과 같은 TeleopRig) + 같은 배치 ② 시범의 자세 흐름·흔들림. ④0 50/50(시도 50), ④ 48/50(시도 63). 데이터셋 만드는 중(cond2_webcam, cond3_webcam_corrected, cond4_depth_error, cond4z_no_error).
   **M9 준비:** 평가 60초 제한·시드 3개·RunPod에서 학습+평가(`runpod/run_m9.sh`, 이어 하기 지원, `eval_policy.py --workers`). `scripts/push_dataset.py`로 Hub 비공개 업로드.
-  **다음: 데이터셋 다 만들어지면 Hub에 올리기 → 사용자가 RunPod Pod 켜고 run_m9.sh 실행**
+  **데이터셋 4개 완료·Hub 비공개 업로드(라이선스 없음, v3.0 태그 확인):** cond2-webcam 50개·44,053프레임(중앙 23.2초), cond3-webcam-corrected 50개·41,865프레임(26.0초), cond4-depth-error 48개·8,945프레임, cond4z-no-error 50개·9,560프레임. 학습은 모든 조건 2만 스텝·배치 8로 같게(같은 계산량, 웹캠 조건은 에폭 수가 약 4로 적음).
+  **다음: 사용자가 RunPod Pod 켜고 run_m9.sh 실행 → 결과 Hub(kheechan04/webcam-teach-robot-m9-results)에서 받아 분석**
   남은 1단계 일: 참값 있는 정식 깊이·지연 측정 (조건 ④의 근거)
   ③ 보정 만들기 전: 단안 손 깊이 추정 관련 연구를 CVPR/ICCV/ECCV 중심으로, 원격 조종·모방 학습은 CoRL/RSS/ICRA/IROS 중심으로 재조사 (피드백 반영, `docs/04-feedback-log.md`)
 
