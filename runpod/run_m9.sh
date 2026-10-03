@@ -49,6 +49,7 @@ cd /workspace
 [ -d webcam-teach-robot ] || git clone -q https://github.com/kheechan04/webcam-teach-robot.git
 cd webcam-teach-robot && git pull -q
 uv sync -q
+uv cache clean -q || true  # 설치 캐시 정리 (디스크 절약)
 # 화면 없는 서버에서 MuJoCo 카메라 그리기: GPU(EGL)가 되면 그걸, 안 되면 CPU(OSMesa)로
 export MUJOCO_GL=egl
 if ! uv run python -c "import mujoco; m=mujoco.MjModel.from_xml_string('<mujoco/>'); r=mujoco.Renderer(m,64,64); r.render()" 2>/dev/null; then
@@ -114,6 +115,7 @@ PY
     J="/workspace/eval/${NAME}_eval100.json"
     uv run hf upload "$POLICY" "$J" "eval/$NAME.json" --private
     uv run hf upload "$RESULTS" "$J" "eval/$NAME.json" --repo-type dataset --private
+    rm -rf "/workspace/outputs/$NAME"  # 모델은 Hub에 있다. 체크포인트(약 0.6 GB)가 쌓이면 컨테이너 디스크 30 GB가 찬다
   done
 done
 ALL_DONE=1
