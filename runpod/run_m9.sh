@@ -22,13 +22,20 @@ WORKERS="${WORKERS:-$(( $(nproc) > 16 ? 16 : $(nproc) ))}"
 RESULTS="$USER_HF/webcam-teach-robot-m9-results"
 
 mkdir -p /workspace/logs
+# 두 번 겹쳐 실행되지 않게 (2026-10-03 첫 시도에서 토큰 없이 한 번, 넣고 한 번 실행돼 둘이 같이 돌았다)
+exec 9>/workspace/run_m9.lock
+flock -n 9 || { echo "이미 실행 중이에요. 진행은: tail -f /workspace/logs/m9_*.log"; exit 1; }
 LOG="/workspace/logs/m9_$(date +%Y%m%d_%H%M%S).log"
 exec > >(tee -a "$LOG") 2>&1
 
 finish() {
   echo "=== 끝 $(date) ==="
   (cd /workspace/webcam-teach-robot 2>/dev/null && uv run hf upload "$RESULTS" "$LOG" "logs/$(basename "$LOG")" --repo-type dataset --private) || true
-  if [ -n "${RUNPOD_POD_ID:-}" ] && command -v runpodctl >/dev/null 2>&1; then runpodctl stop pod "$RUNPOD_POD_ID"; fi
+  # runpodctl은 설정 파일이 없으면 못 끈다(첫 시도: "config file not found"). Pod에 들어 있는 API 키로 먼저 설정.
+  if [ -n "${RUNPOD_POD_ID:-}" ] && command -v runpodctl >/dev/null 2>&1; then
+    [ -n "${RUNPOD_API_KEY:-}" ] && runpodctl config --apiKey "$RUNPOD_API_KEY" >/dev/null 2>&1
+    runpodctl stop pod "$RUNPOD_POD_ID" || echo "!!! 서버를 스스로 끄지 못함 — RunPod 화면에서 직접 Stop/Terminate 해 주세요"
+  fi
 }
 trap finish EXIT
 
@@ -49,7 +56,19 @@ fi
 echo "MUJOCO_GL=$MUJOCO_GL"
 uv run python -c "import torch, mujoco; print('torch', torch.__version__, 'cuda', torch.cuda.is_available(), 'mujoco', mujoco.__version__)"
 uv run hf auth login --token "$HF_TOKEN"
+# 학습은 M4 시험 학습과 같은 방식의 별도 환경(LeRobot 0.6.1을 pip로 설치)에서 한다. 첫 시도에서 프로젝트 환경(uv sync)으로
+# 학습하니 RTX 4000 Ada에서 초당 5~7스텝이었다(3090 시험 학습은 22스텝). 평가는 프로젝트 환경에서 한다.
+[ -d /workspace/.venv-train ] || uv venv -q -p 3.12 /workspace/.venv-train
+VIRTUAL_ENV=/workspace/.venv-train uv pip install -q "lerobot[dataset,training]==0.6.1"
+TRAIN=/workspace/.venv-train/bin
+$TRAIN/python -c "import torch; print('train env torch', torch.__version__, 'cuda', torch.cuda.is_available())"
 uv run hf repo create "$RESULTS" --repo-type dataset --private --exist-ok || true
+
+# 웹 터미널이 끊겨도 노트북에서 진행을 볼 수 있게 로그를 10분마다 Hub에 올린다
+( while sleep 600; do
+    grep -v $'' "$LOG" | tail -n 400 > /workspace/logs/latest.txt
+    uv run hf upload "$RESULTS" /workspace/logs/latest.txt "logs/latest.txt" --repo-type dataset --private >/dev/null 2>&1
+  done ) &
 
 for SEED in $SEEDS; do
   for COND in $CONDS; do
@@ -66,13 +85,16 @@ PY
     echo "=== $NAME 학습 시작 $(date) ==="
     T0=$(date +%s)
     rm -rf "/workspace/outputs/$NAME"
-    uv run lerobot-train \
+    $TRAIN/lerobot-train \
       --dataset.repo_id="$USER_HF/webcam-teach-robot-$COND" \
       --policy.type=act --policy.device=cuda \
       --policy.repo_id="$POLICY" --policy.push_to_hub=true --policy.private=true \
       --output_dir="/workspace/outputs/$NAME" --job_name="$NAME" \
       --batch_size=$BATCH --steps=$STEPS --save_freq=$STEPS --log_freq=500 \
-      --seed=$SEED --wandb.enable=false || { echo "!!! $NAME 학습 실패"; continue; }
+      --seed=$SEED --wandb.enable=false &
+    TPID=$!
+    sleep 240; nvidia-smi --query-gpu=utilization.gpu,memory.used --format=csv,noheader | sed 's/^/GPU 사용률·메모리 (학습 4분째): /'
+    wait $TPID || { echo "!!! $NAME 학습 실패"; continue; }
     echo "학습 시간(초): $(( $(date +%s) - T0 ))"
     uv run python - <<PY || true
 from huggingface_hub import ModelCard
