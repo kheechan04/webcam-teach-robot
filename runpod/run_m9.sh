@@ -87,6 +87,8 @@ sys.exit(0 if "eval/$NAME.json" in files else 1)
 PY
     then echo "--- $NAME: 이미 끝남, 건너뜀"; continue; fi
 
+    # GPU가 사라지면(2026-10-03 첫 서버: 몇 시간 뒤 "Failed to initialize NVML", 학습이 CPU로 넘어가 한 스텝 5.5초) 멈춘다
+    $TRAIN/python -c "import torch,sys; sys.exit(0 if torch.cuda.is_available() else 1)"       || { echo "!!! GPU가 안 보임 — 멈춤. Pod를 새로 만들어 같은 명령으로 이어 하세요"; exit 1; }
     echo "=== $NAME 학습 시작 $(date) ==="
     T0=$(date +%s)
     rm -rf "/workspace/outputs/$NAME"
