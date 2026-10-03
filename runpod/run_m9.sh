@@ -70,8 +70,7 @@ uv run hf repo create "$RESULTS" --repo-type dataset --private --exist-ok || tru
 
 # 웹 터미널이 끊겨도 노트북에서 진행을 볼 수 있게 로그를 10분마다 Hub에 올린다
 ( while sleep 600; do
-    tr '' '
-' < "$LOG" | grep -v '^Training:' | tail -n 400 > /workspace/logs/latest.txt
+    tr '\r' '\n' < "$LOG" | grep -v '^Training:' | tail -n 400 > /workspace/logs/latest.txt
     date -u >> /workspace/logs/latest.txt  # 내용이 같아도 매번 새로 올라가게
     uv run hf upload "$RESULTS" /workspace/logs/latest.txt "logs/latest.txt" --repo-type dataset --private >/dev/null 2>&1
   done ) &
