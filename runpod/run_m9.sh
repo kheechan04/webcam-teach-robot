@@ -32,7 +32,8 @@ finish() {
   echo "=== 끝 $(date) ==="
   (cd /workspace/webcam-teach-robot 2>/dev/null && uv run hf upload "$RESULTS" "$LOG" "logs/$(basename "$LOG")" --repo-type dataset --private) || true
   # runpodctl은 설정 파일이 없으면 못 끈다(첫 시도: "config file not found"). Pod에 들어 있는 API 키로 먼저 설정.
-  if [ -n "${RUNPOD_POD_ID:-}" ] && command -v runpodctl >/dev/null 2>&1; then
+  # 끝까지 돌았을 때만 서버를 끈다. 사람이 pkill로 멈춘 경우에도 끄면 바로 다시 실행할 수 없다(2026-10-03 실제로 그랬다).
+  if [ "${ALL_DONE:-0}" = 1 ] && [ -n "${RUNPOD_POD_ID:-}" ] && command -v runpodctl >/dev/null 2>&1; then
     [ -n "${RUNPOD_API_KEY:-}" ] && runpodctl config --apiKey "$RUNPOD_API_KEY" >/dev/null 2>&1
     runpodctl stop pod "$RUNPOD_POD_ID" || echo "!!! 서버를 스스로 끄지 못함 — RunPod 화면에서 직접 Stop/Terminate 해 주세요"
   fi
@@ -115,3 +116,4 @@ PY
     uv run hf upload "$RESULTS" "$J" "eval/$NAME.json" --repo-type dataset --private
   done
 done
+ALL_DONE=1
