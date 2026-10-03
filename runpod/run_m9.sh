@@ -59,14 +59,17 @@ uv run hf auth login --token "$HF_TOKEN"
 # 학습은 M4 시험 학습과 같은 방식의 별도 환경(LeRobot 0.6.1을 pip로 설치)에서 한다. 첫 시도에서 프로젝트 환경(uv sync)으로
 # 학습하니 RTX 4000 Ada에서 초당 5~7스텝이었다(3090 시험 학습은 22스텝). 평가는 프로젝트 환경에서 한다.
 [ -d /workspace/.venv-train ] || uv venv -q -p 3.12 /workspace/.venv-train
-VIRTUAL_ENV=/workspace/.venv-train uv pip install -q "lerobot[dataset,training]==0.6.1"
+# --no-config: 프로젝트의 [tool.uv] 설정(opencv-python-headless 빼기)이 학습 환경에 적용되면 cv2가 없어 학습이 안 뜬다
+# (2026-10-03 두 번째 시도에서 실제로 그랬다).
+VIRTUAL_ENV=/workspace/.venv-train uv pip install -q --no-config "lerobot[dataset,training]==0.6.1"
 TRAIN=/workspace/.venv-train/bin
-$TRAIN/python -c "import torch; print('train env torch', torch.__version__, 'cuda', torch.cuda.is_available())"
+$TRAIN/python -c "import torch, cv2, lerobot.scripts.lerobot_train; print('train env torch', torch.__version__, 'cuda', torch.cuda.is_available(), 'cv2', cv2.__version__)"   || { echo "!!! 학습 환경이 안 뜸 — 멈춤"; exit 1; }
 uv run hf repo create "$RESULTS" --repo-type dataset --private --exist-ok || true
 
 # 웹 터미널이 끊겨도 노트북에서 진행을 볼 수 있게 로그를 10분마다 Hub에 올린다
 ( while sleep 600; do
-    grep -v $'' "$LOG" | tail -n 400 > /workspace/logs/latest.txt
+    grep -v $'
+' "$LOG" | tail -n 400 > /workspace/logs/latest.txt
     uv run hf upload "$RESULTS" /workspace/logs/latest.txt "logs/latest.txt" --repo-type dataset --private >/dev/null 2>&1
   done ) &
 
@@ -94,7 +97,7 @@ PY
       --seed=$SEED --wandb.enable=false &
     TPID=$!
     sleep 240; nvidia-smi --query-gpu=utilization.gpu,memory.used --format=csv,noheader | sed 's/^/GPU 사용률·메모리 (학습 4분째): /'
-    wait $TPID || { echo "!!! $NAME 학습 실패"; continue; }
+    wait $TPID || { echo "!!! $NAME 학습 실패 — 나머지도 같은 이유로 실패할 수 있어 멈춤"; exit 1; }
     echo "학습 시간(초): $(( $(date +%s) - T0 ))"
     uv run python - <<PY || true
 from huggingface_hub import ModelCard
