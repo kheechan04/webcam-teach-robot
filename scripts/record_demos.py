@@ -32,6 +32,7 @@ import numpy as np
 
 from webcam_teach_robot.depth_correction import DepthCorrection
 from webcam_teach_robot.hand_tracking import HandTracker
+from webcam_teach_robot.marker_depth import MarkerTracker
 from webcam_teach_robot.scene import load_layouts
 from webcam_teach_robot.teleop_rig import (LOG_COLUMNS, RigSettings, TeleopRig, put_lines, run_meta,
                                            setup_viewer_camera, warn_palm)
@@ -62,17 +63,39 @@ def make_plan(n_layouts: int) -> dict:
             "split": "train", "units": units}
 
 
+def make_plan_m8b(n_layouts: int) -> dict:
+    """세션 m8b (2026-10-04): 조건 ⑤(손목 마커 깊이) 50개 + 조건 ② 20개(며칠 사이 조종 실력 변화 확인용).
+    ⑤ 5개 묶음 10개 사이에 ② 5개 묶음 4개를 고르게 끼운다. ②의 배치는 ⑤에서 이미 한 배치 중에서 고른다.
+    조작자는 내내 마커를 차고 있고, 화면에는 조건을 표시하지 않는다(가림 유지)."""
+    rng = np.random.default_rng(PLAN_SEED + 1)
+    order = [int(x) for x in rng.permutation(n_layouts)]
+    five = [order[i * BLOCK:(i + 1) * BLOCK] for i in range(n_layouts // BLOCK)]
+    two_after = {1: 0, 3: 2, 6: 5, 8: 7}  # ⑤ 묶음 k 뒤에, ⑤ 묶음 j의 배치로 ② 묶음
+    units, blk = [], 0
+    for k, lays in enumerate(five):
+        for lay in lays:
+            units.append({"unit": len(units), "block": blk, "condition": 5, "layout": lay})
+        blk += 1
+        if k in two_after:
+            for lay in rng.permutation(five[two_after[k]]):
+                units.append({"unit": len(units), "block": blk, "condition": 2, "layout": int(lay)})
+            blk += 1
+    return {"seed": PLAN_SEED + 1, "session": "m8b", "block_size": BLOCK, "time_limit_s": TIME_LIMIT_S,
+            "max_tries": MAX_TRIES, "split": "train", "units": units}
+
+
 def write_json(path: Path, obj) -> None:
     tmp = path.with_suffix(".tmp")
     tmp.write_text(json.dumps(obj, ensure_ascii=False, indent=1), encoding="utf-8")
     os.replace(tmp, path)  # 쓰는 중에 꺼져도 예전 파일은 남는다
 
 
-def load_state(out: Path):
+def load_state(out: Path, session: str = "m8"):
     out.mkdir(parents=True, exist_ok=True)
     plan_path, prog_path = out / "plan.json", out / "progress.json"
     if not plan_path.exists():
-        write_json(plan_path, make_plan(len(load_layouts("train"))))
+        n = len(load_layouts("train"))
+        write_json(plan_path, make_plan_m8b(n) if session == "m8b" else make_plan(n))
         print(f"녹화 계획을 만들었어요: {plan_path}")
     plan = json.loads(plan_path.read_text(encoding="utf-8"))
     prog = json.loads(prog_path.read_text(encoding="utf-8")) if prog_path.exists() else {"units": {}}
@@ -91,7 +114,7 @@ def next_unit(plan, prog):
 
 
 def print_status(plan, prog) -> None:
-    by = {2: [0, 0, 0], 3: [0, 0, 0]}  # 성공, 실패, 남음
+    by = {c: [0, 0, 0] for c in sorted({u["condition"] for u in plan["units"]})}  # 성공, 실패, 남음
     for u in plan["units"]:
         st = unit_state(prog, u["unit"])["status"]
         by[u["condition"]][{"success": 0, "failed": 1}.get(st, 2)] += 1
@@ -105,9 +128,13 @@ def main() -> None:
     p.add_argument("--camera", type=int, default=0)
     p.add_argument("--out", type=Path, default=OUT_DIR)
     p.add_argument("--status", action="store_true", help="진행 상황만 보고 끝내기")
+    p.add_argument("--session", choices=["m8", "m8b"], default="m8",
+                   help="m8b = 조건 ⑤(손목 마커) 50개 + ② 20개 (measurements/demos_m8b)")
     args = p.parse_args()
 
-    plan, prog, prog_path = load_state(args.out)
+    if args.session == "m8b" and args.out == OUT_DIR:
+        args.out = ROOT / "measurements" / "demos_m8b"
+    plan, prog, prog_path = load_state(args.out, args.session)
     if args.status:
         by = print_status(plan, prog)
         if next_unit(plan, prog) is None:
@@ -120,6 +147,7 @@ def main() -> None:
     settings = RigSettings()
     correction = DepthCorrection()
     rig = TeleopRig(settings, None)
+    marker = MarkerTracker() if plan.get("session") == "m8b" else None  # m8b는 ② 단계에서도 마커를 기록만 한다
 
     cap = cv2.VideoCapture(args.camera, cv2.CAP_DSHOW)
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
@@ -143,6 +171,7 @@ def main() -> None:
         us = unit_state(prog, u["unit"])
         tries_done = len([t for t in us["tries"] if t["result"] != "interrupted"])
         rig.correction = correction if u["condition"] == 3 else None
+        rig.marker_mode = u["condition"] == 5
         cube_xy, goal_xy = layouts[u["layout"]]
         rig.reset(cube_xy, goal_xy, now())
         stem = f"u{u['unit']:03d}_try{tries_done + 1}_{datetime.now():%Y%m%d_%H%M%S}"
@@ -150,9 +179,12 @@ def main() -> None:
         f = open(path, "w", newline="", encoding="utf-8")
         w = csv.writer(f)
         w.writerow(LOG_COLUMNS)
-        write_json(path.with_suffix(".json"), run_meta(settings, rig.correction, frame_size, {
+        meta = run_meta(settings, rig.correction, frame_size, {
             "plan_unit": u, "try": tries_done + 1, "started": datetime.now().isoformat(timespec="seconds"),
-            "time_limit_s": plan["time_limit_s"], "layout_split": plan["split"]}))
+            "time_limit_s": plan["time_limit_s"], "layout_split": plan["split"], "session": plan.get("session", "m8")})
+        if u["condition"] == 5:
+            meta.update(condition=5, hand_source="wrist_marker", marker={"dict": "4x4_50", "id": 0, "size_m": 0.05})
+        write_json(path.with_suffix(".json"), meta)
         st.update(unit=u, us=us, try_no=tries_done + 1, file=f, writer=w, path=path, t_engage=None,
                   t_success=None, result=None, t_start=now(), last_flush=now())
         return True
@@ -182,6 +214,7 @@ def main() -> None:
             ok, frame = cap.read()
             if not ok:
                 break
+            marker_obs = marker.detect(frame) if marker else None  # 거울상이 되기 전 원본에서
             frame = cv2.flip(frame, 1)
             h, w = frame.shape[:2]
             t_det = time.perf_counter()
@@ -190,7 +223,7 @@ def main() -> None:
 
             recording = st["result"] is None
             if recording:
-                rig.update_hand(obs, w, h, now(), time.perf_counter)
+                rig.update_hand(obs, w, h, now(), time.perf_counter, marker_obs)
                 if rig.engaged and st["t_engage"] is None:
                     st["t_engage"] = now()  # 90초는 조종을 처음 건 때부터
             first_success = rig.step_sim(now())
@@ -213,6 +246,11 @@ def main() -> None:
             # ---- 화면 ----
             rig.draw_frame(frame, obs)
             warn_palm(frame, obs)
+            if marker:
+                MarkerTracker.draw(frame, marker_obs)
+                if marker_obs is None:
+                    cv2.putText(frame, "MARKER NOT SEEN", (10, h - 50), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 0), 5)
+                    cv2.putText(frame, "MARKER NOT SEEN", (10, h - 50), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 140, 255), 2)
             u = st["unit"]
             n_units = len(plan["units"])
             head = f"block {u['block'] + 1}/{n_units // (2 * BLOCK)}  demo {u['unit'] + 1}/{n_units}  try {st['try_no']}/{plan['max_tries']}"

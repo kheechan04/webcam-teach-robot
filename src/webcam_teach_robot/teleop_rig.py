@@ -44,7 +44,8 @@ LOG_COLUMNS = (["t_s", "engaged", "hand_found", "detect_ms", "ik_ms", "loop_ms",
                 "ik_pos_err_mm", "ik_dir_err_deg", "depth_used_m"] + [f"q{i}" for i in range(6)]
                + [f"ctrl{i}" for i in range(6)]
                + ["layout", "cube_x", "cube_y", "cube_z", "goal_x", "goal_y", "placed_success"]
-               + ["cube_qw", "cube_qx", "cube_qy", "cube_qz", "handedness", "grasp_locked"] + LANDMARK_COLUMNS)
+               + ["cube_qw", "cube_qx", "cube_qy", "cube_qz", "handedness", "grasp_locked"] + LANDMARK_COLUMNS
+               + ["marker_found", "marker_x", "marker_y", "marker_z", "marker_tilt_deg"])  # 손목 마커(조건 ⑤ 녹화 때만 값)
 
 
 @dataclass
@@ -66,7 +67,7 @@ def run_meta(settings: RigSettings, correction: DepthCorrection | None, frame_si
     """기록 CSV 옆에 남기는 실행 설정(나중에 같은 조건인지 확인하려고). 영상은 저장하지 않는다."""
     return {**extra, "settings": vars(settings), "git_commit": git_commit(), "workspace_lo": WORKSPACE_LO.tolist(),
             "workspace_hi": WORKSPACE_HI.tolist(), "home_q": HOME_Q.tolist(), "frame_size": list(frame_size),
-            "mirror": True, "condition": 3 if correction else 2,
+            "mirror": True, "condition": 3 if correction else 2,  # 조건 ⑤ 녹화는 호출하는 쪽에서 5로 덮어쓴다
             "depth_correction": json.loads(DepthCorrection.coef_text()) if correction else None}
 
 
@@ -95,6 +96,8 @@ class TeleopRig:
         self.ids = task_ids(self.model)
         self.ik = SO101IK(self.model)
         self.hand_filter = HandFilter(smooth=settings.smooth)
+        self.marker_mode = False  # 조건 ⑤: 손 위치를 손목 마커에서
+        self.marker = None
 
     # ---- 한 판 시작 ----
     def reset(self, cube_xy: np.ndarray, goal_xy: np.ndarray, now: float) -> None:
@@ -123,16 +126,23 @@ class TeleopRig:
         self.hand_smooth = None
 
     # ---- 매 프레임 ----
-    def update_hand(self, obs: HandObservation | None, frame_w: int, frame_h: int, now: float, perf) -> None:
-        """손 관측을 받아 목표·IK·관절 명령까지. perf는 time.perf_counter (IK 시간 재기용)."""
+    def update_hand(self, obs: HandObservation | None, frame_w: int, frame_h: int, now: float, perf,
+                    marker=None) -> None:
+        """손 관측을 받아 목표·IK·관절 명령까지. perf는 time.perf_counter (IK 시간 재기용).
+        marker_mode(조건 ⑤)면 손 위치(x, y, z)를 손목 마커에서 가져오고, 집기만 MediaPipe로 읽는다."""
         self.ik_res, self.ik_ms, self.gated, self.depth_used = None, 0.0, False, float("nan")
-        if obs is None or not np.isfinite(obs.depth_m):
+        self.marker = marker
+        if obs is None or not np.isfinite(obs.depth_m) or (self.marker_mode and marker is None):
             self.hand_filter.lost()
             return
         self.hand_filter.found()
-        self.depth_used = (self.correction(obs.pixels, obs.world, obs.depth_m, frame_w, frame_h)
-                           if self.correction else obs.depth_m)
-        hand = hand_point_camera(obs.palm_center_px, self.depth_used, frame_w, frame_h, self.s.fov)
+        if self.marker_mode:
+            hand = marker.point_cam.copy()
+            self.depth_used = float(hand[2])
+        else:
+            self.depth_used = (self.correction(obs.pixels, obs.world, obs.depth_m, frame_w, frame_h)
+                               if self.correction else obs.depth_m)
+            hand = hand_point_camera(obs.palm_center_px, self.depth_used, frame_w, frame_h, self.s.fov)
         self.hand_smooth, self.gated = self.hand_filter.update(hand)
         if not self.engaged:
             return
@@ -230,7 +240,13 @@ class TeleopRig:
                 *[f"{v:.5f}" for v in self.data.qpos[:6]], *[f"{v:.5f}" for v in self.data.ctrl[:6]],
                 layout, *[f"{v:.5f}" for v in self.cube()], *[f"{v:.5f}" for v in self.goal_xy], int(self.success),
                 *[f"{v:.5f}" for v in self.cube_quat()], obs.handedness if obs else "",
-                int(self.locked and self.engaged), *landmark_values(obs)]
+                int(self.locked and self.engaged), *landmark_values(obs), *marker_values(self.marker)]
+
+
+def marker_values(m) -> list[str]:
+    if m is None:
+        return ["0", "", "", "", ""]
+    return ["1", *[f"{v:.5f}" for v in m.point_cam], f"{m.tilt_deg:.1f}"]
 
 
 def landmark_values(obs) -> list[str]:
