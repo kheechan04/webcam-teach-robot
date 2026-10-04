@@ -21,7 +21,7 @@ ROOT = Path(__file__).resolve().parent.parent
 EVAL = ROOT / "experiments" / "eval" / "m9"
 CONDS = [("cond1-scripted", "① 스크립트"), ("cond4z-no-error", "④0 가상 조작자"), ("cond4-depth-error", "④ 가상 + 오차 주입"),
          ("cond3-webcam-corrected", "③ 웹캠 + 보정"), ("cond2-webcam", "② 웹캠")]
-SEEDS = ["1000", "2000", "3000"]
+SEEDS = ["1000", "2000", "3000", "4000", "5000"]
 COMPARISONS = [  # (뒤, 앞, 이름): 앞 − 뒤
     ("cond1-scripted", "cond2-webcam", "웹캠 시범의 손해 (② − ①)"),
     ("cond4z-no-error", "cond4-depth-error", "깊이 오차만의 몫 (④ − ④0)"),
