@@ -1,0 +1,51 @@
+{
+ "plan_unit": {
+  "unit": 36,
+  "block": 7,
+  "condition": 5,
+  "layout": 47
+ },
+ "try": 1,
+ "started": "2026-10-04T21:48:43",
+ "time_limit_s": 90.0,
+ "layout_split": "train",
+ "session": "m8b",
+ "settings": {
+  "fov": 60.0,
+  "scale": 1.0,
+  "scale_depth": 0.5,
+  "smooth": 0.5
+ },
+ "git_commit": "f32e26e",
+ "workspace_lo": [
+  0.16,
+  -0.15,
+  0.01
+ ],
+ "workspace_hi": [
+  0.28,
+  0.15,
+  0.08
+ ],
+ "home_q": [
+  0.0,
+  -0.21,
+  0.346,
+  1.434,
+  0.0,
+  1.0
+ ],
+ "frame_size": [
+  640,
+  480
+ ],
+ "mirror": true,
+ "condition": 5,
+ "depth_correction": null,
+ "hand_source": "wrist_marker",
+ "marker": {
+  "dict": "4x4_50",
+  "id": 0,
+  "size_m": 0.05
+ }
+}

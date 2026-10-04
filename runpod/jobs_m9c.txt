@@ -1,0 +1,6 @@
+# 조건 ⑤ (손목 마커 깊이, 사람 시범) 학습 — 다른 조건과 같은 2만 스텝·시드 1000~5000
+cond5-webcam-marker 1000 20000
+cond5-webcam-marker 2000 20000
+cond5-webcam-marker 3000 20000
+cond5-webcam-marker 4000 20000
+cond5-webcam-marker 5000 20000
