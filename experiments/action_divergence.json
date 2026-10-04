@@ -1,0 +1,30 @@
+{
+ "2": {
+  "frames": 9177,
+  "compared": 2924,
+  "divergence_mean": 0.6422344597625584,
+  "divergence_median": 0.5048037910347256,
+  "x_component_diff": 0.5753025686601246
+ },
+ "3": {
+  "frames": 12145,
+  "compared": 2953,
+  "divergence_mean": 0.6499142424111206,
+  "divergence_median": 0.5232013948192251,
+  "x_component_diff": 0.5383796837509117
+ },
+ "4": {
+  "frames": 2717,
+  "compared": 2620,
+  "divergence_mean": 0.5510406797053818,
+  "divergence_median": 0.403191776337226,
+  "x_component_diff": 0.3995369887529386
+ },
+ "40": {
+  "frames": 2250,
+  "compared": 2250,
+  "divergence_mean": 0.0165146122401429,
+  "divergence_median": 0.00010206539753389032,
+  "x_component_diff": 0.014120035196494905
+ }
+}
