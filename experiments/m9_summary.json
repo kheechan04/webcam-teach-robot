@@ -1,0 +1,133 @@
+{
+ "conditions": {
+  "cond1-scripted": {
+   "name": "① 스크립트",
+   "per_seed": [
+    80.0,
+    73.0,
+    77.0
+   ],
+   "mean": 76.66666666666667,
+   "lift_mean": 91.0,
+   "success_seconds_median": 4.5
+  },
+  "cond4z-no-error": {
+   "name": "④0 가상 조작자",
+   "per_seed": [
+    86.0,
+    91.0,
+    null
+   ],
+   "mean": 88.5,
+   "lift_mean": 93.5,
+   "success_seconds_median": 5.433333333333334
+  },
+  "cond4-depth-error": {
+   "name": "④ 가상 + 깊이 오차",
+   "per_seed": [
+    77.0,
+    65.0,
+    null
+   ],
+   "mean": 71.0,
+   "lift_mean": 82.5,
+   "success_seconds_median": 5.566666666666666
+  },
+  "cond3-webcam-corrected": {
+   "name": "③ 웹캠 + 보정",
+   "per_seed": [
+    68.0,
+    66.0,
+    null
+   ],
+   "mean": 67.0,
+   "lift_mean": 92.5,
+   "success_seconds_median": 19.28333333333333
+  },
+  "cond2-webcam": {
+   "name": "② 웹캠",
+   "per_seed": [
+    54.0,
+    37.0,
+    null
+   ],
+   "mean": 45.5,
+   "lift_mean": 69.0,
+   "success_seconds_median": 26.6
+  }
+ },
+ "comparisons": {
+  "웹캠 시범의 손해 (② − ①)": {
+   "per_seed": [
+    -26.0,
+    -36.0
+   ],
+   "mean": -31.0,
+   "ci95": [
+    -44.0,
+    -17.0
+   ],
+   "n_seeds": 2
+  },
+  "깊이 오차만의 몫 (④ − ④0)": {
+   "per_seed": [
+    -9.0,
+    -26.0
+   ],
+   "mean": -17.5,
+   "ci95": [
+    -32.0,
+    -3.0
+   ],
+   "n_seeds": 2
+  },
+  "보정으로 회복 (③ − ②)": {
+   "per_seed": [
+    14.0,
+    29.0
+   ],
+   "mean": 21.5,
+   "ci95": [
+    7.0,
+    38.0
+   ],
+   "n_seeds": 2
+  },
+  "조종 코드를 거친 효과 (④0 − ①)": {
+   "per_seed": [
+    6.0,
+    18.0
+   ],
+   "mean": 12.0,
+   "ci95": [
+    0.0,
+    24.0
+   ],
+   "n_seeds": 2
+  },
+  "사람 시범의 추가 손해 (② − ④)": {
+   "per_seed": [
+    -23.0,
+    -28.0
+   ],
+   "mean": -25.5,
+   "ci95": [
+    -37.5,
+    -14.0
+   ],
+   "n_seeds": 2
+  },
+  "보정해도 남는 손해 (③ − ①)": {
+   "per_seed": [
+    -12.0,
+    -7.0
+   ],
+   "mean": -9.5,
+   "ci95": [
+    -21.0,
+    2.5
+   ],
+   "n_seeds": 2
+  }
+ }
+}
