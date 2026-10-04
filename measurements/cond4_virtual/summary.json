@@ -1180,5 +1180,1271 @@
     }
    ]
   }
+ ],
+ "err_x0.5": [
+  {
+   "layout": 0,
+   "tries": [
+    {
+     "file": "layout00_try1.csv",
+     "success": true,
+     "seconds": 6.5,
+     "frames": 242
+    }
+   ]
+  },
+  {
+   "layout": 1,
+   "tries": [
+    {
+     "file": "layout01_try1.csv",
+     "success": true,
+     "seconds": 5.53,
+     "frames": 213
+    }
+   ]
+  },
+  {
+   "layout": 2,
+   "tries": [
+    {
+     "file": "layout02_try1.csv",
+     "success": false,
+     "seconds": 9.23,
+     "frames": 278
+    },
+    {
+     "file": "layout02_try2.csv",
+     "success": true,
+     "seconds": 6.3,
+     "frames": 236
+    }
+   ]
+  },
+  {
+   "layout": 3,
+   "tries": [
+    {
+     "file": "layout03_try1.csv",
+     "success": true,
+     "seconds": 5.67,
+     "frames": 217
+    }
+   ]
+  },
+  {
+   "layout": 4,
+   "tries": [
+    {
+     "file": "layout04_try1.csv",
+     "success": true,
+     "seconds": 6.3,
+     "frames": 236
+    }
+   ]
+  },
+  {
+   "layout": 5,
+   "tries": [
+    {
+     "file": "layout05_try1.csv",
+     "success": true,
+     "seconds": 5.03,
+     "frames": 198
+    }
+   ]
+  },
+  {
+   "layout": 6,
+   "tries": [
+    {
+     "file": "layout06_try1.csv",
+     "success": true,
+     "seconds": 5.73,
+     "frames": 219
+    }
+   ]
+  },
+  {
+   "layout": 7,
+   "tries": [
+    {
+     "file": "layout07_try1.csv",
+     "success": true,
+     "seconds": 5.33,
+     "frames": 207
+    }
+   ]
+  },
+  {
+   "layout": 8,
+   "tries": [
+    {
+     "file": "layout08_try1.csv",
+     "success": true,
+     "seconds": 5.7,
+     "frames": 218
+    }
+   ]
+  },
+  {
+   "layout": 9,
+   "tries": [
+    {
+     "file": "layout09_try1.csv",
+     "success": true,
+     "seconds": 6.33,
+     "frames": 237
+    }
+   ]
+  },
+  {
+   "layout": 10,
+   "tries": [
+    {
+     "file": "layout10_try1.csv",
+     "success": true,
+     "seconds": 6.37,
+     "frames": 238
+    }
+   ]
+  },
+  {
+   "layout": 11,
+   "tries": [
+    {
+     "file": "layout11_try1.csv",
+     "success": true,
+     "seconds": 5.27,
+     "frames": 205
+    }
+   ]
+  },
+  {
+   "layout": 12,
+   "tries": [
+    {
+     "file": "layout12_try1.csv",
+     "success": true,
+     "seconds": 5.7,
+     "frames": 218
+    }
+   ]
+  },
+  {
+   "layout": 13,
+   "tries": [
+    {
+     "file": "layout13_try1.csv",
+     "success": true,
+     "seconds": 6.13,
+     "frames": 231
+    }
+   ]
+  },
+  {
+   "layout": 14,
+   "tries": [
+    {
+     "file": "layout14_try1.csv",
+     "success": true,
+     "seconds": 6.1,
+     "frames": 230
+    }
+   ]
+  },
+  {
+   "layout": 15,
+   "tries": [
+    {
+     "file": "layout15_try1.csv",
+     "success": true,
+     "seconds": 5.43,
+     "frames": 210
+    }
+   ]
+  },
+  {
+   "layout": 16,
+   "tries": [
+    {
+     "file": "layout16_try1.csv",
+     "success": true,
+     "seconds": 6.0,
+     "frames": 227
+    }
+   ]
+  },
+  {
+   "layout": 17,
+   "tries": [
+    {
+     "file": "layout17_try1.csv",
+     "success": true,
+     "seconds": 5.87,
+     "frames": 223
+    }
+   ]
+  },
+  {
+   "layout": 18,
+   "tries": [
+    {
+     "file": "layout18_try1.csv",
+     "success": true,
+     "seconds": 6.0,
+     "frames": 227
+    }
+   ]
+  },
+  {
+   "layout": 19,
+   "tries": [
+    {
+     "file": "layout19_try1.csv",
+     "success": true,
+     "seconds": 5.97,
+     "frames": 226
+    }
+   ]
+  },
+  {
+   "layout": 20,
+   "tries": [
+    {
+     "file": "layout20_try1.csv",
+     "success": true,
+     "seconds": 5.6,
+     "frames": 215
+    }
+   ]
+  },
+  {
+   "layout": 21,
+   "tries": [
+    {
+     "file": "layout21_try1.csv",
+     "success": true,
+     "seconds": 6.43,
+     "frames": 240
+    }
+   ]
+  },
+  {
+   "layout": 22,
+   "tries": [
+    {
+     "file": "layout22_try1.csv",
+     "success": true,
+     "seconds": 5.7,
+     "frames": 218
+    }
+   ]
+  },
+  {
+   "layout": 23,
+   "tries": [
+    {
+     "file": "layout23_try1.csv",
+     "success": true,
+     "seconds": 5.33,
+     "frames": 207
+    }
+   ]
+  },
+  {
+   "layout": 24,
+   "tries": [
+    {
+     "file": "layout24_try1.csv",
+     "success": true,
+     "seconds": 5.3,
+     "frames": 206
+    }
+   ]
+  },
+  {
+   "layout": 25,
+   "tries": [
+    {
+     "file": "layout25_try1.csv",
+     "success": true,
+     "seconds": 6.17,
+     "frames": 232
+    }
+   ]
+  },
+  {
+   "layout": 26,
+   "tries": [
+    {
+     "file": "layout26_try1.csv",
+     "success": true,
+     "seconds": 6.6,
+     "frames": 245
+    }
+   ]
+  },
+  {
+   "layout": 27,
+   "tries": [
+    {
+     "file": "layout27_try1.csv",
+     "success": true,
+     "seconds": 6.1,
+     "frames": 230
+    }
+   ]
+  },
+  {
+   "layout": 28,
+   "tries": [
+    {
+     "file": "layout28_try1.csv",
+     "success": true,
+     "seconds": 5.97,
+     "frames": 226
+    }
+   ]
+  },
+  {
+   "layout": 29,
+   "tries": [
+    {
+     "file": "layout29_try1.csv",
+     "success": true,
+     "seconds": 5.57,
+     "frames": 214
+    }
+   ]
+  },
+  {
+   "layout": 30,
+   "tries": [
+    {
+     "file": "layout30_try1.csv",
+     "success": true,
+     "seconds": 5.73,
+     "frames": 219
+    }
+   ]
+  },
+  {
+   "layout": 31,
+   "tries": [
+    {
+     "file": "layout31_try1.csv",
+     "success": true,
+     "seconds": 4.87,
+     "frames": 193
+    }
+   ]
+  },
+  {
+   "layout": 32,
+   "tries": [
+    {
+     "file": "layout32_try1.csv",
+     "success": true,
+     "seconds": 5.7,
+     "frames": 218
+    }
+   ]
+  },
+  {
+   "layout": 33,
+   "tries": [
+    {
+     "file": "layout33_try1.csv",
+     "success": true,
+     "seconds": 5.63,
+     "frames": 216
+    }
+   ]
+  },
+  {
+   "layout": 34,
+   "tries": [
+    {
+     "file": "layout34_try1.csv",
+     "success": false,
+     "seconds": 7.83,
+     "frames": 236
+    },
+    {
+     "file": "layout34_try2.csv",
+     "success": true,
+     "seconds": 5.0,
+     "frames": 197
+    }
+   ]
+  },
+  {
+   "layout": 35,
+   "tries": [
+    {
+     "file": "layout35_try1.csv",
+     "success": true,
+     "seconds": 5.97,
+     "frames": 226
+    }
+   ]
+  },
+  {
+   "layout": 36,
+   "tries": [
+    {
+     "file": "layout36_try1.csv",
+     "success": true,
+     "seconds": 5.4,
+     "frames": 209
+    }
+   ]
+  },
+  {
+   "layout": 37,
+   "tries": [
+    {
+     "file": "layout37_try1.csv",
+     "success": true,
+     "seconds": 5.2,
+     "frames": 203
+    }
+   ]
+  },
+  {
+   "layout": 38,
+   "tries": [
+    {
+     "file": "layout38_try1.csv",
+     "success": true,
+     "seconds": 5.63,
+     "frames": 216
+    }
+   ]
+  },
+  {
+   "layout": 39,
+   "tries": [
+    {
+     "file": "layout39_try1.csv",
+     "success": true,
+     "seconds": 5.33,
+     "frames": 207
+    }
+   ]
+  },
+  {
+   "layout": 40,
+   "tries": [
+    {
+     "file": "layout40_try1.csv",
+     "success": true,
+     "seconds": 5.1,
+     "frames": 200
+    }
+   ]
+  },
+  {
+   "layout": 41,
+   "tries": [
+    {
+     "file": "layout41_try1.csv",
+     "success": true,
+     "seconds": 5.97,
+     "frames": 226
+    }
+   ]
+  },
+  {
+   "layout": 42,
+   "tries": [
+    {
+     "file": "layout42_try1.csv",
+     "success": true,
+     "seconds": 5.97,
+     "frames": 226
+    }
+   ]
+  },
+  {
+   "layout": 43,
+   "tries": [
+    {
+     "file": "layout43_try1.csv",
+     "success": true,
+     "seconds": 5.67,
+     "frames": 217
+    }
+   ]
+  },
+  {
+   "layout": 44,
+   "tries": [
+    {
+     "file": "layout44_try1.csv",
+     "success": true,
+     "seconds": 5.4,
+     "frames": 209
+    }
+   ]
+  },
+  {
+   "layout": 45,
+   "tries": [
+    {
+     "file": "layout45_try1.csv",
+     "success": true,
+     "seconds": 5.6,
+     "frames": 215
+    }
+   ]
+  },
+  {
+   "layout": 46,
+   "tries": [
+    {
+     "file": "layout46_try1.csv",
+     "success": true,
+     "seconds": 5.1,
+     "frames": 200
+    }
+   ]
+  },
+  {
+   "layout": 47,
+   "tries": [
+    {
+     "file": "layout47_try1.csv",
+     "success": true,
+     "seconds": 5.5,
+     "frames": 212
+    }
+   ]
+  },
+  {
+   "layout": 48,
+   "tries": [
+    {
+     "file": "layout48_try1.csv",
+     "success": true,
+     "seconds": 5.33,
+     "frames": 207
+    }
+   ]
+  },
+  {
+   "layout": 49,
+   "tries": [
+    {
+     "file": "layout49_try1.csv",
+     "success": true,
+     "seconds": 5.3,
+     "frames": 206
+    }
+   ]
+  }
+ ],
+ "err_x2": [
+  {
+   "layout": 0,
+   "tries": [
+    {
+     "file": "layout00_try1.csv",
+     "success": false,
+     "seconds": 9.9,
+     "frames": 298
+    },
+    {
+     "file": "layout00_try2.csv",
+     "success": true,
+     "seconds": 6.93,
+     "frames": 255
+    }
+   ]
+  },
+  {
+   "layout": 1,
+   "tries": [
+    {
+     "file": "layout01_try1.csv",
+     "success": false,
+     "seconds": 60.03,
+     "frames": 1802
+    },
+    {
+     "file": "layout01_try2.csv",
+     "success": true,
+     "seconds": 5.63,
+     "frames": 216
+    }
+   ]
+  },
+  {
+   "layout": 2,
+   "tries": [
+    {
+     "file": "layout02_try1.csv",
+     "success": true,
+     "seconds": 6.87,
+     "frames": 252
+    }
+   ]
+  },
+  {
+   "layout": 3,
+   "tries": [
+    {
+     "file": "layout03_try1.csv",
+     "success": true,
+     "seconds": 5.53,
+     "frames": 213
+    }
+   ]
+  },
+  {
+   "layout": 4,
+   "tries": [
+    {
+     "file": "layout04_try1.csv",
+     "success": true,
+     "seconds": 6.53,
+     "frames": 243
+    }
+   ]
+  },
+  {
+   "layout": 5,
+   "tries": [
+    {
+     "file": "layout05_try1.csv",
+     "success": true,
+     "seconds": 5.0,
+     "frames": 197
+    }
+   ]
+  },
+  {
+   "layout": 6,
+   "tries": [
+    {
+     "file": "layout06_try1.csv",
+     "success": true,
+     "seconds": 5.47,
+     "frames": 211
+    }
+   ]
+  },
+  {
+   "layout": 7,
+   "tries": [
+    {
+     "file": "layout07_try1.csv",
+     "success": true,
+     "seconds": 5.7,
+     "frames": 218
+    }
+   ]
+  },
+  {
+   "layout": 8,
+   "tries": [
+    {
+     "file": "layout08_try1.csv",
+     "success": true,
+     "seconds": 5.7,
+     "frames": 218
+    }
+   ]
+  },
+  {
+   "layout": 9,
+   "tries": [
+    {
+     "file": "layout09_try1.csv",
+     "success": true,
+     "seconds": 6.37,
+     "frames": 238
+    }
+   ]
+  },
+  {
+   "layout": 10,
+   "tries": [
+    {
+     "file": "layout10_try1.csv",
+     "success": false,
+     "seconds": 9.37,
+     "frames": 282
+    },
+    {
+     "file": "layout10_try2.csv",
+     "success": true,
+     "seconds": 6.27,
+     "frames": 235
+    }
+   ]
+  },
+  {
+   "layout": 11,
+   "tries": [
+    {
+     "file": "layout11_try1.csv",
+     "success": false,
+     "seconds": 8.6,
+     "frames": 259
+    },
+    {
+     "file": "layout11_try2.csv",
+     "success": false,
+     "seconds": 11.63,
+     "frames": 350
+    },
+    {
+     "file": "layout11_try3.csv",
+     "success": true,
+     "seconds": 5.93,
+     "frames": 225
+    }
+   ]
+  },
+  {
+   "layout": 12,
+   "tries": [
+    {
+     "file": "layout12_try1.csv",
+     "success": true,
+     "seconds": 5.4,
+     "frames": 209
+    }
+   ]
+  },
+  {
+   "layout": 13,
+   "tries": [
+    {
+     "file": "layout13_try1.csv",
+     "success": false,
+     "seconds": 9.17,
+     "frames": 276
+    },
+    {
+     "file": "layout13_try2.csv",
+     "success": true,
+     "seconds": 5.9,
+     "frames": 224
+    }
+   ]
+  },
+  {
+   "layout": 14,
+   "tries": [
+    {
+     "file": "layout14_try1.csv",
+     "success": false,
+     "seconds": 9.6,
+     "frames": 289
+    },
+    {
+     "file": "layout14_try2.csv",
+     "success": false,
+     "seconds": 9.13,
+     "frames": 275
+    },
+    {
+     "file": "layout14_try3.csv",
+     "success": false,
+     "seconds": 8.9,
+     "frames": 268
+    }
+   ]
+  },
+  {
+   "layout": 15,
+   "tries": [
+    {
+     "file": "layout15_try1.csv",
+     "success": false,
+     "seconds": 9.47,
+     "frames": 285
+    },
+    {
+     "file": "layout15_try2.csv",
+     "success": false,
+     "seconds": 9.13,
+     "frames": 275
+    },
+    {
+     "file": "layout15_try3.csv",
+     "success": true,
+     "seconds": 6.17,
+     "frames": 232
+    }
+   ]
+  },
+  {
+   "layout": 16,
+   "tries": [
+    {
+     "file": "layout16_try1.csv",
+     "success": true,
+     "seconds": 5.67,
+     "frames": 217
+    }
+   ]
+  },
+  {
+   "layout": 17,
+   "tries": [
+    {
+     "file": "layout17_try1.csv",
+     "success": true,
+     "seconds": 6.9,
+     "frames": 254
+    }
+   ]
+  },
+  {
+   "layout": 18,
+   "tries": [
+    {
+     "file": "layout18_try1.csv",
+     "success": true,
+     "seconds": 5.9,
+     "frames": 224
+    }
+   ]
+  },
+  {
+   "layout": 19,
+   "tries": [
+    {
+     "file": "layout19_try1.csv",
+     "success": false,
+     "seconds": 10.7,
+     "frames": 322
+    },
+    {
+     "file": "layout19_try2.csv",
+     "success": false,
+     "seconds": 9.6,
+     "frames": 289
+    },
+    {
+     "file": "layout19_try3.csv",
+     "success": true,
+     "seconds": 6.0,
+     "frames": 227
+    }
+   ]
+  },
+  {
+   "layout": 20,
+   "tries": [
+    {
+     "file": "layout20_try1.csv",
+     "success": true,
+     "seconds": 5.33,
+     "frames": 207
+    }
+   ]
+  },
+  {
+   "layout": 21,
+   "tries": [
+    {
+     "file": "layout21_try1.csv",
+     "success": false,
+     "seconds": 9.6,
+     "frames": 289
+    },
+    {
+     "file": "layout21_try2.csv",
+     "success": false,
+     "seconds": 9.53,
+     "frames": 287
+    },
+    {
+     "file": "layout21_try3.csv",
+     "success": false,
+     "seconds": 9.9,
+     "frames": 298
+    }
+   ]
+  },
+  {
+   "layout": 22,
+   "tries": [
+    {
+     "file": "layout22_try1.csv",
+     "success": true,
+     "seconds": 5.6,
+     "frames": 215
+    }
+   ]
+  },
+  {
+   "layout": 23,
+   "tries": [
+    {
+     "file": "layout23_try1.csv",
+     "success": true,
+     "seconds": 5.6,
+     "frames": 215
+    }
+   ]
+  },
+  {
+   "layout": 24,
+   "tries": [
+    {
+     "file": "layout24_try1.csv",
+     "success": true,
+     "seconds": 5.2,
+     "frames": 203
+    }
+   ]
+  },
+  {
+   "layout": 25,
+   "tries": [
+    {
+     "file": "layout25_try1.csv",
+     "success": true,
+     "seconds": 6.1,
+     "frames": 230
+    }
+   ]
+  },
+  {
+   "layout": 26,
+   "tries": [
+    {
+     "file": "layout26_try1.csv",
+     "success": false,
+     "seconds": 9.53,
+     "frames": 287
+    },
+    {
+     "file": "layout26_try2.csv",
+     "success": false,
+     "seconds": 9.9,
+     "frames": 298
+    },
+    {
+     "file": "layout26_try3.csv",
+     "success": false,
+     "seconds": 9.97,
+     "frames": 300
+    }
+   ]
+  },
+  {
+   "layout": 27,
+   "tries": [
+    {
+     "file": "layout27_try1.csv",
+     "success": false,
+     "seconds": 9.93,
+     "frames": 299
+    },
+    {
+     "file": "layout27_try2.csv",
+     "success": true,
+     "seconds": 7.63,
+     "frames": 276
+    }
+   ]
+  },
+  {
+   "layout": 28,
+   "tries": [
+    {
+     "file": "layout28_try1.csv",
+     "success": false,
+     "seconds": 60.03,
+     "frames": 1802
+    },
+    {
+     "file": "layout28_try2.csv",
+     "success": true,
+     "seconds": 5.9,
+     "frames": 224
+    }
+   ]
+  },
+  {
+   "layout": 29,
+   "tries": [
+    {
+     "file": "layout29_try1.csv",
+     "success": false,
+     "seconds": 10.97,
+     "frames": 330
+    },
+    {
+     "file": "layout29_try2.csv",
+     "success": true,
+     "seconds": 6.4,
+     "frames": 239
+    }
+   ]
+  },
+  {
+   "layout": 30,
+   "tries": [
+    {
+     "file": "layout30_try1.csv",
+     "success": true,
+     "seconds": 6.03,
+     "frames": 228
+    }
+   ]
+  },
+  {
+   "layout": 31,
+   "tries": [
+    {
+     "file": "layout31_try1.csv",
+     "success": false,
+     "seconds": 7.87,
+     "frames": 237
+    },
+    {
+     "file": "layout31_try2.csv",
+     "success": true,
+     "seconds": 4.8,
+     "frames": 191
+    }
+   ]
+  },
+  {
+   "layout": 32,
+   "tries": [
+    {
+     "file": "layout32_try1.csv",
+     "success": true,
+     "seconds": 8.43,
+     "frames": 300
+    }
+   ]
+  },
+  {
+   "layout": 33,
+   "tries": [
+    {
+     "file": "layout33_try1.csv",
+     "success": false,
+     "seconds": 9.47,
+     "frames": 285
+    },
+    {
+     "file": "layout33_try2.csv",
+     "success": true,
+     "seconds": 6.43,
+     "frames": 240
+    }
+   ]
+  },
+  {
+   "layout": 34,
+   "tries": [
+    {
+     "file": "layout34_try1.csv",
+     "success": true,
+     "seconds": 4.93,
+     "frames": 195
+    }
+   ]
+  },
+  {
+   "layout": 35,
+   "tries": [
+    {
+     "file": "layout35_try1.csv",
+     "success": true,
+     "seconds": 11.2,
+     "frames": 383
+    }
+   ]
+  },
+  {
+   "layout": 36,
+   "tries": [
+    {
+     "file": "layout36_try1.csv",
+     "success": true,
+     "seconds": 5.2,
+     "frames": 203
+    }
+   ]
+  },
+  {
+   "layout": 37,
+   "tries": [
+    {
+     "file": "layout37_try1.csv",
+     "success": true,
+     "seconds": 13.23,
+     "frames": 444
+    }
+   ]
+  },
+  {
+   "layout": 38,
+   "tries": [
+    {
+     "file": "layout38_try1.csv",
+     "success": true,
+     "seconds": 5.87,
+     "frames": 223
+    }
+   ]
+  },
+  {
+   "layout": 39,
+   "tries": [
+    {
+     "file": "layout39_try1.csv",
+     "success": true,
+     "seconds": 5.43,
+     "frames": 210
+    }
+   ]
+  },
+  {
+   "layout": 40,
+   "tries": [
+    {
+     "file": "layout40_try1.csv",
+     "success": false,
+     "seconds": 7.9,
+     "frames": 238
+    },
+    {
+     "file": "layout40_try2.csv",
+     "success": false,
+     "seconds": 8.77,
+     "frames": 264
+    },
+    {
+     "file": "layout40_try3.csv",
+     "success": false,
+     "seconds": 8.13,
+     "frames": 245
+    }
+   ]
+  },
+  {
+   "layout": 41,
+   "tries": [
+    {
+     "file": "layout41_try1.csv",
+     "success": true,
+     "seconds": 6.6,
+     "frames": 245
+    }
+   ]
+  },
+  {
+   "layout": 42,
+   "tries": [
+    {
+     "file": "layout42_try1.csv",
+     "success": true,
+     "seconds": 6.23,
+     "frames": 234
+    }
+   ]
+  },
+  {
+   "layout": 43,
+   "tries": [
+    {
+     "file": "layout43_try1.csv",
+     "success": false,
+     "seconds": 8.53,
+     "frames": 257
+    },
+    {
+     "file": "layout43_try2.csv",
+     "success": true,
+     "seconds": 5.6,
+     "frames": 215
+    }
+   ]
+  },
+  {
+   "layout": 44,
+   "tries": [
+    {
+     "file": "layout44_try1.csv",
+     "success": true,
+     "seconds": 5.67,
+     "frames": 217
+    }
+   ]
+  },
+  {
+   "layout": 45,
+   "tries": [
+    {
+     "file": "layout45_try1.csv",
+     "success": true,
+     "seconds": 5.67,
+     "frames": 217
+    }
+   ]
+  },
+  {
+   "layout": 46,
+   "tries": [
+    {
+     "file": "layout46_try1.csv",
+     "success": true,
+     "seconds": 5.37,
+     "frames": 208
+    }
+   ]
+  },
+  {
+   "layout": 47,
+   "tries": [
+    {
+     "file": "layout47_try1.csv",
+     "success": true,
+     "seconds": 5.43,
+     "frames": 210
+    }
+   ]
+  },
+  {
+   "layout": 48,
+   "tries": [
+    {
+     "file": "layout48_try1.csv",
+     "success": false,
+     "seconds": 9.57,
+     "frames": 288
+    },
+    {
+     "file": "layout48_try2.csv",
+     "success": true,
+     "seconds": 5.23,
+     "frames": 204
+    }
+   ]
+  },
+  {
+   "layout": 49,
+   "tries": [
+    {
+     "file": "layout49_try1.csv",
+     "success": true,
+     "seconds": 5.2,
+     "frames": 203
+    }
+   ]
+  }
  ]
 }

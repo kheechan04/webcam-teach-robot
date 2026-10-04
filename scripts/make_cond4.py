@@ -37,30 +37,39 @@ def cond2_demo_for_layout() -> dict[int, Path]:
     return out
 
 
+# 변형: (폴더, 깊이 오차 배율, 조건 번호). 0.5배·2배는 용량-반응 실험(2026-10-04 추가)
+VARIANTS = {"clean": (0.0, 40), "err": (1.0, 4), "err_x0.5": (0.5, 405), "err_x2": (2.0, 42)}
+
+
 def main() -> None:
+    import sys
+    which = sys.argv[1:] or ["clean", "err"]
     layouts = load_layouts("train")
     correction = DepthCorrection()
     demos = cond2_demo_for_layout()
     rig = TeleopRig(RigSettings(), None)
-    summary = {"err": [], "clean": []}
-    for variant in ("clean", "err"):
+    summary_path = OUT / "summary.json"
+    summary = json.loads(summary_path.read_text(encoding="utf-8")) if summary_path.exists() else {}
+    for variant in which:
+        scale, cond = VARIANTS[variant]
+        summary[variant] = []
         d = OUT / variant
         d.mkdir(parents=True, exist_ok=True)
         for lay, (cube_xy, goal_xy) in enumerate(layouts):
-            src = load_error_source(demos[lay], correction) if variant == "err" else None
+            src = load_error_source(demos[lay], correction) if scale > 0 else None
             tries = []
-            for k in range(1 if variant == "clean" else MAX_TRIES):
+            for k in range(1 if scale == 0 else MAX_TRIES):
                 if src is not None and k > 0:
                     src.jitter = np.roll(src.jitter, 97 * k)  # 다시 할 때는 흔들림을 다른 데서부터
                 path = d / f"layout{lay:02d}_try{k + 1}.csv"
                 with open(path, "w", newline="", encoding="utf-8") as f:
                     w = csv.writer(f)
                     w.writerow(LOG_COLUMNS)
-                    r = run_episode(rig, cube_xy, goal_xy, src, w, lay)
+                    r = run_episode(rig, cube_xy, goal_xy, src, w, lay, error_scale=scale)
                 meta = run_meta(rig.s, None, (640, 480), {
-                    "virtual_operator": True, "depth_error": variant == "err",
+                    "virtual_operator": True, "depth_error": scale > 0, "error_scale": scale,
                     "error_source": src.name if src else None, "try": k + 1, "layout": lay, "layout_split": "train"})
-                meta["condition"] = 4 if variant == "err" else 40
+                meta["condition"] = cond
                 meta["result"] = "success" if r["success"] else "failed"
                 path.with_suffix(".json").write_text(json.dumps(meta, ensure_ascii=False, indent=1), encoding="utf-8")
                 tries.append({"file": path.name, **r})
@@ -69,11 +78,13 @@ def main() -> None:
             summary[variant].append({"layout": lay, "tries": tries})
             print(variant, lay, [(t["success"], t["seconds"]) for t in tries])
     for v, s in summary.items():
+        if not s:
+            continue
         ok = sum(any(t["success"] for t in x["tries"]) for x in s)
         n = sum(len(x["tries"]) for x in s)
         first = sum(x["tries"][0]["success"] for x in s)
         print(f"{v}: 배치 성공 {ok}/50, 시도 {n}, 첫 시도 성공 {first}")
-    (OUT / "summary.json").write_text(json.dumps(summary, ensure_ascii=False, indent=1), encoding="utf-8")
+    summary_path.write_text(json.dumps(summary, ensure_ascii=False, indent=1), encoding="utf-8")
 
 
 if __name__ == "__main__":

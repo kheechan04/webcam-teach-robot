@@ -81,8 +81,10 @@ def robot_to_hand_delta(d_robot: np.ndarray, s: RigSettings) -> np.ndarray:
     return np.array([-d_robot[1] / s.scale, -d_robot[2] / s.scale, -d_robot[0] / s.scale_depth])
 
 
-def run_episode(rig: TeleopRig, cube_xy, goal_xy, source: DemoErrorSource | None, writer, layout_id: int) -> dict:
-    """한 배치를 가상 조작자로 끝까지. writer(csv.writer)에 웹캠 녹화와 같은 형식으로 기록한다."""
+def run_episode(rig: TeleopRig, cube_xy, goal_xy, source: DemoErrorSource | None, writer, layout_id: int,
+                error_scale: float = 1.0) -> dict:
+    """error_scale: 깊이 오차 크기 배율(용량-반응 실험). 로그 공간에서 곱한다: 웹캠이 읽는 거리 = 실제 × ratio^k × exp(k·흔들림).
+    한 배치를 가상 조작자로 끝까지. writer(csv.writer)에 웹캠 녹화와 같은 형식으로 기록한다."""
     s = rig.s
     rig.reset(np.asarray(cube_xy), np.asarray(goal_xy), 0.0)
     rig.hand_filter.__init__(smooth=s.smooth)
@@ -100,7 +102,7 @@ def run_episode(rig: TeleopRig, cube_xy, goal_xy, source: DemoErrorSource | None
         if source is not None:
             seq = source.phases[phase]
             ratio = seq[min(phase_k[phase], len(seq) - 1)]
-            depth_seen = hand[2] * ratio * np.exp(source.jitter[k % len(source.jitter)])
+            depth_seen = hand[2] * ratio ** error_scale * np.exp(error_scale * source.jitter[k % len(source.jitter)])
         else:
             depth_seen = hand[2]
         rig.update_hand(fake_obs(hand, depth_seen, pinch), W, H, t, lambda: 0.0)

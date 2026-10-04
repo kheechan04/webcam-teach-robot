@@ -1,0 +1,27 @@
+# M9 보강 (2026-10-04). 줄마다: 조건(데이터셋 이름) 시드 스텝 [모델 이름 꼬리]
+# (데이터셋이 이미 있는 시드 늘리기부터: 용량-반응 데이터셋을 올리는 동안 먼저 돌 수 있게)
+# A3 시드 늘리기: 4000, 5000
+cond1-scripted 4000 20000
+cond2-webcam 4000 20000
+cond3-webcam-corrected 4000 20000
+cond4-depth-error 4000 20000
+cond4z-no-error 4000 20000
+cond1-scripted 5000 20000
+cond2-webcam 5000 20000
+cond3-webcam-corrected 5000 20000
+cond4-depth-error 5000 20000
+cond4z-no-error 5000 20000
+# A1 용량-반응: 깊이 오차 0.5배·2배 (0배 = cond4z, 1배 = cond4는 M9에 있음)
+cond4h-error-half 1000 20000
+cond4d-error-double 1000 20000
+cond4h-error-half 2000 20000
+cond4d-error-double 2000 20000
+cond4h-error-half 3000 20000
+cond4d-error-double 3000 20000
+# A2 학습량 맞추기: 웹캠 조건을 10만 스텝(약 18~19에폭, 조건 ①의 2만 스텝 = 17.6에폭과 비슷)
+cond2-webcam 1000 100000 -100k
+cond3-webcam-corrected 1000 100000 -100k
+cond2-webcam 2000 100000 -100k
+cond3-webcam-corrected 2000 100000 -100k
+cond2-webcam 3000 100000 -100k
+cond3-webcam-corrected 3000 100000 -100k

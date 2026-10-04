@@ -4,7 +4,8 @@
 # 사용 (RunPod 웹 터미널에서):
 #   export HF_TOKEN=hf_...            # 이번 학습용으로 새로 만든 쓰기 토큰 (끝나면 지운다)
 #   curl -LsSf https://raw.githubusercontent.com/kheechan04/webcam-teach-robot/main/runpod/run_m9.sh -o run_m9.sh
-#   nohup bash run_m9.sh > /dev/null 2>&1 &
+#   nohup bash run_m9.sh > /dev/null 2>&1 &           # M9
+#   JOBS=jobs_m9b.txt nohup bash run_m9.sh > /dev/null 2>&1 &   # 보강 실험 목록
 #   tail -f /workspace/logs/m9_*.log  # 진행 보기 (창을 닫아도 계속 돈다)
 #
 # 이어 하기: 같은 명령을 다시 실행하면, Hub에 평가 결과가 이미 있는 (조건, 시드)는 건너뛴다.
@@ -75,9 +76,17 @@ uv run hf repo create "$RESULTS" --repo-type dataset --private --exist-ok || tru
     uv run hf upload "$RESULTS" /workspace/logs/latest.txt "logs/latest.txt" --repo-type dataset --private >/dev/null 2>&1
   done ) &
 
-for SEED in $SEEDS; do
-  for COND in $CONDS; do
-    NAME="act-$COND-s$SEED"
+# 할 일 목록: 기본은 M9(5조건 × 시드 1000~3000). JOBS=파일 이름을 주면 그 목록(줄마다 "조건 시드 스텝 [이름꼬리]")을 따른다.
+if [ -n "${JOBS:-}" ]; then
+  JOBLIST=$(grep -v '^#' "runpod/$JOBS" | grep -v '^\s*$')
+else
+  JOBLIST=$(for SEED in $SEEDS; do for COND in $CONDS; do echo "$COND $SEED $STEPS"; done; done)
+fi
+echo "할 일 $(echo "$JOBLIST" | wc -l)개"
+
+while read -r COND SEED STEPS SUFFIX; do
+  {
+    NAME="act-$COND-s$SEED${SUFFIX:-}"
     POLICY="$USER_HF/webcam-teach-robot-$NAME"
     if uv run python - <<PY
 import sys
@@ -118,6 +127,6 @@ PY
     uv run hf upload "$POLICY" "$J" "eval/$NAME.json" --private
     uv run hf upload "$RESULTS" "$J" "eval/$NAME.json" --repo-type dataset --private
     rm -rf "/workspace/outputs/$NAME"  # 모델은 Hub에 있다. 체크포인트(약 0.6 GB)가 쌓이면 컨테이너 디스크 30 GB가 찬다
-  done
-done
+  } < /dev/null
+done <<< "$JOBLIST"
 ALL_DONE=1
