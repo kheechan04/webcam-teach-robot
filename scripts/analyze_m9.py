@@ -89,7 +89,7 @@ def main() -> None:
         v = [R[(c, s)]["succ"].sum() for s in SEEDS if (c, s) in R]
         ax.bar(i, np.mean(v), 0.6, color=colors[i], alpha=0.85)
         ax.scatter([i] * len(v), v, color="#17171d", s=18, zorder=3)
-        ax.text(i, np.mean(v) + 2, f"{np.mean(v):.0f}", ha="center", fontsize=10)
+        ax.text(i, 4, f"{np.mean(v):.1f}", ha="center", fontsize=11, color="white", fontweight="bold")
     ax.set_xticks(x, [n for _, n in CONDS], fontsize=9.5)
     ax.set_ylim(0, 100)
     ax.set_ylabel("처음 보는 배치 100개 중 성공")

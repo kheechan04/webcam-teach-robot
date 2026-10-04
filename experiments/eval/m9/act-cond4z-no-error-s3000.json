@@ -1,0 +1,1118 @@
+{
+ "policy": "/workspace/outputs/act-cond4z-no-error-s3000/checkpoints/last/pretrained_model",
+ "split": "eval",
+ "n": 100,
+ "success_rate": 0.87,
+ "wilson95": [
+  0.7901947810519012,
+  0.9224290614158575
+ ],
+ "lifted_rate": 0.95,
+ "mean_success_seconds": 5.624137931034483,
+ "max_s": 60.0,
+ "eval_wall_s": 32.6,
+ "date": "2026-10-04T03:56:37",
+ "device": "cuda",
+ "episodes": [
+  {
+   "layout": 0,
+   "success": true,
+   "seconds": 5.533333333333333,
+   "lifted": true,
+   "final_cube": [
+    0.1995,
+    0.0982,
+    0.0149
+   ]
+  },
+  {
+   "layout": 1,
+   "success": true,
+   "seconds": 8.0,
+   "lifted": true,
+   "final_cube": [
+    0.1996,
+    0.1004,
+    0.0149
+   ]
+  },
+  {
+   "layout": 2,
+   "success": true,
+   "seconds": 4.966666666666667,
+   "lifted": true,
+   "final_cube": [
+    0.1789,
+    0.0719,
+    0.0149
+   ]
+  },
+  {
+   "layout": 3,
+   "success": false,
+   "seconds": 60.0,
+   "lifted": false,
+   "final_cube": [
+    0.1894,
+    -0.0405,
+    0.0149
+   ]
+  },
+  {
+   "layout": 4,
+   "success": true,
+   "seconds": 4.933333333333334,
+   "lifted": true,
+   "final_cube": [
+    0.2528,
+    0.0579,
+    0.0149
+   ]
+  },
+  {
+   "layout": 5,
+   "success": true,
+   "seconds": 4.966666666666667,
+   "lifted": true,
+   "final_cube": [
+    0.1841,
+    0.0926,
+    0.0149
+   ]
+  },
+  {
+   "layout": 6,
+   "success": true,
+   "seconds": 6.0,
+   "lifted": true,
+   "final_cube": [
+    0.1921,
+    0.064,
+    0.0149
+   ]
+  },
+  {
+   "layout": 7,
+   "success": false,
+   "seconds": 60.0,
+   "lifted": true,
+   "final_cube": [
+    0.2162,
+    0.0889,
+    0.0149
+   ]
+  },
+  {
+   "layout": 8,
+   "success": true,
+   "seconds": 12.033333333333333,
+   "lifted": true,
+   "final_cube": [
+    0.1775,
+    0.0582,
+    0.0149
+   ]
+  },
+  {
+   "layout": 9,
+   "success": false,
+   "seconds": 60.0,
+   "lifted": false,
+   "final_cube": [
+    0.1963,
+    -0.0479,
+    0.0149
+   ]
+  },
+  {
+   "layout": 10,
+   "success": true,
+   "seconds": 6.2,
+   "lifted": true,
+   "final_cube": [
+    0.2369,
+    0.1118,
+    0.0149
+   ]
+  },
+  {
+   "layout": 11,
+   "success": true,
+   "seconds": 5.8,
+   "lifted": true,
+   "final_cube": [
+    0.2489,
+    0.0545,
+    0.0149
+   ]
+  },
+  {
+   "layout": 12,
+   "success": true,
+   "seconds": 5.5,
+   "lifted": true,
+   "final_cube": [
+    0.2294,
+    0.0609,
+    0.0149
+   ]
+  },
+  {
+   "layout": 13,
+   "success": true,
+   "seconds": 6.4,
+   "lifted": true,
+   "final_cube": [
+    0.2309,
+    0.1246,
+    0.0149
+   ]
+  },
+  {
+   "layout": 14,
+   "success": true,
+   "seconds": 5.533333333333333,
+   "lifted": true,
+   "final_cube": [
+    0.2318,
+    0.0653,
+    0.0149
+   ]
+  },
+  {
+   "layout": 15,
+   "success": false,
+   "seconds": 60.0,
+   "lifted": true,
+   "final_cube": [
+    0.1962,
+    -0.0434,
+    0.0149
+   ]
+  },
+  {
+   "layout": 16,
+   "success": true,
+   "seconds": 6.0,
+   "lifted": true,
+   "final_cube": [
+    0.2417,
+    0.0899,
+    0.0149
+   ]
+  },
+  {
+   "layout": 17,
+   "success": true,
+   "seconds": 7.866666666666666,
+   "lifted": true,
+   "final_cube": [
+    0.1958,
+    0.0931,
+    0.0149
+   ]
+  },
+  {
+   "layout": 18,
+   "success": true,
+   "seconds": 5.533333333333333,
+   "lifted": true,
+   "final_cube": [
+    0.2281,
+    0.0516,
+    0.0149
+   ]
+  },
+  {
+   "layout": 19,
+   "success": true,
+   "seconds": 5.4,
+   "lifted": true,
+   "final_cube": [
+    0.1766,
+    0.1018,
+    0.0149
+   ]
+  },
+  {
+   "layout": 20,
+   "success": true,
+   "seconds": 5.366666666666666,
+   "lifted": true,
+   "final_cube": [
+    0.1862,
+    0.1106,
+    0.0149
+   ]
+  },
+  {
+   "layout": 21,
+   "success": true,
+   "seconds": 5.066666666666666,
+   "lifted": true,
+   "final_cube": [
+    0.2172,
+    0.0663,
+    0.0149
+   ]
+  },
+  {
+   "layout": 22,
+   "success": true,
+   "seconds": 5.5,
+   "lifted": true,
+   "final_cube": [
+    0.271,
+    0.0679,
+    0.0149
+   ]
+  },
+  {
+   "layout": 23,
+   "success": true,
+   "seconds": 4.933333333333334,
+   "lifted": true,
+   "final_cube": [
+    0.2425,
+    0.0686,
+    0.0149
+   ]
+  },
+  {
+   "layout": 24,
+   "success": true,
+   "seconds": 5.133333333333334,
+   "lifted": true,
+   "final_cube": [
+    0.1862,
+    0.0627,
+    0.0149
+   ]
+  },
+  {
+   "layout": 25,
+   "success": true,
+   "seconds": 4.433333333333334,
+   "lifted": true,
+   "final_cube": [
+    0.1832,
+    0.0517,
+    0.0149
+   ]
+  },
+  {
+   "layout": 26,
+   "success": true,
+   "seconds": 4.566666666666666,
+   "lifted": true,
+   "final_cube": [
+    0.2125,
+    0.0546,
+    0.0149
+   ]
+  },
+  {
+   "layout": 27,
+   "success": true,
+   "seconds": 5.6,
+   "lifted": true,
+   "final_cube": [
+    0.1749,
+    0.079,
+    0.0149
+   ]
+  },
+  {
+   "layout": 28,
+   "success": true,
+   "seconds": 4.533333333333333,
+   "lifted": true,
+   "final_cube": [
+    0.2327,
+    0.0505,
+    0.0149
+   ]
+  },
+  {
+   "layout": 29,
+   "success": true,
+   "seconds": 5.433333333333334,
+   "lifted": true,
+   "final_cube": [
+    0.2509,
+    0.0564,
+    0.0149
+   ]
+  },
+  {
+   "layout": 30,
+   "success": true,
+   "seconds": 5.666666666666667,
+   "lifted": true,
+   "final_cube": [
+    0.1912,
+    0.0639,
+    0.0149
+   ]
+  },
+  {
+   "layout": 31,
+   "success": true,
+   "seconds": 5.5,
+   "lifted": true,
+   "final_cube": [
+    0.2366,
+    0.1141,
+    0.0149
+   ]
+  },
+  {
+   "layout": 32,
+   "success": true,
+   "seconds": 5.1,
+   "lifted": true,
+   "final_cube": [
+    0.1905,
+    0.0763,
+    0.0149
+   ]
+  },
+  {
+   "layout": 33,
+   "success": true,
+   "seconds": 5.0,
+   "lifted": true,
+   "final_cube": [
+    0.2012,
+    0.0557,
+    0.0149
+   ]
+  },
+  {
+   "layout": 34,
+   "success": true,
+   "seconds": 6.366666666666666,
+   "lifted": true,
+   "final_cube": [
+    0.1779,
+    0.1124,
+    0.0149
+   ]
+  },
+  {
+   "layout": 35,
+   "success": true,
+   "seconds": 5.466666666666667,
+   "lifted": true,
+   "final_cube": [
+    0.1968,
+    0.0884,
+    0.0149
+   ]
+  },
+  {
+   "layout": 36,
+   "success": true,
+   "seconds": 5.133333333333334,
+   "lifted": true,
+   "final_cube": [
+    0.2396,
+    0.1262,
+    0.0149
+   ]
+  },
+  {
+   "layout": 37,
+   "success": true,
+   "seconds": 5.433333333333334,
+   "lifted": true,
+   "final_cube": [
+    0.2176,
+    0.0917,
+    0.0149
+   ]
+  },
+  {
+   "layout": 38,
+   "success": true,
+   "seconds": 6.133333333333334,
+   "lifted": true,
+   "final_cube": [
+    0.1684,
+    0.0732,
+    0.0149
+   ]
+  },
+  {
+   "layout": 39,
+   "success": true,
+   "seconds": 6.866666666666666,
+   "lifted": true,
+   "final_cube": [
+    0.2093,
+    0.1305,
+    0.0149
+   ]
+  },
+  {
+   "layout": 40,
+   "success": true,
+   "seconds": 6.166666666666667,
+   "lifted": true,
+   "final_cube": [
+    0.2261,
+    0.1011,
+    0.0149
+   ]
+  },
+  {
+   "layout": 41,
+   "success": true,
+   "seconds": 4.933333333333334,
+   "lifted": true,
+   "final_cube": [
+    0.232,
+    0.0698,
+    0.0149
+   ]
+  },
+  {
+   "layout": 42,
+   "success": true,
+   "seconds": 8.066666666666666,
+   "lifted": true,
+   "final_cube": [
+    0.2067,
+    0.118,
+    0.0149
+   ]
+  },
+  {
+   "layout": 43,
+   "success": true,
+   "seconds": 5.133333333333334,
+   "lifted": true,
+   "final_cube": [
+    0.2418,
+    0.0694,
+    0.0149
+   ]
+  },
+  {
+   "layout": 44,
+   "success": true,
+   "seconds": 5.633333333333334,
+   "lifted": true,
+   "final_cube": [
+    0.2494,
+    0.1244,
+    0.0149
+   ]
+  },
+  {
+   "layout": 45,
+   "success": true,
+   "seconds": 5.633333333333334,
+   "lifted": true,
+   "final_cube": [
+    0.1895,
+    0.1209,
+    0.0149
+   ]
+  },
+  {
+   "layout": 46,
+   "success": true,
+   "seconds": 5.4,
+   "lifted": true,
+   "final_cube": [
+    0.1837,
+    0.0601,
+    0.0149
+   ]
+  },
+  {
+   "layout": 47,
+   "success": true,
+   "seconds": 5.2,
+   "lifted": true,
+   "final_cube": [
+    0.256,
+    0.0698,
+    0.0149
+   ]
+  },
+  {
+   "layout": 48,
+   "success": true,
+   "seconds": 5.4,
+   "lifted": true,
+   "final_cube": [
+    0.1852,
+    0.0612,
+    0.0149
+   ]
+  },
+  {
+   "layout": 49,
+   "success": true,
+   "seconds": 4.666666666666667,
+   "lifted": true,
+   "final_cube": [
+    0.1994,
+    0.0753,
+    0.0149
+   ]
+  },
+  {
+   "layout": 50,
+   "success": true,
+   "seconds": 6.633333333333334,
+   "lifted": true,
+   "final_cube": [
+    0.2534,
+    0.1221,
+    0.0149
+   ]
+  },
+  {
+   "layout": 51,
+   "success": false,
+   "seconds": 60.0,
+   "lifted": false,
+   "final_cube": [
+    0.2078,
+    -0.0521,
+    0.0149
+   ]
+  },
+  {
+   "layout": 52,
+   "success": true,
+   "seconds": 6.533333333333333,
+   "lifted": true,
+   "final_cube": [
+    0.2395,
+    0.1169,
+    0.0149
+   ]
+  },
+  {
+   "layout": 53,
+   "success": true,
+   "seconds": 5.033333333333333,
+   "lifted": true,
+   "final_cube": [
+    0.2175,
+    0.0558,
+    0.0149
+   ]
+  },
+  {
+   "layout": 54,
+   "success": false,
+   "seconds": 60.0,
+   "lifted": true,
+   "final_cube": [
+    0.2502,
+    -0.0118,
+    0.0149
+   ]
+  },
+  {
+   "layout": 55,
+   "success": true,
+   "seconds": 5.3,
+   "lifted": true,
+   "final_cube": [
+    0.1811,
+    0.0877,
+    0.0149
+   ]
+  },
+  {
+   "layout": 56,
+   "success": true,
+   "seconds": 5.6,
+   "lifted": true,
+   "final_cube": [
+    0.1924,
+    0.0942,
+    0.0149
+   ]
+  },
+  {
+   "layout": 57,
+   "success": true,
+   "seconds": 5.8,
+   "lifted": true,
+   "final_cube": [
+    0.1776,
+    0.0659,
+    0.0149
+   ]
+  },
+  {
+   "layout": 58,
+   "success": true,
+   "seconds": 5.233333333333333,
+   "lifted": true,
+   "final_cube": [
+    0.2463,
+    0.0766,
+    0.0149
+   ]
+  },
+  {
+   "layout": 59,
+   "success": true,
+   "seconds": 5.5,
+   "lifted": true,
+   "final_cube": [
+    0.259,
+    0.0672,
+    0.0149
+   ]
+  },
+  {
+   "layout": 60,
+   "success": true,
+   "seconds": 5.366666666666666,
+   "lifted": true,
+   "final_cube": [
+    0.1783,
+    0.0925,
+    0.0149
+   ]
+  },
+  {
+   "layout": 61,
+   "success": true,
+   "seconds": 5.7,
+   "lifted": true,
+   "final_cube": [
+    0.2258,
+    0.0707,
+    0.0149
+   ]
+  },
+  {
+   "layout": 62,
+   "success": true,
+   "seconds": 4.833333333333333,
+   "lifted": true,
+   "final_cube": [
+    0.229,
+    0.0595,
+    0.0149
+   ]
+  },
+  {
+   "layout": 63,
+   "success": true,
+   "seconds": 5.533333333333333,
+   "lifted": true,
+   "final_cube": [
+    0.1838,
+    0.1122,
+    0.0149
+   ]
+  },
+  {
+   "layout": 64,
+   "success": true,
+   "seconds": 4.7,
+   "lifted": true,
+   "final_cube": [
+    0.1845,
+    0.0611,
+    0.0149
+   ]
+  },
+  {
+   "layout": 65,
+   "success": true,
+   "seconds": 4.7,
+   "lifted": true,
+   "final_cube": [
+    0.2384,
+    0.0671,
+    0.0149
+   ]
+  },
+  {
+   "layout": 66,
+   "success": true,
+   "seconds": 5.433333333333334,
+   "lifted": true,
+   "final_cube": [
+    0.175,
+    0.089,
+    0.0149
+   ]
+  },
+  {
+   "layout": 67,
+   "success": true,
+   "seconds": 4.966666666666667,
+   "lifted": true,
+   "final_cube": [
+    0.1956,
+    0.0565,
+    0.0149
+   ]
+  },
+  {
+   "layout": 68,
+   "success": false,
+   "seconds": 60.0,
+   "lifted": true,
+   "final_cube": [
+    0.2014,
+    -0.048,
+    0.0149
+   ]
+  },
+  {
+   "layout": 69,
+   "success": true,
+   "seconds": 5.466666666666667,
+   "lifted": true,
+   "final_cube": [
+    0.2103,
+    0.0785,
+    0.0149
+   ]
+  },
+  {
+   "layout": 70,
+   "success": true,
+   "seconds": 5.166666666666667,
+   "lifted": true,
+   "final_cube": [
+    0.1698,
+    0.0858,
+    0.0149
+   ]
+  },
+  {
+   "layout": 71,
+   "success": true,
+   "seconds": 5.3,
+   "lifted": true,
+   "final_cube": [
+    0.2297,
+    0.0509,
+    0.0149
+   ]
+  },
+  {
+   "layout": 72,
+   "success": true,
+   "seconds": 5.233333333333333,
+   "lifted": true,
+   "final_cube": [
+    0.208,
+    0.0892,
+    0.0149
+   ]
+  },
+  {
+   "layout": 73,
+   "success": true,
+   "seconds": 5.366666666666666,
+   "lifted": true,
+   "final_cube": [
+    0.1839,
+    0.0734,
+    0.0149
+   ]
+  },
+  {
+   "layout": 74,
+   "success": true,
+   "seconds": 5.066666666666666,
+   "lifted": true,
+   "final_cube": [
+    0.1727,
+    0.0896,
+    0.0149
+   ]
+  },
+  {
+   "layout": 75,
+   "success": true,
+   "seconds": 5.133333333333334,
+   "lifted": true,
+   "final_cube": [
+    0.2487,
+    0.081,
+    0.0149
+   ]
+  },
+  {
+   "layout": 76,
+   "success": false,
+   "seconds": 60.0,
+   "lifted": true,
+   "final_cube": [
+    0.2357,
+    -0.0371,
+    0.0149
+   ]
+  },
+  {
+   "layout": 77,
+   "success": true,
+   "seconds": 5.333333333333333,
+   "lifted": true,
+   "final_cube": [
+    0.1959,
+    0.0587,
+    0.0149
+   ]
+  },
+  {
+   "layout": 78,
+   "success": false,
+   "seconds": 60.0,
+   "lifted": false,
+   "final_cube": [
+    0.2109,
+    -0.0295,
+    0.0149
+   ]
+  },
+  {
+   "layout": 79,
+   "success": true,
+   "seconds": 7.166666666666667,
+   "lifted": true,
+   "final_cube": [
+    0.2474,
+    0.1289,
+    0.0149
+   ]
+  },
+  {
+   "layout": 80,
+   "success": false,
+   "seconds": 60.0,
+   "lifted": true,
+   "final_cube": [
+    0.2479,
+    -0.077,
+    0.0149
+   ]
+  },
+  {
+   "layout": 81,
+   "success": true,
+   "seconds": 5.433333333333334,
+   "lifted": true,
+   "final_cube": [
+    0.1898,
+    0.1066,
+    0.0149
+   ]
+  },
+  {
+   "layout": 82,
+   "success": false,
+   "seconds": 60.0,
+   "lifted": true,
+   "final_cube": [
+    0.198,
+    -0.0354,
+    0.0149
+   ]
+  },
+  {
+   "layout": 83,
+   "success": true,
+   "seconds": 6.266666666666667,
+   "lifted": true,
+   "final_cube": [
+    0.1907,
+    0.1207,
+    0.0149
+   ]
+  },
+  {
+   "layout": 84,
+   "success": true,
+   "seconds": 5.533333333333333,
+   "lifted": true,
+   "final_cube": [
+    0.2474,
+    0.1183,
+    0.0149
+   ]
+  },
+  {
+   "layout": 85,
+   "success": true,
+   "seconds": 5.4,
+   "lifted": true,
+   "final_cube": [
+    0.1777,
+    0.0641,
+    0.0149
+   ]
+  },
+  {
+   "layout": 86,
+   "success": true,
+   "seconds": 5.3,
+   "lifted": true,
+   "final_cube": [
+    0.2082,
+    0.1103,
+    0.0149
+   ]
+  },
+  {
+   "layout": 87,
+   "success": true,
+   "seconds": 5.0,
+   "lifted": true,
+   "final_cube": [
+    0.247,
+    0.064,
+    0.0149
+   ]
+  },
+  {
+   "layout": 88,
+   "success": true,
+   "seconds": 6.066666666666666,
+   "lifted": true,
+   "final_cube": [
+    0.2471,
+    0.1038,
+    0.0149
+   ]
+  },
+  {
+   "layout": 89,
+   "success": true,
+   "seconds": 5.3,
+   "lifted": true,
+   "final_cube": [
+    0.2378,
+    0.0477,
+    0.0149
+   ]
+  },
+  {
+   "layout": 90,
+   "success": true,
+   "seconds": 5.533333333333333,
+   "lifted": true,
+   "final_cube": [
+    0.1806,
+    0.1099,
+    0.0149
+   ]
+  },
+  {
+   "layout": 91,
+   "success": true,
+   "seconds": 5.6,
+   "lifted": true,
+   "final_cube": [
+    0.2523,
+    0.0819,
+    0.0149
+   ]
+  },
+  {
+   "layout": 92,
+   "success": false,
+   "seconds": 60.0,
+   "lifted": false,
+   "final_cube": [
+    0.1651,
+    -0.1038,
+    0.0149
+   ]
+  },
+  {
+   "layout": 93,
+   "success": true,
+   "seconds": 5.966666666666667,
+   "lifted": true,
+   "final_cube": [
+    0.198,
+    0.109,
+    0.0149
+   ]
+  },
+  {
+   "layout": 94,
+   "success": true,
+   "seconds": 5.566666666666666,
+   "lifted": true,
+   "final_cube": [
+    0.2173,
+    0.0654,
+    0.0149
+   ]
+  },
+  {
+   "layout": 95,
+   "success": true,
+   "seconds": 5.433333333333334,
+   "lifted": true,
+   "final_cube": [
+    0.187,
+    0.0742,
+    0.0149
+   ]
+  },
+  {
+   "layout": 96,
+   "success": true,
+   "seconds": 5.433333333333334,
+   "lifted": true,
+   "final_cube": [
+    0.214,
+    0.07,
+    0.0149
+   ]
+  },
+  {
+   "layout": 97,
+   "success": false,
+   "seconds": 60.0,
+   "lifted": true,
+   "final_cube": [
+    0.208,
+    0.0012,
+    0.0149
+   ]
+  },
+  {
+   "layout": 98,
+   "success": true,
+   "seconds": 5.466666666666667,
+   "lifted": true,
+   "final_cube": [
+    0.2321,
+    0.0739,
+    0.0149
+   ]
+  },
+  {
+   "layout": 99,
+   "success": true,
+   "seconds": 5.766666666666667,
+   "lifted": true,
+   "final_cube": [
+    0.2094,
+    0.1156,
+    0.0149
+   ]
+  }
+ ]
+}
