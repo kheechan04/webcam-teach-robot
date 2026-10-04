@@ -19,7 +19,7 @@ import numpy as np
 
 ROOT = Path(__file__).resolve().parent.parent
 EVAL = ROOT / "experiments" / "eval" / "m9"
-CONDS = [("cond1-scripted", "① 스크립트"), ("cond4z-no-error", "④0 가상 조작자"), ("cond4-depth-error", "④ 가상 + 오차 주입"),
+CONDS = [("cond1-scripted", "① 스크립트"), ("cond5-webcam-marker", "⑤ 웹캠 + 마커"), ("cond4z-no-error", "④0 가상 조작자"), ("cond4-depth-error", "④ 가상 + 오차 주입"),
          ("cond3-webcam-corrected", "③ 웹캠 + 보정"), ("cond2-webcam", "② 웹캠")]
 SEEDS = ["1000", "2000", "3000", "4000", "5000"]
 COMPARISONS = [  # (뒤, 앞, 이름): 앞 − 뒤
@@ -29,6 +29,9 @@ COMPARISONS = [  # (뒤, 앞, 이름): 앞 − 뒤
     ("cond1-scripted", "cond4z-no-error", "조종 코드를 거친 효과 (④0 − ①)"),
     ("cond4-depth-error", "cond2-webcam", "사람 시범의 추가 손해 (② − ④)"),
     ("cond1-scripted", "cond3-webcam-corrected", "보정해도 남는 손해 (③ − ①)"),
+    ("cond2-webcam", "cond5-webcam-marker", "사람 시범에서 깊이 오차를 없애면 (⑤ − ②)"),
+    ("cond1-scripted", "cond5-webcam-marker", "깊이 오차 없어도 남는 사람 시범 손해 (⑤ − ①)"),
+    ("cond3-webcam-corrected", "cond5-webcam-marker", "보정 vs 마커 (⑤ − ③)"),
 ]
 plt.rcParams["font.family"] = "Malgun Gothic"
 plt.rcParams["axes.unicode_minus"] = False
@@ -84,7 +87,7 @@ def main() -> None:
 
     fig, ax = plt.subplots(figsize=(8.5, 4.2))
     x = np.arange(len(CONDS))
-    colors = ["#9a9893", "#1baf7a", "#2a78d6", "#7b5fd6", "#eb6834"]
+    colors = ["#9a9893", "#c08a2b", "#1baf7a", "#2a78d6", "#7b5fd6", "#eb6834"]
     for i, (c, name) in enumerate(CONDS):
         v = [R[(c, s)]["succ"].sum() for s in SEEDS if (c, s) in R]
         ax.bar(i, np.mean(v), 0.6, color=colors[i], alpha=0.85)
