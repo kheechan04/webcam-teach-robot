@@ -1,5 +1,5 @@
 {
- "created": "20261004_205648",
+ "created": "20261004_210804",
  "geometry": {
   "cam_back_cm": 0.0,
   "cam_height_cm": 24.4,
@@ -163,5 +163,102 @@
    "step": 23
   }
  ],
- "done": []
+ "done": [
+  {
+   "step": 0,
+   "take": 0
+  },
+  {
+   "step": 1,
+   "take": 0
+  },
+  {
+   "step": 2,
+   "take": 0
+  },
+  {
+   "step": 3,
+   "take": 0
+  },
+  {
+   "step": 4,
+   "take": 0
+  },
+  {
+   "step": 5,
+   "take": 0
+  },
+  {
+   "step": 6,
+   "take": 0
+  },
+  {
+   "step": 7,
+   "take": 0
+  },
+  {
+   "step": 8,
+   "take": 0
+  },
+  {
+   "step": 9,
+   "take": 0
+  },
+  {
+   "step": 10,
+   "take": 0
+  },
+  {
+   "step": 11,
+   "take": 0
+  },
+  {
+   "step": 12,
+   "take": 0
+  },
+  {
+   "step": 13,
+   "take": 0
+  },
+  {
+   "step": 14,
+   "take": 0
+  },
+  {
+   "step": 15,
+   "take": 0
+  },
+  {
+   "step": 16,
+   "take": 0
+  },
+  {
+   "step": 17,
+   "take": 0
+  },
+  {
+   "step": 18,
+   "take": 0
+  },
+  {
+   "step": 19,
+   "take": 0
+  },
+  {
+   "step": 20,
+   "take": 0
+  },
+  {
+   "step": 21,
+   "take": 0
+  },
+  {
+   "step": 22,
+   "take": 0
+  },
+  {
+   "step": 23,
+   "take": 0
+  }
+ ]
 }

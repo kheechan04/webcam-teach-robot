@@ -13,10 +13,13 @@ from dataclasses import dataclass
 import cv2
 import numpy as np
 
-from webcam_teach_robot.hand_tracking import focal_length_px
 
 MARKER_SIZE_M = 0.050
 MARKER_ID = 0
+# 초점거리: 화각 60° 가정(554 px)으로는 마커가 일정하게 약 14% 가깝게 나왔다(2026-10-04 정확도 측정,
+# measurements/marker/20261004_210804, 편 손·정면·웹캠 높이 4단계로 맞춤 → 647 px). 다른 자세·높이 20단계에서
+# 맞춘 뒤 자세×높이별 평균 오차 −0.9 ~ +1.2 cm. 실제 거리·좌우 이동량이 맞게 이 값을 쓴다.
+MARKER_FOCAL_PX = 647.0
 
 
 @dataclass
@@ -29,8 +32,9 @@ class MarkerObservation:
 
 
 class MarkerTracker:
-    def __init__(self, frame_w: int = 640, frame_h: int = 480, fov_deg: float = 60.0, size_m: float = MARKER_SIZE_M):
-        f = focal_length_px(frame_w, fov_deg)  # MediaPipe 깊이와 같은 가정값(화각 60°)
+    def __init__(self, frame_w: int = 640, frame_h: int = 480, focal_px: float = MARKER_FOCAL_PX,
+                 size_m: float = MARKER_SIZE_M):
+        f = focal_px
         self.K = np.array([[f, 0, frame_w / 2], [0, f, frame_h / 2], [0, 0, 1]], dtype=np.float64)
         self.w = frame_w
         s = size_m / 2
