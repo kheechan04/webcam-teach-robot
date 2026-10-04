@@ -27,7 +27,7 @@ from webcam_teach_robot.scene import PlacementTracker, build_model, cube_pos, lo
 
 ROOT = Path(__file__).resolve().parent.parent
 MODELS = {c: [f"kheechan04/webcam-teach-robot-act-{c}-s{s}" for s in (1000, 2000, 3000)]
-          for c in ("cond2-webcam", "cond3-webcam-corrected", "cond4-depth-error", "cond4z-no-error")}
+          for c in ("cond2-webcam", "cond3-webcam-corrected", "cond4-depth-error", "cond4z-no-error", "cond5-webcam-marker")}
 MAX_S = 60.0
 _W = {}
 

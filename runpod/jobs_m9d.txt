@@ -1,0 +1,4 @@
+# 조건 ⑤ 10만 스텝 (②·③ 10만 스텝과 같은 학습량 비교)
+cond5-webcam-marker 1000 100000 -100k
+cond5-webcam-marker 2000 100000 -100k
+cond5-webcam-marker 3000 100000 -100k
