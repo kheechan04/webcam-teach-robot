@@ -307,7 +307,8 @@ def cmd_pair(args):
                 side.update_scene(d, camera=view)
                 im.paste(Image.fromarray(side.render()), (i * 540, 200))
                 moved = np.linalg.norm(cube_pos(d, ids)[:2] - cube_xy) > 0.01 and not trs[i].was_lifted
-                st = "성공!" if done[i] is not None else ("큐브를 밀어 버림" if moved else "")
+                st = ("성공!" if done[i] is not None else "큐브를 밀어 버림" if moved
+                      else "아직 못 집음" if any(x is not None for x in done) else "")
                 col = (110, 230, 150) if done[i] is not None else (255, 150, 90)
                 dr.text((i * 540 + 24, 820), labels[i], font=font(30), fill=(255, 255, 255))
                 dr.text((i * 540 + 24, 870), st, font=font(30), fill=col)
@@ -318,7 +319,7 @@ def cmd_pair(args):
                 break
         pushed = not trs[0].was_lifted and np.linalg.norm(cube_pos(sims[0], ids)[:2] - cube_xy) > 0.01
         print(f"  배치 {lay}: ② 성공 {done[0]} 밀었나 {pushed} / ③ 성공 {done[1]}")
-        if done[1] is not None and done[0] is None and pushed:
+        if done[1] is not None and done[0] is None and (pushed or args.allow_unpushed):
             OUT.mkdir(parents=True, exist_ok=True)
             write_mp4(frames, OUT / f"pair_L{lay}.mp4")
             return
@@ -333,6 +334,7 @@ def main() -> None:
     p.add_argument("--speed", type=float, default=2.0)
     p.add_argument("--title", default=None)
     p.add_argument("--layouts", default="7,8,13,20,25,36,40,42,44,47")
+    p.add_argument("--allow-unpushed", action="store_true", help="②가 큐브를 밀지 않고 실패해도 받기")
     a = p.parse_args()
     {"policy": cmd_policy, "replay": cmd_replay, "charts": cmd_charts, "pair": cmd_pair}[a.what](a)
 
