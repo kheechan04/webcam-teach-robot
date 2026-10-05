@@ -1,0 +1,277 @@
+{
+  "episodes": [
+    {
+      "source": "webcam",
+      "log": "u010_try1_20261005_133021.csv",
+      "layout": 0,
+      "condition": 3,
+      "plan_unit": {
+        "unit": 10,
+        "block": 0,
+        "condition": 3,
+        "layout": 0,
+        "split": "train"
+      },
+      "cube_quat": "logged",
+      "raw_rows": 671,
+      "frames": 669,
+      "seconds": 22.3
+    },
+    {
+      "source": "webcam",
+      "log": "u012_try2_20261005_133721.csv",
+      "layout": 40,
+      "condition": 3,
+      "plan_unit": {
+        "unit": 12,
+        "block": 0,
+        "condition": 3,
+        "layout": 40,
+        "split": "train"
+      },
+      "cube_quat": "logged",
+      "raw_rows": 1072,
+      "frames": 1068,
+      "seconds": 35.6
+    },
+    {
+      "source": "webcam",
+      "log": "u014_try2_20261005_134439.csv",
+      "layout": 48,
+      "condition": 3,
+      "plan_unit": {
+        "unit": 14,
+        "block": 0,
+        "condition": 3,
+        "layout": 48,
+        "split": "train"
+      },
+      "cube_quat": "logged",
+      "raw_rows": 2011,
+      "frames": 2011,
+      "seconds": 67.03
+    },
+    {
+      "source": "webcam",
+      "log": "u015_try1_20261005_134625.csv",
+      "layout": 16,
+      "condition": 3,
+      "plan_unit": {
+        "unit": 15,
+        "block": 1,
+        "condition": 3,
+        "layout": 16,
+        "split": "train"
+      },
+      "cube_quat": "logged",
+      "raw_rows": 1416,
+      "frames": 1411,
+      "seconds": 47.03
+    },
+    {
+      "source": "webcam",
+      "log": "u016_try1_20261005_134730.csv",
+      "layout": 15,
+      "condition": 3,
+      "plan_unit": {
+        "unit": 16,
+        "block": 1,
+        "condition": 3,
+        "layout": 15,
+        "split": "train"
+      },
+      "cube_quat": "logged",
+      "raw_rows": 1464,
+      "frames": 1459,
+      "seconds": 48.63
+    },
+    {
+      "source": "webcam",
+      "log": "u017_try3_20261005_135136.csv",
+      "layout": 31,
+      "condition": 3,
+      "plan_unit": {
+        "unit": 17,
+        "block": 1,
+        "condition": 3,
+        "layout": 31,
+        "split": "train"
+      },
+      "cube_quat": "logged",
+      "raw_rows": 1298,
+      "frames": 1294,
+      "seconds": 43.13
+    },
+    {
+      "source": "webcam",
+      "log": "u018_try1_20261005_135241.csv",
+      "layout": 26,
+      "condition": 3,
+      "plan_unit": {
+        "unit": 18,
+        "block": 1,
+        "condition": 3,
+        "layout": 26,
+        "split": "train"
+      },
+      "cube_quat": "logged",
+      "raw_rows": 2379,
+      "frames": 2372,
+      "seconds": 79.07
+    },
+    {
+      "source": "webcam",
+      "log": "u025_try1_20261005_140905.csv",
+      "layout": 32,
+      "condition": 3,
+      "plan_unit": {
+        "unit": 25,
+        "block": 2,
+        "condition": 3,
+        "layout": 32,
+        "split": "train"
+      },
+      "cube_quat": "logged",
+      "raw_rows": 1520,
+      "frames": 1515,
+      "seconds": 50.5
+    },
+    {
+      "source": "webcam",
+      "log": "u027_try1_20261005_141511.csv",
+      "layout": 11,
+      "condition": 3,
+      "plan_unit": {
+        "unit": 27,
+        "block": 2,
+        "condition": 3,
+        "layout": 11,
+        "split": "train"
+      },
+      "cube_quat": "logged",
+      "raw_rows": 1221,
+      "frames": 1217,
+      "seconds": 40.57
+    },
+    {
+      "source": "webcam",
+      "log": "u028_try3_20261005_141805.csv",
+      "layout": 21,
+      "condition": 3,
+      "plan_unit": {
+        "unit": 28,
+        "block": 2,
+        "condition": 3,
+        "layout": 21,
+        "split": "train"
+      },
+      "cube_quat": "logged",
+      "raw_rows": 2280,
+      "frames": 2273,
+      "seconds": 75.77
+    },
+    {
+      "source": "webcam",
+      "log": "u029_try1_20261005_141939.csv",
+      "layout": 47,
+      "condition": 3,
+      "plan_unit": {
+        "unit": 29,
+        "block": 2,
+        "condition": 3,
+        "layout": 47,
+        "split": "train"
+      },
+      "cube_quat": "logged",
+      "raw_rows": 599,
+      "frames": 596,
+      "seconds": 19.87
+    },
+    {
+      "source": "webcam",
+      "log": "u040_try1_20261005_142725.csv",
+      "layout": 34,
+      "condition": 3,
+      "plan_unit": {
+        "unit": 40,
+        "block": 3,
+        "condition": 3,
+        "layout": 34,
+        "split": "train"
+      },
+      "cube_quat": "logged",
+      "raw_rows": 1152,
+      "frames": 1148,
+      "seconds": 38.27
+    },
+    {
+      "source": "webcam",
+      "log": "u041_try2_20261005_142935.csv",
+      "layout": 30,
+      "condition": 3,
+      "plan_unit": {
+        "unit": 41,
+        "block": 3,
+        "condition": 3,
+        "layout": 30,
+        "split": "train"
+      },
+      "cube_quat": "logged",
+      "raw_rows": 886,
+      "frames": 883,
+      "seconds": 29.43
+    },
+    {
+      "source": "webcam",
+      "log": "u042_try1_20261005_143010.csv",
+      "layout": 24,
+      "condition": 3,
+      "plan_unit": {
+        "unit": 42,
+        "block": 3,
+        "condition": 3,
+        "layout": 24,
+        "split": "train"
+      },
+      "cube_quat": "logged",
+      "raw_rows": 2449,
+      "frames": 2441,
+      "seconds": 81.37
+    },
+    {
+      "source": "webcam",
+      "log": "u043_try1_20261005_143141.csv",
+      "layout": 5,
+      "condition": 3,
+      "plan_unit": {
+        "unit": 43,
+        "block": 3,
+        "condition": 3,
+        "layout": 5,
+        "split": "train"
+      },
+      "cube_quat": "logged",
+      "raw_rows": 1121,
+      "frames": 1117,
+      "seconds": 37.23
+    },
+    {
+      "source": "webcam",
+      "log": "u044_try2_20261005_143403.csv",
+      "layout": 44,
+      "condition": 3,
+      "plan_unit": {
+        "unit": 44,
+        "block": 3,
+        "condition": 3,
+        "layout": 44,
+        "split": "train"
+      },
+      "cube_quat": "logged",
+      "raw_rows": 1397,
+      "frames": 1393,
+      "seconds": 46.43
+    }
+  ],
+  "skipped_failures": 0
+}

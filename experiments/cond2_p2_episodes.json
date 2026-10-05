@@ -1,0 +1,294 @@
+{
+  "episodes": [
+    {
+      "source": "webcam",
+      "log": "u008_try1_20261005_132820.csv",
+      "layout": 48,
+      "condition": 2,
+      "plan_unit": {
+        "unit": 8,
+        "block": 0,
+        "condition": 2,
+        "layout": 48,
+        "split": "train"
+      },
+      "cube_quat": "logged",
+      "raw_rows": 841,
+      "frames": 838,
+      "seconds": 27.93
+    },
+    {
+      "source": "webcam",
+      "log": "u009_try1_20261005_132907.csv",
+      "layout": 0,
+      "condition": 2,
+      "plan_unit": {
+        "unit": 9,
+        "block": 0,
+        "condition": 2,
+        "layout": 0,
+        "split": "train"
+      },
+      "cube_quat": "logged",
+      "raw_rows": 1607,
+      "frames": 1603,
+      "seconds": 53.43
+    },
+    {
+      "source": "webcam",
+      "log": "u020_try1_20261005_135908.csv",
+      "layout": 31,
+      "condition": 2,
+      "plan_unit": {
+        "unit": 20,
+        "block": 1,
+        "condition": 2,
+        "layout": 31,
+        "split": "train"
+      },
+      "cube_quat": "logged",
+      "raw_rows": 758,
+      "frames": 755,
+      "seconds": 25.17
+    },
+    {
+      "source": "webcam",
+      "log": "u021_try1_20261005_135944.csv",
+      "layout": 16,
+      "condition": 2,
+      "plan_unit": {
+        "unit": 21,
+        "block": 1,
+        "condition": 2,
+        "layout": 16,
+        "split": "train"
+      },
+      "cube_quat": "logged",
+      "raw_rows": 1886,
+      "frames": 1880,
+      "seconds": 62.67
+    },
+    {
+      "source": "webcam",
+      "log": "u022_try2_20261005_140233.csv",
+      "layout": 26,
+      "condition": 2,
+      "plan_unit": {
+        "unit": 22,
+        "block": 1,
+        "condition": 2,
+        "layout": 26,
+        "split": "train"
+      },
+      "cube_quat": "logged",
+      "raw_rows": 2007,
+      "frames": 2002,
+      "seconds": 66.73
+    },
+    {
+      "source": "webcam",
+      "log": "u023_try2_20261005_140533.csv",
+      "layout": 22,
+      "condition": 2,
+      "plan_unit": {
+        "unit": 23,
+        "block": 1,
+        "condition": 2,
+        "layout": 22,
+        "split": "train"
+      },
+      "cube_quat": "logged",
+      "raw_rows": 1501,
+      "frames": 1496,
+      "seconds": 49.87
+    },
+    {
+      "source": "webcam",
+      "log": "u024_try2_20261005_140816.csv",
+      "layout": 15,
+      "condition": 2,
+      "plan_unit": {
+        "unit": 24,
+        "block": 1,
+        "condition": 2,
+        "layout": 15,
+        "split": "train"
+      },
+      "cube_quat": "logged",
+      "raw_rows": 1282,
+      "frames": 1277,
+      "seconds": 42.57
+    },
+    {
+      "source": "webcam",
+      "log": "u030_try1_20261005_142007.csv",
+      "layout": 21,
+      "condition": 2,
+      "plan_unit": {
+        "unit": 30,
+        "block": 2,
+        "condition": 2,
+        "layout": 21,
+        "split": "train"
+      },
+      "cube_quat": "logged",
+      "raw_rows": 1029,
+      "frames": 1025,
+      "seconds": 34.17
+    },
+    {
+      "source": "webcam",
+      "log": "u031_try1_20261005_142050.csv",
+      "layout": 11,
+      "condition": 2,
+      "plan_unit": {
+        "unit": 31,
+        "block": 2,
+        "condition": 2,
+        "layout": 11,
+        "split": "train"
+      },
+      "cube_quat": "logged",
+      "raw_rows": 1579,
+      "frames": 1574,
+      "seconds": 52.47
+    },
+    {
+      "source": "webcam",
+      "log": "u032_try1_20261005_142148.csv",
+      "layout": 32,
+      "condition": 2,
+      "plan_unit": {
+        "unit": 32,
+        "block": 2,
+        "condition": 2,
+        "layout": 32,
+        "split": "train"
+      },
+      "cube_quat": "logged",
+      "raw_rows": 2350,
+      "frames": 2343,
+      "seconds": 78.1
+    },
+    {
+      "source": "webcam",
+      "log": "u033_try1_20261005_142313.csv",
+      "layout": 10,
+      "condition": 2,
+      "plan_unit": {
+        "unit": 33,
+        "block": 2,
+        "condition": 2,
+        "layout": 10,
+        "split": "train"
+      },
+      "cube_quat": "logged",
+      "raw_rows": 1541,
+      "frames": 1536,
+      "seconds": 51.2
+    },
+    {
+      "source": "webcam",
+      "log": "u034_try1_20261005_142413.csv",
+      "layout": 47,
+      "condition": 2,
+      "plan_unit": {
+        "unit": 34,
+        "block": 2,
+        "condition": 2,
+        "layout": 47,
+        "split": "train"
+      },
+      "cube_quat": "logged",
+      "raw_rows": 606,
+      "frames": 603,
+      "seconds": 20.1
+    },
+    {
+      "source": "webcam",
+      "log": "u035_try1_20261005_142444.csv",
+      "layout": 5,
+      "condition": 2,
+      "plan_unit": {
+        "unit": 35,
+        "block": 3,
+        "condition": 2,
+        "layout": 5,
+        "split": "train"
+      },
+      "cube_quat": "logged",
+      "raw_rows": 707,
+      "frames": 704,
+      "seconds": 23.47
+    },
+    {
+      "source": "webcam",
+      "log": "u036_try1_20261005_142511.csv",
+      "layout": 30,
+      "condition": 2,
+      "plan_unit": {
+        "unit": 36,
+        "block": 3,
+        "condition": 2,
+        "layout": 30,
+        "split": "train"
+      },
+      "cube_quat": "logged",
+      "raw_rows": 787,
+      "frames": 784,
+      "seconds": 26.13
+    },
+    {
+      "source": "webcam",
+      "log": "u037_try1_20261005_142544.csv",
+      "layout": 24,
+      "condition": 2,
+      "plan_unit": {
+        "unit": 37,
+        "block": 3,
+        "condition": 2,
+        "layout": 24,
+        "split": "train"
+      },
+      "cube_quat": "logged",
+      "raw_rows": 654,
+      "frames": 650,
+      "seconds": 21.67
+    },
+    {
+      "source": "webcam",
+      "log": "u038_try1_20261005_142611.csv",
+      "layout": 44,
+      "condition": 2,
+      "plan_unit": {
+        "unit": 38,
+        "block": 3,
+        "condition": 2,
+        "layout": 44,
+        "split": "train"
+      },
+      "cube_quat": "logged",
+      "raw_rows": 747,
+      "frames": 743,
+      "seconds": 24.77
+    },
+    {
+      "source": "webcam",
+      "log": "u039_try1_20261005_142641.csv",
+      "layout": 34,
+      "condition": 2,
+      "plan_unit": {
+        "unit": 39,
+        "block": 3,
+        "condition": 2,
+        "layout": 34,
+        "split": "train"
+      },
+      "cube_quat": "logged",
+      "raw_rows": 1161,
+      "frames": 1157,
+      "seconds": 38.57
+    }
+  ],
+  "skipped_failures": 0
+}
