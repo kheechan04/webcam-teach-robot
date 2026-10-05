@@ -127,7 +127,7 @@ def run_layout(lay, policy, pre, post, model, data, ids, cams, side, view, ev, a
         if tr.update(cube_pos(data, ids), goal_xy, a[5] < 0.5, 1 / FPS) and done is None:
             done = k / FPS
         side.update_scene(data, camera=view)
-        sub = f"{k / FPS:4.1f}초" + ("   ✓ 성공" if done is not None else "")
+        sub = f"{k / FPS:4.1f}초" + ("   · 성공!" if done is not None else "")
         frames.append(card(side.render(), args.title or "웹캠 시범으로 배운 로봇 (혼자)", sub,
                            [imgs["front"], imgs["wrist"]], "처음 보는 배치 · 시뮬레이션 SO-101 · ACT"))
         if done is not None and k / FPS > done + 1.0:
