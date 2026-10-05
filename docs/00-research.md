@@ -6,7 +6,7 @@
 
 | 프로젝트 | 무엇을 하나 | 시뮬/실물 | 학습까지? | 라이선스 | 비고 |
 |---|---|---|---|---|---|
-| [guptabhishekumar/handrobot](https://github.com/guptabhishekumar/handrobot) | 웹캠 손 → MuJoCo 로봇팔 조종 → 시범 녹화 → ACT 학습 → 평가 | 시뮬만 (Panda 기본, SO-101 옵션) | O. README 기준 단일 과제 95% (38/40), 30Hz | MIT | **우리 계획 1~3단계와 거의 같다.** 스스로 적은 한계: "Monocular depth is the weak link", 실물 미배포 |
+| [guptabhishekumar/handrobot](https://github.com/guptabhishekumar/handrobot) | 웹캠 손 → MuJoCo 로봇팔 조종 → 시범 녹화 → ACT 학습 → 평가 | 시뮬만 (Panda 기본, SO-101 옵션) | O. README 기준 단일 과제 95% (38/40), 30Hz | MIT | **우리 계획 1\~3단계와 거의 같다.** 스스로 적은 한계: "Monocular depth is the weak link", 실물 미배포 |
 | [steven-tired/mediapipe-so101](https://github.com/steven-tired/mediapipe-so101) | 웹캠 손목 포즈 → IK(placo) → 실물 SO-101, LeRobot v3.0 데이터셋 10Hz | 실물만 | O. ACT/Diffusion/SmolVLA 시도, "not approved for autonomous deployment" | Apache-2.0 | 깊이: 단안 스케일 가정 또는 OAK-D 스테레오. 조작자 손 영상은 녹화 안 함 |
 | [Joeclinton1/hand-teleop](https://github.com/Joeclinton1/hand-teleop) | 웹캠 → 관절 각도, LeRobot용 | 실물 | X | Apache-2.0 | 별 50. 주 백엔드 WiLoR(GPU 필요), MediaPipe 백엔드는 "almost working". LeRobot 최신 버전과 호환 안 됨, 본체에 합쳐지지 않음 |
 | [MattiArlo/so101-hand-teleop](https://github.com/MattiArlo/so101-hand-teleop) | 양손 추적으로 SO-101 조종 | 둘 다 | X | Apache-2.0 | 깊이: 손 크기 정규화 + 밀고 당기는 제스처 |
@@ -50,7 +50,7 @@
 
 ## 3. GPU 비용 (3단계용)
 
-- LeRobot 하드웨어 가이드: ACT는 배치 8에서 VRAM ~2–6GB, L4/A10G로 50 에피소드 5 에폭에 ~1–2시간 (문서 스스로 ±50% 오차라고 함). CPU로는 학습하지 말라고 함.
+- LeRobot 하드웨어 가이드: ACT는 배치 8에서 VRAM \~2–6GB, L4/A10G로 50 에피소드 5 에폭에 \~1–2시간 (문서 스스로 ±50% 오차라고 함). CPU로는 학습하지 말라고 함.
 - Hugging Face Jobs 가격(분 단위 과금): T4 small $0.40/h, L4 $0.80/h, A10G small $1.00/h.
 - 예상(추정): L4로 20시간이면 $16. 실패한 실행을 넣어도 3만 원 안쪽일 가능성이 높다. 3단계에서 실제로 재고 갱신한다.
 

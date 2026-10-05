@@ -11,7 +11,7 @@
 | Huang et al., **Neural Voting Field**, CVPR 2023 ([논문](https://openaccess.thecvf.com/content/CVPR2023/papers/Huang_Neural_Voting_Field_for_Camera-Space_3D_Hand_Pose_Estimation_CVPR_2023_paper.pdf)) | 카메라 공간(절대 위치 포함) 3D 손 자세를 한 번에 추정하는 암시적 표현 | 학습 기반 절대 손 위치 |
 | Valassakis & Garcia-Hernando, **HandDGP**, ECCV 2024 ([arXiv 2407.15844](https://arxiv.org/abs/2407.15844)) | 손 메시를 카메라 공간에서 바로 예측, 미분 가능한 전역 위치 모듈, 입력을 같은 카메라로 찍은 것처럼 정규화해 크기-깊이 모호성을 다룸 | 같은 문제("크기-깊이 모호성")를 학습으로 정면 해결 |
 | Pavlakos et al., **HaMeR**, CVPR 2024 ([페이지](https://geopavlakos.github.io/hamer/)) | ViT 기반 손 메시 복원, MANO와 카메라 파라미터 출력 | 강한 손 복원 모델. 큰 ViT라 노트북 CPU 실시간은 어려울 것(확인 안 함) |
-| Potamias et al., **WiLoR**, CVPR 2025 ([arXiv 2409.12259](https://arxiv.org/abs/2409.12259)) | 실시간 손 검출(RTX 4090에서 138~175 FPS) + 트랜스포머 복원 | 0단계에서 본 hand-teleop이 이걸 썼고 GPU가 필요했다 |
+| Potamias et al., **WiLoR**, CVPR 2025 ([arXiv 2409.12259](https://arxiv.org/abs/2409.12259)) | 실시간 손 검출(RTX 4090에서 138\~175 FPS) + 트랜스포머 복원 | 0단계에서 본 hand-teleop이 이걸 썼고 GPU가 필요했다 |
 | 단안 metric depth: Depth Anything V2, UniDepth(CVPR 2024), Metric3D v2 | 한 장의 사진에서 장면 전체의 실제 거리(미터) 추정 | 손 위치의 깊이를 읽는 다른 길. 노트북 CPU로 30 fps는 어려울 것으로 보임(확인 안 함) |
 
 ## B. 로봇: RGB 카메라 손 추적으로 조종
