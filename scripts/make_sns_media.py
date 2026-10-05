@@ -217,6 +217,27 @@ def cmd_charts(args):
     ax.set_ylabel("처음 보는 배치 100개 중 성공", fontsize=11)
     fig.savefig(OUT / "chart2_dose_response.png", facecolor=fig.get_facecolor())
     plt.close(fig)
+    # 2b. 최종 결과: 학습량 맞추기 전(2만 스텝)·후(10만 스텝), 시드 1000~3000 평균
+    conds = [("cond1-scripted", "스크립트|(정답 아는 프로그램)"), ("cond5-webcam-marker", "웹캠|+ 마커"),
+             ("cond3-webcam-corrected", "웹캠|+ 보정"), ("cond2-webcam", "웹캠|(그대로)")]
+    lo = [np.mean([sc(f"{c}-s{s}") for s in (1000, 2000, 3000)]) for c, _ in conds]
+    hi = [np.mean([sc(f"{c}-s{s}-100k") for s in (1000, 2000, 3000)]) for c, _ in conds]
+    fig, ax = sq("학습을 충분히 시키자 이야기가 달라졌다", "같은 시범, 학습량만 다름 (처음 보는 배치 100개, 시드 3개 평균)")
+    x = np.arange(4)
+    ax.bar(x - 0.2, lo, 0.38, color="#c9c7c1", label="짧게 학습 (2만 스텝)")
+    ax.bar(x + 0.2, hi, 0.38, color=["#9a9893", "#1baf7a", "#2a78d6", "#eb6834"], label="충분히 학습 (10만 스텝)")
+    for i, (a_, b_) in enumerate(zip(lo, hi)):
+        ax.text(i - 0.2, a_ + 1.5, f"{a_:.0f}", ha="center", fontsize=11, color="#7d7d8c")
+        ax.text(i + 0.2, b_ + 1.5, f"{b_:.0f}", ha="center", fontsize=13, fontweight="bold")
+    ax.set_xticks(x, [n.replace("|", chr(10)) for _, n in conds], fontsize=11)
+    ax.set_ylim(0, 105)
+    ax.set_ylabel("성공 (100개 중)", fontsize=11)
+    ax.legend(frameon=False, fontsize=11, loc="upper right")
+    fig.text(0.07, 0.03, "짧게 학습하면 웹캠 손해가 부풀어 보인다 · 충분히 학습해도 깊이 오차 몫(약 9%p)은 남는다",
+             fontsize=10.5, color="#2a78d6")
+    fig.savefig(OUT / "chart_final_results.png", facecolor=fig.get_facecolor())
+    plt.close(fig)
+
     # 3. 보정 전·후 (M7, 2회차 평가)
     ce = json.loads((ROOT / "experiments" / "depth_correction_eval.json").read_text(encoding="utf-8"))
     tb = ce["baseline"]["test"]["by_condition"]
