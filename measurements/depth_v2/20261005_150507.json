@@ -1,0 +1,239 @@
+{
+ "created": "20261005_150507",
+ "geometry": {
+  "cam_back_cm": 0.0,
+  "cam_height_cm": 24.4,
+  "tilt_deg": 0.0
+ },
+ "inputs": {
+  "tilt_deg": 0.0,
+  "screen_cm": 22.9,
+  "base_cm": 1.5,
+  "low_cm": 15.0
+ },
+ "hand_height_cm": {
+  "cam": 24.4,
+  "low": 15.0
+ },
+ "seed": 20261002,
+ "frames_per_step": 60,
+ "mirror": true,
+ "resolution": [
+  640,
+  480
+ ],
+ "steps": [
+  {
+   "block": "main",
+   "distance_cm": 45,
+   "pose": "pinch_flat",
+   "height": "cam",
+   "lateral": "center",
+   "rep": 0,
+   "step": 0
+  },
+  {
+   "block": "main",
+   "distance_cm": 55,
+   "pose": "pinch_tilt",
+   "height": "cam",
+   "lateral": "center",
+   "rep": 0,
+   "step": 1
+  },
+  {
+   "block": "main",
+   "distance_cm": 45,
+   "pose": "open_flat",
+   "height": "cam",
+   "lateral": "center",
+   "rep": 0,
+   "step": 2
+  },
+  {
+   "block": "main",
+   "distance_cm": 55,
+   "pose": "pinch_flat",
+   "height": "cam",
+   "lateral": "center",
+   "rep": 0,
+   "step": 3
+  },
+  {
+   "block": "main",
+   "distance_cm": 45,
+   "pose": "pinch_tilt",
+   "height": "cam",
+   "lateral": "center",
+   "rep": 0,
+   "step": 4
+  },
+  {
+   "block": "main",
+   "distance_cm": 55,
+   "pose": "open_flat",
+   "height": "cam",
+   "lateral": "center",
+   "rep": 0,
+   "step": 5
+  },
+  {
+   "block": "main",
+   "distance_cm": 55,
+   "pose": "open_tilt",
+   "height": "cam",
+   "lateral": "center",
+   "rep": 0,
+   "step": 6
+  },
+  {
+   "block": "main",
+   "distance_cm": 45,
+   "pose": "open_tilt",
+   "height": "cam",
+   "lateral": "center",
+   "rep": 0,
+   "step": 7
+  },
+  {
+   "block": "main",
+   "distance_cm": 55,
+   "pose": "open_flat",
+   "height": "cam",
+   "lateral": "center",
+   "rep": 1,
+   "step": 8
+  },
+  {
+   "block": "main",
+   "distance_cm": 45,
+   "pose": "pinch_flat",
+   "height": "cam",
+   "lateral": "center",
+   "rep": 1,
+   "step": 9
+  },
+  {
+   "block": "main",
+   "distance_cm": 55,
+   "pose": "pinch_tilt",
+   "height": "cam",
+   "lateral": "center",
+   "rep": 1,
+   "step": 10
+  },
+  {
+   "block": "main",
+   "distance_cm": 45,
+   "pose": "open_flat",
+   "height": "cam",
+   "lateral": "center",
+   "rep": 1,
+   "step": 11
+  },
+  {
+   "block": "main",
+   "distance_cm": 45,
+   "pose": "pinch_tilt",
+   "height": "cam",
+   "lateral": "center",
+   "rep": 1,
+   "step": 12
+  },
+  {
+   "block": "main",
+   "distance_cm": 55,
+   "pose": "open_tilt",
+   "height": "cam",
+   "lateral": "center",
+   "rep": 1,
+   "step": 13
+  },
+  {
+   "block": "main",
+   "distance_cm": 55,
+   "pose": "pinch_flat",
+   "height": "cam",
+   "lateral": "center",
+   "rep": 1,
+   "step": 14
+  },
+  {
+   "block": "main",
+   "distance_cm": 45,
+   "pose": "open_tilt",
+   "height": "cam",
+   "lateral": "center",
+   "rep": 1,
+   "step": 15
+  }
+ ],
+ "done": [
+  {
+   "step": 0,
+   "take": 0
+  },
+  {
+   "step": 1,
+   "take": 0
+  },
+  {
+   "step": 2,
+   "take": 0
+  },
+  {
+   "step": 3,
+   "take": 0
+  },
+  {
+   "step": 4,
+   "take": 0
+  },
+  {
+   "step": 5,
+   "take": 0
+  },
+  {
+   "step": 6,
+   "take": 0
+  },
+  {
+   "step": 7,
+   "take": 0
+  },
+  {
+   "step": 8,
+   "take": 0
+  },
+  {
+   "step": 9,
+   "take": 0
+  },
+  {
+   "step": 10,
+   "take": 0
+  },
+  {
+   "step": 11,
+   "take": 0
+  },
+  {
+   "step": 12,
+   "take": 0
+  },
+  {
+   "step": 13,
+   "take": 0
+  },
+  {
+   "step": 14,
+   "take": 0
+  },
+  {
+   "step": 15,
+   "take": 0
+  }
+ ],
+ "short": true,
+ "participant": 2
+}
