@@ -55,17 +55,19 @@ LATERAL_DIST = 50
 FONT_PATH = Path("C:/Windows/Fonts/malgun.ttf")
 
 
-def make_steps(seed: int) -> list[dict]:
+def make_steps(seed: int, short: bool = False) -> list[dict]:
+    """short: 다른 시범자용 짧은 버전(2026-10-05) — 거리 45·55 × 손 4가지 × 웹캠 높이 × 2회 = 16단계, 가로 위치 없음."""
     rng = np.random.default_rng(seed)
+    dists, heights = ([45, 55], ["cam"]) if short else (DISTANCES, list(HEIGHTS))
     main = [{"block": "main", "distance_cm": d, "pose": p, "height": h, "lateral": "center"}
-            for d in DISTANCES for p in POSES for h in HEIGHTS]
+            for d in dists for p in POSES for h in heights]
     lat = [{"block": "lateral", "distance_cm": LATERAL_DIST, "pose": "open_flat", "height": "cam", "lateral": l}
            for l in LATERAL]
     steps = []
     for rep in range(2):  # 두 번씩, 매번 순서를 섞는다(지치는 효과와 자세 효과가 섞이지 않게)
         order = rng.permutation(len(main))
         steps += [{**main[i], "rep": rep} for i in order]
-    for rep in range(2):
+    for rep in range(0 if short else 2):
         steps += [{**s, "rep": rep} for s in (lat[i] for i in rng.permutation(len(lat)))]
     for i, s in enumerate(steps):
         s["step"] = i
@@ -125,6 +127,9 @@ def main() -> None:
     p.add_argument("--low", type=float)
     p.add_argument("--camera", type=int, default=0)
     p.add_argument("--seed", type=int, default=20261002)
+    p.add_argument("--short", action="store_true", help="짧은 버전 16단계(다른 시범자용, 거리 45·55, 웹캠 높이만)")
+    p.add_argument("--participant", type=int, default=None, help="시범자 번호(기록에만 남김, 이름은 쓰지 않음)")
+    p.add_argument("--like", type=Path, default=None, help="화면·높이 값을 이 측정 json에서 그대로 가져옴(--tilt 등 대신)")
     p.add_argument("--resume", type=Path, default=None)
     args = p.parse_args()
 
@@ -133,6 +138,9 @@ def main() -> None:
         meta = json.loads(meta_path.read_text(encoding="utf-8"))
         csv_path = meta_path.with_suffix(".csv")
     else:
+        if args.like:
+            inp = json.loads(args.like.read_text(encoding="utf-8"))["inputs"]
+            args.tilt, args.screen, args.base, args.low = inp["tilt_deg"], inp["screen_cm"], inp["base_cm"], inp["low_cm"]
         if None in (args.tilt, args.screen, args.base, args.low):
             raise SystemExit("--tilt --screen --base --low 를 모두 넣어 주세요 (설명은 파일 맨 위).")
         geo = camera_geometry(args.tilt, args.screen, args.base)
@@ -144,7 +152,8 @@ def main() -> None:
                                                                "base_cm": args.base, "low_cm": args.low},
                 "hand_height_cm": {"cam": round(geo["cam_height_cm"], 1), "low": args.low},
                 "seed": args.seed, "frames_per_step": FRAMES_PER_STEP, "mirror": True, "resolution": [640, 480],
-                "steps": make_steps(args.seed), "done": []}
+                "steps": make_steps(args.seed, args.short), "done": [], "short": args.short,
+                "participant": args.participant or 1}
         with open(csv_path, "w", newline="", encoding="utf-8") as f:
             csv.writer(f).writerow(header())
     geo = meta["geometry"]
