@@ -22,6 +22,7 @@ import argparse
 import csv
 import json
 import os
+import sys
 import time
 from datetime import datetime
 from pathlib import Path
@@ -29,6 +30,9 @@ from pathlib import Path
 import cv2
 import mujoco.viewer
 import numpy as np
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from measure_depth_v2 import draw_text  # noqa: E402
 
 from webcam_teach_robot.depth_correction import DepthCorrection
 from webcam_teach_robot.hand_tracking import HandTracker
@@ -84,18 +88,54 @@ def make_plan_m8b(n_layouts: int) -> dict:
             "max_tries": MAX_TRIES, "split": "train", "units": units}
 
 
+PARTICIPANT_LAYOUTS = 20  # 다른 시범자: 학습 배치 중 20개 × ②·③
+PRACTICE_MIN_SUCCESS = 3  # 연습 5개 중 이만큼 성공해야 본 녹화로 (2026-10-03 미리 정한 기준)
+
+
+def make_plan_participant(n_layouts: int, participant: int) -> dict:
+    """다른 시범자 세션: 연습 5개(연습용 배치, 학습·평가에 안 씀, ②·③ 번갈아) → 기준 통과 시 본 녹화
+    ② 20개 + ③ 20개(모든 시범자에게 같은 학습 배치 20개). 5개 묶음, 먼저 할 조건은 ABBA(시범자마다 시작 조건을 바꿈)."""
+    rng = np.random.default_rng(PLAN_SEED + 100 + participant)
+    common = [int(x) for x in np.random.default_rng(PLAN_SEED + 99).permutation(n_layouts)[:PARTICIPANT_LAYOUTS]]
+    units = [{"unit": k, "block": -1, "condition": (2, 3)[k % 2], "layout": k, "split": "practice", "practice": True}
+             for k in range(5)]
+    a, b = (2, 3) if participant % 2 == 0 else (3, 2)
+    for blk in range(PARTICIPANT_LAYOUTS // BLOCK):
+        first, second = (a, b) if blk % 4 in (0, 3) else (b, a)
+        lays = common[blk * BLOCK:(blk + 1) * BLOCK]
+        for cond in (first, second):
+            for lay in rng.permutation(lays):
+                units.append({"unit": len(units), "block": blk, "condition": cond, "layout": int(lay), "split": "train"})
+    return {"seed": PLAN_SEED + 100 + participant, "session": f"p{participant}", "participant": participant,
+            "block_size": BLOCK, "time_limit_s": TIME_LIMIT_S, "max_tries": MAX_TRIES, "split": "train",
+            "practice_min_success": PRACTICE_MIN_SUCCESS, "units": units}
+
+
+INTRO = [
+    "안내 (모든 시범자에게 같은 문장)",
+    "· 웹캠 영상은 저장하지 않아요. 손 마디 좌표 숫자만 남고, 결과에는 이름 대신 '시범자 번호'로 적어요.",
+    "· 오른손만 써요. 손바닥이 카메라를 보게 하고, 카메라에서 약 50 cm에 손을 두세요.",
+    "· 스페이스 = 조종 시작/멈춤. 손이 화면 끝에 닿으면 멈추고 손을 가운데로 옮겨 다시 시작해요.",
+    "· 손목은 돌리지 말고, 창문 닦듯이 팔 전체로 옮겨요. 엄지·검지를 붙이면 집게가 닫혀요.",
+    "· 빨간 큐브를 집어 초록 사각형 위에 내려놓고 손가락을 펴면 성공. 한 번에 90초.",
+    "· 먼저 연습 5개를 하고, 5개 중 3개 이상 성공하면 본 녹화로 넘어가요.",
+    "준비되면 스페이스",
+]
+
+
 def write_json(path: Path, obj) -> None:
     tmp = path.with_suffix(".tmp")
     tmp.write_text(json.dumps(obj, ensure_ascii=False, indent=1), encoding="utf-8")
     os.replace(tmp, path)  # 쓰는 중에 꺼져도 예전 파일은 남는다
 
 
-def load_state(out: Path, session: str = "m8"):
+def load_state(out: Path, session: str = "m8", participant: int | None = None):
     out.mkdir(parents=True, exist_ok=True)
     plan_path, prog_path = out / "plan.json", out / "progress.json"
     if not plan_path.exists():
         n = len(load_layouts("train"))
-        write_json(plan_path, make_plan_m8b(n) if session == "m8b" else make_plan(n))
+        write_json(plan_path, make_plan_participant(n, participant) if session == "person"
+                   else make_plan_m8b(n) if session == "m8b" else make_plan(n))
         print(f"녹화 계획을 만들었어요: {plan_path}")
     plan = json.loads(plan_path.read_text(encoding="utf-8"))
     prog = json.loads(prog_path.read_text(encoding="utf-8")) if prog_path.exists() else {"units": {}}
@@ -106,9 +146,23 @@ def unit_state(prog, k: int) -> dict:
     return prog["units"].setdefault(str(k), {"status": "todo", "tries": []})
 
 
+def practice_passed(plan, prog) -> bool | None:
+    """연습 단계가 있는 세션: 연습이 다 끝났으면 기준 통과 여부, 아직이면 None, 연습이 없는 세션이면 True."""
+    pr = [u for u in plan["units"] if u.get("practice")]
+    if not pr:
+        return True
+    st = [unit_state(prog, u["unit"])["status"] for u in pr]
+    if "todo" in st:
+        return None
+    return sum(x == "success" for x in st) >= plan.get("practice_min_success", PRACTICE_MIN_SUCCESS)
+
+
 def next_unit(plan, prog):
+    passed = practice_passed(plan, prog)
     for u in plan["units"]:
         if unit_state(prog, u["unit"])["status"] == "todo":
+            if not u.get("practice") and passed is False:
+                return None  # 연습 기준 미달: 본 녹화는 하지 않는다(연습 기록은 남는다)
             return u
     return None
 
@@ -128,13 +182,19 @@ def main() -> None:
     p.add_argument("--camera", type=int, default=0)
     p.add_argument("--out", type=Path, default=OUT_DIR)
     p.add_argument("--status", action="store_true", help="진행 상황만 보고 끝내기")
-    p.add_argument("--session", choices=["m8", "m8b"], default="m8",
-                   help="m8b = 조건 ⑤(손목 마커) 50개 + ② 20개 (measurements/demos_m8b)")
+    p.add_argument("--session", choices=["m8", "m8b", "person"], default="m8",
+                   help="m8b = 조건 ⑤(손목 마커) 50개 + ② 20개 / person = 다른 시범자(연습 5 + ②·③ 20개씩)")
+    p.add_argument("--participant", type=int, default=None, help="--session person일 때 시범자 번호(2, 3, ...)")
     args = p.parse_args()
 
     if args.session == "m8b" and args.out == OUT_DIR:
         args.out = ROOT / "measurements" / "demos_m8b"
-    plan, prog, prog_path = load_state(args.out, args.session)
+    if args.session == "person":
+        if not args.participant or args.participant < 2:
+            raise SystemExit("--participant 2 처럼 시범자 번호를 넣어 주세요 (1은 프로젝트 진행자)")
+        if args.out == OUT_DIR:
+            args.out = ROOT / "measurements" / f"demos_p{args.participant}"
+    plan, prog, prog_path = load_state(args.out, args.session, args.participant)
     if args.status:
         by = print_status(plan, prog)
         if next_unit(plan, prog) is None:
@@ -143,7 +203,7 @@ def main() -> None:
     if next_unit(plan, prog) is None:
         print("다 끝났어요.")
         return
-    layouts = load_layouts(plan["split"])
+    layouts = {sp: load_layouts(sp) for sp in {u.get("split", plan["split"]) for u in plan["units"]}}
     settings = RigSettings()
     correction = DepthCorrection()
     rig = TeleopRig(settings, None)
@@ -172,7 +232,7 @@ def main() -> None:
         tries_done = len([t for t in us["tries"] if t["result"] != "interrupted"])
         rig.correction = correction if u["condition"] == 3 else None
         rig.marker_mode = u["condition"] == 5
-        cube_xy, goal_xy = layouts[u["layout"]]
+        cube_xy, goal_xy = layouts[u.get("split", plan["split"])][u["layout"]]
         rig.reset(cube_xy, goal_xy, now())
         stem = f"u{u['unit']:03d}_try{tries_done + 1}_{datetime.now():%Y%m%d_%H%M%S}"
         path = args.out / f"{stem}.csv"
@@ -198,12 +258,14 @@ def main() -> None:
                                   "seconds_total": round(now() - st["t_start"], 2)})
         if result == "success":
             st["us"]["status"] = "success"
-        elif result != "interrupted" and st["try_no"] >= plan["max_tries"]:
-            st["us"]["status"] = "failed"
+        elif result != "interrupted" and (st["try_no"] >= plan["max_tries"] or st["unit"].get("practice")):
+            st["us"]["status"] = "failed"  # 연습은 한 번씩만
         write_json(prog_path, prog)
         st["result"] = result
 
     start_attempt()
+    # 다른 시범자 세션: 처음(아무 시도도 안 했을 때) 같은 안내문을 띄운다
+    show_intro = plan.get("session", "").startswith("p") and not any(v["tries"] for v in prog["units"].values() if v["tries"])
     print_status(plan, prog)
 
     with HandTracker(horizontal_fov_deg=settings.fov, depth_segment="min") as tracker, \
@@ -253,7 +315,9 @@ def main() -> None:
                     cv2.putText(frame, "MARKER NOT SEEN", (10, h - 50), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 140, 255), 2)
             u = st["unit"]
             n_units = len(plan["units"])
-            head = f"block {u['block'] + 1}/{n_units // (2 * BLOCK)}  demo {u['unit'] + 1}/{n_units}  try {st['try_no']}/{plan['max_tries']}"
+            n_blocks = len({x["block"] for x in plan["units"] if not x.get("practice")})
+            head = (f"PRACTICE {u['unit'] + 1}/5" if u.get("practice") else
+                    f"block {u['block'] + 1}/{n_blocks}  demo {u['unit'] + 1}/{n_units}  try {st['try_no']}/{plan['max_tries']}")
             if st["result"] is None:
                 left = plan["time_limit_s"] - (now() - st["t_engage"]) if st["t_engage"] is not None else plan["time_limit_s"]
                 lines = [head, f"{rig.status()}  time left {left:4.0f} s",
@@ -263,19 +327,30 @@ def main() -> None:
                 msg = {"success": "SUCCESS - saved", "timeout": "time over", "abandoned": "abandoned"}[st["result"]]
                 nxt = next_unit(plan, prog)
                 lines = [head, msg]
-                if nxt is None:
+                if nxt is None and practice_passed(plan, prog) is False:
+                    ok = sum(unit_state(prog, x["unit"])["status"] == "success" for x in plan["units"] if x.get("practice"))
+                    lines += [f"practice {ok}/5 - below 3, recording ends here. thank you!", "press q"]
+                elif nxt is None:
                     lines += ["ALL DONE - press q"]
                 else:
                     if nxt["unit"] == u["unit"]:
                         lines += ["same layout again: press n"]
+                    elif u.get("practice") and not nxt.get("practice"):
+                        lines += ["practice done. main recording next", "n: start   q: quit (resume later)"]
                     elif nxt["block"] != u["block"]:
                         lines += [f"block {u['block'] + 1} done. rest if you like", "n: next   q: quit (resume later)"]
                     else:
                         lines += ["n: next demo"]
                 put_lines(frame, lines, (80, 220, 255))
+            if show_intro:
+                frame = draw_text(frame, INTRO, 17)
             cv2.imshow("recording camera (not recorded)", frame)
 
             key = cv2.waitKey(1) & 0xFF
+            if show_intro:
+                if key == ord(" "):
+                    show_intro = False
+                continue
             if key in (ord("q"), 27):
                 break
             if st["result"] is None:
