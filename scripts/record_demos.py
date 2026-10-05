@@ -149,7 +149,7 @@ def unit_state(prog, k: int) -> dict:
 def practice_passed(plan, prog) -> bool | None:
     """연습 단계가 있는 세션: 연습이 다 끝났으면 기준 통과 여부, 아직이면 None, 연습이 없는 세션이면 True."""
     pr = [u for u in plan["units"] if u.get("practice")]
-    if not pr:
+    if not pr or prog.get("practice_skipped"):
         return True
     st = [unit_state(prog, u["unit"])["status"] for u in pr]
     if "todo" in st:
@@ -160,6 +160,8 @@ def practice_passed(plan, prog) -> bool | None:
 def next_unit(plan, prog):
     passed = practice_passed(plan, prog)
     for u in plan["units"]:
+        if u.get("practice") and prog.get("practice_skipped"):
+            continue
         if unit_state(prog, u["unit"])["status"] == "todo":
             if not u.get("practice") and passed is False:
                 return None  # 연습 기준 미달: 본 녹화는 하지 않는다(연습 기록은 남는다)
@@ -185,6 +187,8 @@ def main() -> None:
     p.add_argument("--session", choices=["m8", "m8b", "person"], default="m8",
                    help="m8b = 조건 ⑤(손목 마커) 50개 + ② 20개 / person = 다른 시범자(연습 5 + ②·③ 20개씩)")
     p.add_argument("--participant", type=int, default=None, help="--session person일 때 시범자 번호(2, 3, ...)")
+    p.add_argument("--skip-practice", action="store_true",
+                   help="연습 5개를 건너뛰고 바로 본 녹화(자유 연습으로 대신했을 때). 기록에 '건너뜀'으로 남는다")
     args = p.parse_args()
 
     if args.session == "m8b" and args.out == OUT_DIR:
@@ -195,6 +199,10 @@ def main() -> None:
         if args.out == OUT_DIR:
             args.out = ROOT / "measurements" / f"demos_p{args.participant}"
     plan, prog, prog_path = load_state(args.out, args.session, args.participant)
+    if args.skip_practice and any(u.get("practice") for u in plan["units"]) and not prog.get("practice_skipped"):
+        prog["practice_skipped"] = {"when": datetime.now().isoformat(timespec="seconds"),
+                                    "why": "자유 연습(teleop.py)으로 대신하고 연습 5개·참가 기준을 건너뜀"}
+        write_json(prog_path, prog)
     if args.status:
         by = print_status(plan, prog)
         if next_unit(plan, prog) is None:
