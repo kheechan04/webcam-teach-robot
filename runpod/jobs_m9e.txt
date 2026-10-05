@@ -1,0 +1,7 @@
+# 같은 스텝(10만) 맞추기 1: ①·④ (서버 A)
+cond1-scripted 1000 100000 -100k
+cond4-depth-error 1000 100000 -100k
+cond1-scripted 2000 100000 -100k
+cond4-depth-error 2000 100000 -100k
+cond1-scripted 3000 100000 -100k
+cond4-depth-error 3000 100000 -100k

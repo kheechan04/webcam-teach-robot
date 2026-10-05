@@ -1,0 +1,8 @@
+# 같은 스텝(10만) 맞추기 2: ④0 (서버 B)
+cond4z-no-error 1000 100000 -100k
+cond4z-no-error 2000 100000 -100k
+cond4z-no-error 3000 100000 -100k
+# 같은 에폭 맞추기: ⑤를 약 18.6에폭(②·③ 10만 스텝 = 18.2·19.1에폭과 비슷). 58000 × 8 / 25102 프레임 = 18.5
+cond5-webcam-marker 1000 58000 -58k
+cond5-webcam-marker 2000 58000 -58k
+cond5-webcam-marker 3000 58000 -58k
