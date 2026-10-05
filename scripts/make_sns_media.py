@@ -217,18 +217,124 @@ def cmd_charts(args):
     ax.set_ylabel("처음 보는 배치 100개 중 성공", fontsize=11)
     fig.savefig(OUT / "chart2_dose_response.png", facecolor=fig.get_facecolor())
     plt.close(fig)
-    print(f"→ {OUT}/chart1_depth_error.png, chart2_dose_response.png")
+    # 3. 보정 전·후 (M7, 2회차 평가)
+    ce = json.loads((ROOT / "experiments" / "depth_correction_eval.json").read_text(encoding="utf-8"))
+    tb = ce["baseline"]["test"]["by_condition"]
+    tc = ce["correction"]["test"]["by_condition"]
+    b = [np.mean([tb[f"{p}|{h}"] for h in ("cam", "low")]) for p, _ in poses]
+    c = [np.mean([tc[f"{p}|{h}"] for h in ("cam", "low")]) for p, _ in poses]
+    fig, ax = sq("손 모양을 보고 거리를 고친다", "손 모양 특징 → 치우침 예측 (측정 1회차로 맞추고 2회차로 평가, 노트북 CPU 실시간)")
+    x = np.arange(4)
+    ax.bar(x - 0.2, b, 0.38, color="#eb6834", label="보정 전")
+    ax.bar(x + 0.2, c, 0.38, color="#2a78d6", label="보정 후")
+    ax.axhline(0, color="#52514e", lw=1)
+    ax.set_xticks(x, [n for _, n in poses], fontsize=12)
+    ax.set_ylabel("평균 깊이 오차 (cm)", fontsize=11)
+    ax.legend(frameon=False, fontsize=12, loc="upper left")
+    fig.text(0.07, 0.03, "손 모양을 바꿀 때 깊이가 튀는 폭 9.9 → 5.6 cm (다 없애진 못함)", fontsize=11, color="#2a78d6")
+    fig.savefig(OUT / "chart3_correction.png", facecolor=fig.get_facecolor())
+    plt.close(fig)
+
+    # 4. 직접 한 측정·녹화 요약 카드
+    im = Image.new("RGB", (S, S), (252, 252, 251))
+    d = ImageDraw.Draw(im)
+    d.text((70, 70), "직접 몸으로 한 것", font=font(54), fill=(23, 23, 29))
+    d.text((70, 150), "웹캠 영상은 하나도 저장하지 않고, 손 마디 좌표 숫자만", font=font(26, False), fill=(80, 80, 94))
+    rows = [("깊이 측정", "줄자로 잰 참값과 비교 · 10 + 70 + 24단계"), ("웹캠 시범 녹화", "시범자 1: 170개 (시도 175번)"),
+            ("", "시범자 2: 34개 + 짧은 깊이 측정"), ("녹화 규칙 수정", "3번 고치고 그때마다 처음부터 다시"),
+            ("조건 가리기", "지금이 어느 조건인지 화면에 안 보이게"), ("학습", "GPU 대여 서버 · 학습 68번")]
+    y = 260
+    for k, v in rows:
+        if k:
+            d.text((70, y), k, font=font(34), fill=(42, 120, 214))
+        d.text((420, y + 4), v, font=font(30, False), fill=(23, 23, 29))
+        y += 105
+    d.text((70, S - 90), "시범 1개 = 웹캠으로 로봇을 조종해 큐브를 목표에 옮긴 한 번", font=font(24, False), fill=(125, 125, 140))
+    im.save(OUT / "card_effort.png")
+    print(f"→ {OUT}/chart1~3, card_effort.png")
+
+
+def cmd_pair(args):
+    """같은 배치에서 두 정책 나란히: 깊이 오차 그대로(②)와 보정(③). ②가 큐브를 밀고 ③이 성공하는 배치를 찾는다."""
+    import importlib.util
+
+    import mujoco
+    import torch
+
+    from webcam_teach_robot.dataset import FPS, SceneRenderer
+    from webcam_teach_robot.scene import PlacementTracker, build_model, cube_pos, load_layouts, place, task_ids
+    spec = importlib.util.spec_from_file_location("ev", ROOT / "scripts" / "eval_policy.py")
+    ev = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(ev)
+    names = args.target.split(",")
+    labels = ["깊이 오차 그대로 (②)", "깊이 보정 (③)"]
+    pols = [ev.load_policy(n, "cpu") for n in names]
+    model = build_model()
+    sims = [mujoco.MjData(model) for _ in pols]
+    ids = task_ids(model)
+    cams = SceneRenderer(model, ids)
+    side, view = renderer(model, 540, 600)
+    view.distance = 0.62
+    steps = int(round(1 / (FPS * model.opt.timestep)))
+    for lay in [int(x) for x in args.layouts.split(",")]:
+        cube_xy, goal_xy = load_layouts("eval")[lay]
+        trs = [PlacementTracker() for _ in pols]
+        for d, (pol, _, _) in zip(sims, pols):
+            mujoco.mj_resetData(model, d)
+            d.qpos[:6] = ev.HOME_Q
+            d.ctrl[:6] = ev.HOME_Q
+            place(model, d, ids, cube_xy, goal_xy)
+            pol.reset()
+        frames, done = [], [None, None]
+        for k in range(int(25 * FPS)):
+            im = Image.new("RGB", (S, S), BG)
+            dr = ImageDraw.Draw(im)
+            dr.text((48, 36), "같은 배치, 두 로봇", font=font(46), fill=(255, 255, 255))
+            dr.text((48, 100), f"{k / FPS:4.1f}초   왼쪽: 보정 없는 웹캠 시범으로 학습 · 오른쪽: 보정한 웹캠 시범으로 학습",
+                    font=font(22, False), fill=(190, 196, 208))
+            for i, (d, (pol, pre, post)) in enumerate(zip(sims, pols)):
+                imgs = cams.render_data(d)
+                obs = {"observation.state": torch.from_numpy(d.qpos[:6].astype(np.float32)), "task": "x"}
+                for key, img in imgs.items():
+                    obs[f"observation.images.{key}"] = torch.from_numpy(img).permute(2, 0, 1).float() / 255.0
+                with torch.inference_mode():
+                    a = post(pol.select_action(pre(obs))).squeeze(0).numpy()
+                d.ctrl[:6] = a
+                for _ in range(steps):
+                    mujoco.mj_step(model, d)
+                if trs[i].update(cube_pos(d, ids), goal_xy, a[5] < 0.5, 1 / FPS) and done[i] is None:
+                    done[i] = k / FPS
+                side.update_scene(d, camera=view)
+                im.paste(Image.fromarray(side.render()), (i * 540, 200))
+                moved = np.linalg.norm(cube_pos(d, ids)[:2] - cube_xy) > 0.01 and not trs[i].was_lifted
+                st = "성공!" if done[i] is not None else ("큐브를 밀어 버림" if moved else "")
+                col = (110, 230, 150) if done[i] is not None else (255, 150, 90)
+                dr.text((i * 540 + 24, 820), labels[i], font=font(30), fill=(255, 255, 255))
+                dr.text((i * 540 + 24, 870), st, font=font(30), fill=col)
+            dr.text((48, S - 52), "처음 보는 배치 · 시뮬레이션 SO-101 · ACT · 같은 학습량(10만 스텝)", font=font(22, False),
+                    fill=(130, 136, 150))
+            frames.append(im)
+            if done[1] is not None and k / FPS > done[1] + 1.5 and k / FPS > 12:
+                break
+        pushed = not trs[0].was_lifted and np.linalg.norm(cube_pos(sims[0], ids)[:2] - cube_xy) > 0.01
+        print(f"  배치 {lay}: ② 성공 {done[0]} 밀었나 {pushed} / ③ 성공 {done[1]}")
+        if done[1] is not None and done[0] is None and pushed:
+            OUT.mkdir(parents=True, exist_ok=True)
+            write_mp4(frames, OUT / f"pair_L{lay}.mp4")
+            return
+    print("조건에 맞는 배치를 못 찾음")
 
 
 def main() -> None:
     p = argparse.ArgumentParser()
-    p.add_argument("what", choices=["policy", "replay", "charts"])
+    p.add_argument("what", choices=["policy", "replay", "charts", "pair"])
     p.add_argument("target", nargs="?")
     p.add_argument("--layout", type=int, default=0)
     p.add_argument("--speed", type=float, default=2.0)
     p.add_argument("--title", default=None)
+    p.add_argument("--layouts", default="7,8,13,20,25,36,40,42,44,47")
     a = p.parse_args()
-    {"policy": cmd_policy, "replay": cmd_replay, "charts": cmd_charts}[a.what](a)
+    {"policy": cmd_policy, "replay": cmd_replay, "charts": cmd_charts, "pair": cmd_pair}[a.what](a)
 
 
 if __name__ == "__main__":
