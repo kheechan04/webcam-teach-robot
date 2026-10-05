@@ -1,0 +1,606 @@
+{
+ "units": {
+  "5": {
+   "status": "failed",
+   "tries": [
+    {
+     "file": "u005_try1_20261005_131748.csv",
+     "result": "timeout",
+     "seconds_from_engage": 90.02,
+     "seconds_total": 100.92
+    },
+    {
+     "file": "u005_try2_20261005_131933.csv",
+     "result": "abandoned",
+     "seconds_from_engage": 28.35,
+     "seconds_total": 32.29
+    },
+    {
+     "file": "u005_try3_20261005_132010.csv",
+     "result": "timeout",
+     "seconds_from_engage": 90.02,
+     "seconds_total": 93.49
+    }
+   ]
+  },
+  "0": {
+   "status": "todo",
+   "tries": []
+  },
+  "1": {
+   "status": "todo",
+   "tries": []
+  },
+  "2": {
+   "status": "todo",
+   "tries": []
+  },
+  "3": {
+   "status": "todo",
+   "tries": []
+  },
+  "4": {
+   "status": "todo",
+   "tries": []
+  },
+  "6": {
+   "status": "success",
+   "tries": [
+    {
+     "file": "u006_try1_20261005_132147.csv",
+     "result": "success",
+     "seconds_from_engage": 77.4,
+     "seconds_total": 85.7
+    }
+   ]
+  },
+  "7": {
+   "status": "failed",
+   "tries": [
+    {
+     "file": "u007_try1_20261005_132318.csv",
+     "result": "timeout",
+     "seconds_from_engage": 90.03,
+     "seconds_total": 93.2
+    },
+    {
+     "file": "u007_try2_20261005_132501.csv",
+     "result": "timeout",
+     "seconds_from_engage": 90.02,
+     "seconds_total": 94.3
+    },
+    {
+     "file": "u007_try3_20261005_132641.csv",
+     "result": "timeout",
+     "seconds_from_engage": 90.03,
+     "seconds_total": 93.94
+    }
+   ]
+  },
+  "8": {
+   "status": "success",
+   "tries": [
+    {
+     "file": "u008_try1_20261005_132820.csv",
+     "result": "success",
+     "seconds_from_engage": 26.95,
+     "seconds_total": 34.81
+    }
+   ]
+  },
+  "9": {
+   "status": "success",
+   "tries": [
+    {
+     "file": "u009_try1_20261005_132907.csv",
+     "result": "success",
+     "seconds_from_engage": 62.72,
+     "seconds_total": 67.5
+    }
+   ]
+  },
+  "10": {
+   "status": "success",
+   "tries": [
+    {
+     "file": "u010_try1_20261005_133021.csv",
+     "result": "success",
+     "seconds_from_engage": 26.64,
+     "seconds_total": 29.11
+    }
+   ]
+  },
+  "11": {
+   "status": "failed",
+   "tries": [
+    {
+     "file": "u011_try1_20261005_133055.csv",
+     "result": "timeout",
+     "seconds_from_engage": 90.02,
+     "seconds_total": 92.37
+    },
+    {
+     "file": "u011_try2_20261005_133231.csv",
+     "result": "timeout",
+     "seconds_from_engage": 90.01,
+     "seconds_total": 93.12
+    },
+    {
+     "file": "u011_try3_20261005_133405.csv",
+     "result": "timeout",
+     "seconds_from_engage": 90.03,
+     "seconds_total": 92.99
+    }
+   ]
+  },
+  "12": {
+   "status": "success",
+   "tries": [
+    {
+     "file": "u012_try1_20261005_133542.csv",
+     "result": "timeout",
+     "seconds_from_engage": 90.02,
+     "seconds_total": 93.56
+    },
+    {
+     "file": "u012_try2_20261005_133721.csv",
+     "result": "success",
+     "seconds_from_engage": 41.75,
+     "seconds_total": 45.07
+    }
+   ]
+  },
+  "13": {
+   "status": "failed",
+   "tries": [
+    {
+     "file": "u013_try1_20261005_133810.csv",
+     "result": "timeout",
+     "seconds_from_engage": 90.02,
+     "seconds_total": 92.18
+    },
+    {
+     "file": "u013_try2_20261005_133946.csv",
+     "result": "timeout",
+     "seconds_from_engage": 90.02,
+     "seconds_total": 92.54
+    },
+    {
+     "file": "u013_try3_20261005_134123.csv",
+     "result": "timeout",
+     "seconds_from_engage": 90.02,
+     "seconds_total": 91.88
+    }
+   ]
+  },
+  "14": {
+   "status": "success",
+   "tries": [
+    {
+     "file": "u014_try1_20261005_134302.csv",
+     "result": "timeout",
+     "seconds_from_engage": 90.03,
+     "seconds_total": 92.54
+    },
+    {
+     "file": "u014_try2_20261005_134439.csv",
+     "result": "success",
+     "seconds_from_engage": 88.96,
+     "seconds_total": 92.75
+    }
+   ]
+  },
+  "15": {
+   "status": "success",
+   "tries": [
+    {
+     "file": "u015_try1_20261005_134625.csv",
+     "result": "success",
+     "seconds_from_engage": 58.0,
+     "seconds_total": 62.47
+    }
+   ]
+  },
+  "16": {
+   "status": "success",
+   "tries": [
+    {
+     "file": "u016_try1_20261005_134730.csv",
+     "result": "success",
+     "seconds_from_engage": 47.64,
+     "seconds_total": 50.31
+    }
+   ]
+  },
+  "17": {
+   "status": "success",
+   "tries": [
+    {
+     "file": "u017_try1_20261005_134824.csv",
+     "result": "timeout",
+     "seconds_from_engage": 90.02,
+     "seconds_total": 91.57
+    },
+    {
+     "file": "u017_try2_20261005_134959.csv",
+     "result": "timeout",
+     "seconds_from_engage": 90.02,
+     "seconds_total": 92.78
+    },
+    {
+     "file": "u017_try3_20261005_135136.csv",
+     "result": "success",
+     "seconds_from_engage": 53.19,
+     "seconds_total": 59.99
+    }
+   ]
+  },
+  "18": {
+   "status": "success",
+   "tries": [
+    {
+     "file": "u018_try1_20261005_135241.csv",
+     "result": "success",
+     "seconds_from_engage": 87.06,
+     "seconds_total": 91.83
+    }
+   ]
+  },
+  "19": {
+   "status": "failed",
+   "tries": [
+    {
+     "file": "u019_try1_20261005_135415.csv",
+     "result": "timeout",
+     "seconds_from_engage": 90.02,
+     "seconds_total": 93.26
+    },
+    {
+     "file": "u019_try2_20261005_135551.csv",
+     "result": "timeout",
+     "seconds_from_engage": 90.02,
+     "seconds_total": 92.32
+    },
+    {
+     "file": "u019_try3_20261005_135731.csv",
+     "result": "timeout",
+     "seconds_from_engage": 90.01,
+     "seconds_total": 92.24
+    }
+   ]
+  },
+  "20": {
+   "status": "success",
+   "tries": [
+    {
+     "file": "u020_try1_20261005_135908.csv",
+     "result": "success",
+     "seconds_from_engage": 28.04,
+     "seconds_total": 31.92
+    }
+   ]
+  },
+  "21": {
+   "status": "success",
+   "tries": [
+    {
+     "file": "u021_try1_20261005_135944.csv",
+     "result": "success",
+     "seconds_from_engage": 67.41,
+     "seconds_total": 73.5
+    }
+   ]
+  },
+  "22": {
+   "status": "success",
+   "tries": [
+    {
+     "file": "u022_try1_20261005_140059.csv",
+     "result": "timeout",
+     "seconds_from_engage": 90.02,
+     "seconds_total": 91.28
+    },
+    {
+     "file": "u022_try2_20261005_140233.csv",
+     "result": "success",
+     "seconds_from_engage": 74.69,
+     "seconds_total": 79.6
+    }
+   ]
+  },
+  "23": {
+   "status": "success",
+   "tries": [
+    {
+     "file": "u023_try1_20261005_140356.csv",
+     "result": "timeout",
+     "seconds_from_engage": 90.0,
+     "seconds_total": 92.47
+    },
+    {
+     "file": "u023_try2_20261005_140533.csv",
+     "result": "success",
+     "seconds_from_engage": 50.78,
+     "seconds_total": 56.72
+    }
+   ]
+  },
+  "24": {
+   "status": "success",
+   "tries": [
+    {
+     "file": "u024_try1_20261005_140634.csv",
+     "result": "timeout",
+     "seconds_from_engage": 90.03,
+     "seconds_total": 96.92
+    },
+    {
+     "file": "u024_try2_20261005_140816.csv",
+     "result": "success",
+     "seconds_from_engage": 41.61,
+     "seconds_total": 45.25
+    }
+   ]
+  },
+  "25": {
+   "status": "success",
+   "tries": [
+    {
+     "file": "u025_try1_20261005_140905.csv",
+     "result": "success",
+     "seconds_from_engage": 49.49,
+     "seconds_total": 54.11
+    }
+   ]
+  },
+  "26": {
+   "status": "failed",
+   "tries": [
+    {
+     "file": "u026_try1_20261005_141001.csv",
+     "result": "timeout",
+     "seconds_from_engage": 90.03,
+     "seconds_total": 94.96
+    },
+    {
+     "file": "u026_try2_20261005_141139.csv",
+     "result": "timeout",
+     "seconds_from_engage": 90.0,
+     "seconds_total": 91.58
+    },
+    {
+     "file": "u026_try3_20261005_141336.csv",
+     "result": "timeout",
+     "seconds_from_engage": 90.03,
+     "seconds_total": 92.24
+    }
+   ]
+  },
+  "27": {
+   "status": "success",
+   "tries": [
+    {
+     "file": "u027_try1_20261005_141511.csv",
+     "result": "success",
+     "seconds_from_engage": 40.44,
+     "seconds_total": 43.46
+    }
+   ]
+  },
+  "28": {
+   "status": "success",
+   "tries": [
+    {
+     "file": "u028_try1_20261005_141557.csv",
+     "result": "timeout",
+     "seconds_from_engage": 90.01,
+     "seconds_total": 91.04
+    },
+    {
+     "file": "u028_try2_20261005_141736.csv",
+     "result": "abandoned",
+     "seconds_from_engage": 24.33,
+     "seconds_total": 26.14
+    },
+    {
+     "file": "u028_try3_20261005_141805.csv",
+     "result": "success",
+     "seconds_from_engage": 82.74,
+     "seconds_total": 90.71
+    }
+   ]
+  },
+  "29": {
+   "status": "success",
+   "tries": [
+    {
+     "file": "u029_try1_20261005_141939.csv",
+     "result": "success",
+     "seconds_from_engage": 20.29,
+     "seconds_total": 24.37
+    }
+   ]
+  },
+  "30": {
+   "status": "success",
+   "tries": [
+    {
+     "file": "u030_try1_20261005_142007.csv",
+     "result": "success",
+     "seconds_from_engage": 36.2,
+     "seconds_total": 40.51
+    }
+   ]
+  },
+  "31": {
+   "status": "success",
+   "tries": [
+    {
+     "file": "u031_try1_20261005_142050.csv",
+     "result": "success",
+     "seconds_from_engage": 52.55,
+     "seconds_total": 55.82
+    }
+   ]
+  },
+  "32": {
+   "status": "success",
+   "tries": [
+    {
+     "file": "u032_try1_20261005_142148.csv",
+     "result": "success",
+     "seconds_from_engage": 80.55,
+     "seconds_total": 83.67
+    }
+   ]
+  },
+  "33": {
+   "status": "success",
+   "tries": [
+    {
+     "file": "u033_try1_20261005_142313.csv",
+     "result": "success",
+     "seconds_from_engage": 53.13,
+     "seconds_total": 57.08
+    }
+   ]
+  },
+  "34": {
+   "status": "success",
+   "tries": [
+    {
+     "file": "u034_try1_20261005_142413.csv",
+     "result": "success",
+     "seconds_from_engage": 20.42,
+     "seconds_total": 24.28
+    }
+   ]
+  },
+  "35": {
+   "status": "success",
+   "tries": [
+    {
+     "file": "u035_try1_20261005_142444.csv",
+     "result": "success",
+     "seconds_from_engage": 22.49,
+     "seconds_total": 24.82
+    }
+   ]
+  },
+  "36": {
+   "status": "success",
+   "tries": [
+    {
+     "file": "u036_try1_20261005_142511.csv",
+     "result": "success",
+     "seconds_from_engage": 26.24,
+     "seconds_total": 30.36
+    }
+   ]
+  },
+  "37": {
+   "status": "success",
+   "tries": [
+    {
+     "file": "u037_try1_20261005_142544.csv",
+     "result": "success",
+     "seconds_from_engage": 22.15,
+     "seconds_total": 25.46
+    }
+   ]
+  },
+  "38": {
+   "status": "success",
+   "tries": [
+    {
+     "file": "u038_try1_20261005_142611.csv",
+     "result": "success",
+     "seconds_from_engage": 24.91,
+     "seconds_total": 27.8
+    }
+   ]
+  },
+  "39": {
+   "status": "success",
+   "tries": [
+    {
+     "file": "u039_try1_20261005_142641.csv",
+     "result": "success",
+     "seconds_from_engage": 37.61,
+     "seconds_total": 41.18
+    }
+   ]
+  },
+  "40": {
+   "status": "success",
+   "tries": [
+    {
+     "file": "u040_try1_20261005_142725.csv",
+     "result": "success",
+     "seconds_from_engage": 38.68,
+     "seconds_total": 41.92
+    }
+   ]
+  },
+  "41": {
+   "status": "success",
+   "tries": [
+    {
+     "file": "u041_try1_20261005_142808.csv",
+     "result": "abandoned",
+     "seconds_from_engage": 83.97,
+     "seconds_total": 84.95
+    },
+    {
+     "file": "u041_try2_20261005_142935.csv",
+     "result": "success",
+     "seconds_from_engage": 30.17,
+     "seconds_total": 33.97
+    }
+   ]
+  },
+  "42": {
+   "status": "success",
+   "tries": [
+    {
+     "file": "u042_try1_20261005_143010.csv",
+     "result": "success",
+     "seconds_from_engage": 84.51,
+     "seconds_total": 88.39
+    }
+   ]
+  },
+  "43": {
+   "status": "success",
+   "tries": [
+    {
+     "file": "u043_try1_20261005_143141.csv",
+     "result": "success",
+     "seconds_from_engage": 38.62,
+     "seconds_total": 41.86
+    }
+   ]
+  },
+  "44": {
+   "status": "success",
+   "tries": [
+    {
+     "file": "u044_try1_20261005_143225.csv",
+     "result": "timeout",
+     "seconds_from_engage": 90.03,
+     "seconds_total": 93.15
+    },
+    {
+     "file": "u044_try2_20261005_143403.csv",
+     "result": "success",
+     "seconds_from_engage": 49.03,
+     "seconds_total": 51.85
+    }
+   ]
+  }
+ },
+ "practice_skipped": {
+  "when": "2026-10-05T13:17:46",
+  "why": "자유 연습(teleop.py)으로 대신하고 연습 5개·참가 기준을 건너뜀"
+ }
+}
