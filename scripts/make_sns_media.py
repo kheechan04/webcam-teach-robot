@@ -220,9 +220,11 @@ def cmd_charts(args):
     # 2b. 최종 결과: 학습량 맞추기 전(2만 스텝)·후(10만 스텝), 시드 1000~3000 평균
     conds = [("cond1-scripted", "스크립트|(정답 아는 프로그램)"), ("cond5-webcam-marker", "웹캠|+ 마커"),
              ("cond3-webcam-corrected", "웹캠|+ 보정"), ("cond2-webcam", "웹캠|(그대로)")]
-    lo = [np.mean([sc(f"{c}-s{s}") for s in (1000, 2000, 3000)]) for c, _ in conds]
-    hi = [np.mean([sc(f"{c}-s{s}-100k") for s in (1000, 2000, 3000)]) for c, _ in conds]
-    fig, ax = sq("학습을 충분히 시키자 이야기가 달라졌다", "같은 시범, 학습량만 다름 (처음 보는 배치 100개, 시드 3개 평균)")
+    have = lambda n: (E / f"act-{n}.json").exists()  # noqa: E731
+    seeds = (1000, 2000, 3000, 4000, 5000)
+    lo = [np.mean([sc(f"{c}-s{s}") for s in seeds if have(f"{c}-s{s}")]) for c, _ in conds]
+    hi = [np.mean([sc(f"{c}-s{s}-100k") for s in seeds if have(f"{c}-s{s}-100k")]) for c, _ in conds]
+    fig, ax = sq("학습을 충분히 시키자 이야기가 달라졌다", "같은 시범, 학습량만 다름 (처음 보는 배치 100개, 시드 3~5개 평균)")
     x = np.arange(4)
     ax.bar(x - 0.2, lo, 0.38, color="#c9c7c1", label="짧게 학습 (2만 스텝)")
     ax.bar(x + 0.2, hi, 0.38, color=["#9a9893", "#1baf7a", "#2a78d6", "#eb6834"], label="충분히 학습 (10만 스텝)")
@@ -233,9 +235,31 @@ def cmd_charts(args):
     ax.set_ylim(0, 105)
     ax.set_ylabel("성공 (100개 중)", fontsize=11)
     ax.legend(frameon=False, fontsize=11, loc="upper right")
-    fig.text(0.07, 0.03, "짧게 학습하면 웹캠 손해가 부풀어 보인다 · 충분히 학습해도 깊이 오차 몫(약 9%p)은 남는다",
+    fig.text(0.07, 0.03, "짧게 학습하면 웹캠 손해가 부풀어 보인다 · 충분히 학습해도 보정·마커와 약 8~9%p 차이가 남는다",
              fontsize=10.5, color="#2a78d6")
     fig.savefig(OUT / "chart_final_results.png", facecolor=fig.get_facecolor())
+    plt.close(fig)
+
+    # 2c. 시범자 1 vs 2: 보정은 맞춘 사람에게만 통한다
+    pairs = [("시범자 1|(보정을 맞춘 사람)", "cond2-webcam", "cond3-webcam-corrected", "-100k"),
+             ("시범자 2|(남의 보정)", "cond2-p2", "cond3-p2", "-50k")]
+    a2 = [np.mean([sc(f"{c2}-s{s}{suf}") for s in seeds]) for _, c2, _, suf in pairs]
+    a3 = [np.mean([sc(f"{c3}-s{s}{suf}") for s in seeds]) for _, _, c3, suf in pairs]
+    fig, ax = sq("보정은 맞춘 사람에게만 통했다", "시범자 1의 손으로 맞춘 보정을 시범자 2에게 그대로 씀 (시드 5개 평균)")
+    x = np.arange(2)
+    ax.bar(x - 0.2, a2, 0.38, color="#eb6834", label="웹캠 그대로")
+    ax.bar(x + 0.2, a3, 0.38, color="#2a78d6", label="웹캠 + 보정")
+    for i, (u, w) in enumerate(zip(a2, a3)):
+        ax.text(i - 0.2, u + 1.5, f"{u:.0f}", ha="center", fontsize=13, fontweight="bold")
+        ax.text(i + 0.2, w + 1.5, f"{w:.0f}", ha="center", fontsize=13, fontweight="bold")
+        ax.text(i, max(u, w) + 9, f"{w - u:+.1f}%p", ha="center", fontsize=14, fontweight="bold", color="#17171d")
+    ax.set_xticks(x, [n.replace("|", chr(10)) for n, *_ in pairs], fontsize=12)
+    ax.set_ylim(0, 105)
+    ax.set_ylabel("성공 (100개 중)", fontsize=11)
+    ax.legend(frameon=False, fontsize=11, loc="upper right")
+    fig.text(0.07, 0.03, "손이 다르면 보정도 그 사람 손으로 다시 맞춰야 한다 (시범자 2는 시범이 적어 5만 스텝)",
+             fontsize=10, color="#2a78d6")
+    fig.savefig(OUT / "chart4_participants.png", facecolor=fig.get_facecolor())
     plt.close(fig)
 
     # 3. 보정 전·후 (M7, 2회차 평가)
@@ -263,7 +287,7 @@ def cmd_charts(args):
     d.text((70, 150), "웹캠 영상은 하나도 저장하지 않고, 손 마디 좌표 숫자만", font=font(26, False), fill=(80, 80, 94))
     rows = [("깊이 측정", "줄자로 잰 참값과 비교 · 10 + 70 + 24단계"), ("웹캠 시범 녹화", "시범자 1: 170개 (시도 175번)"),
             ("", "시범자 2: 34개 + 짧은 깊이 측정"), ("녹화 규칙 수정", "3번 고치고 그때마다 처음부터 다시"),
-            ("조건 가리기", "지금이 어느 조건인지 화면에 안 보이게"), ("학습", "GPU 대여 서버 · 학습 68번")]
+            ("조건 가리기", "지금이 어느 조건인지 화면에 안 보이게"), ("학습", "GPU 대여 서버 · 학습 71번")]
     y = 260
     for k, v in rows:
         if k:
@@ -272,7 +296,7 @@ def cmd_charts(args):
         y += 105
     d.text((70, S - 90), "시범 1개 = 웹캠으로 로봇을 조종해 큐브를 목표에 옮긴 한 번", font=font(24, False), fill=(125, 125, 140))
     im.save(OUT / "card_effort.png")
-    print(f"→ {OUT}/chart1~3, card_effort.png")
+    print(f"→ {OUT}/chart1~4, chart_final_results, card_effort.png")
 
 
 def cmd_pair(args):

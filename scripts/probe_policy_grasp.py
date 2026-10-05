@@ -5,7 +5,8 @@ eval_policy.py와 같은 평가(같은 배치·같은 렌더·같은 판정)를 
 정책이 닫는 위치가 앞뒤로 더 흩어지거나 치우치는지 본다.
 
     uv run python scripts/probe_policy_grasp.py --n 30 --workers 8
-결과: experiments/policy_grasp_probe.json
+    uv run python scripts/probe_policy_grasp.py --set 100k --n 30 --workers 4   # 10만 스텝 ②·③, 시드 5개
+결과: experiments/policy_grasp_probe.json (10만 스텝은 policy_grasp_probe_100k.json)
 """
 
 import argparse
@@ -28,6 +29,8 @@ from webcam_teach_robot.scene import PlacementTracker, build_model, cube_pos, lo
 ROOT = Path(__file__).resolve().parent.parent
 MODELS = {c: [f"kheechan04/webcam-teach-robot-act-{c}-s{s}" for s in (1000, 2000, 3000)]
           for c in ("cond2-webcam", "cond3-webcam-corrected", "cond4-depth-error", "cond4z-no-error", "cond5-webcam-marker")}
+MODELS_100K = {c: [f"kheechan04/webcam-teach-robot-act-{c}-s{s}-100k" for s in (1000, 2000, 3000, 4000, 5000)]
+               for c in ("cond2-webcam", "cond3-webcam-corrected")}
 MAX_S = 60.0
 _W = {}
 
@@ -80,12 +83,14 @@ def main() -> None:
     p = argparse.ArgumentParser()
     p.add_argument("--n", type=int, default=30)
     p.add_argument("--workers", type=int, default=8)
+    p.add_argument("--set", choices=["20k", "100k"], default="20k")
     args = p.parse_args()
+    models = MODELS_100K if args.set == "100k" else MODELS
     layouts = load_layouts("eval")[:args.n]
     jobs = [(i, c, g) for i, (c, g) in enumerate(layouts)]
-    out_path = ROOT / "experiments" / "policy_grasp_probe.json"
+    out_path = ROOT / "experiments" / ("policy_grasp_probe_100k.json" if args.set == "100k" else "policy_grasp_probe.json")
     out = json.loads(out_path.read_text(encoding="utf-8")) if out_path.exists() else {}
-    for cond, paths in MODELS.items():
+    for cond, paths in models.items():
         for path in paths:
             if path in out and len(out[path]) >= args.n:
                 continue
