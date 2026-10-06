@@ -1,0 +1,72 @@
+{
+ "per_seed": {
+  "cond1": [
+   81,
+   79,
+   83
+  ],
+  "cond2": [
+   86,
+   84,
+   88,
+   87,
+   89
+  ],
+  "cond3": [
+   75,
+   87,
+   74,
+   82,
+   75
+  ]
+ },
+ "mean": {
+  "cond1": 81.0,
+  "cond2": 86.8,
+  "cond3": 78.6
+ },
+ "h1": {
+  "diffs_3_minus_2": [
+   -11,
+   3,
+   -14,
+   -5,
+   -14
+  ],
+  "mean": -8.2,
+  "seeds_positive": 1,
+  "p_one_sided": 0.96875,
+  "p_two_sided": 0.125,
+  "ci95": [
+   -17.4,
+   1.0
+  ],
+  "verdict": "재현 안 됨"
+ },
+ "combined_two_tasks": {
+  "diffs": [
+   1,
+   2,
+   24,
+   8,
+   4,
+   -11,
+   3,
+   -14,
+   -5,
+   -14
+  ],
+  "mean": -0.2,
+  "seeds_positive": 6,
+  "p_one_sided": 0.533203125,
+  "p_two_sided": 0.9765625
+ },
+ "discordant": {
+  "cond3_only": 57,
+  "cond2_only": 98
+ },
+ "vs_cond1": {
+  "cond2_minus_1_mean_seeds_1_3": 5.0,
+  "cond3_minus_1_mean_seeds_1_3": -2.3333333333333335
+ }
+}
