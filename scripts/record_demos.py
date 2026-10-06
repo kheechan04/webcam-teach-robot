@@ -18,11 +18,16 @@
     q / Esc   끄기 (나중에 이어서)
 """
 
+import os
+import sys
+
+# 쌓기 과제: --task stack 이면 장면 모듈을 불러오기 전에 과제를 정한다(scene.TASK는 불러올 때 한 번 정해진다)
+if "--task" in sys.argv and sys.argv[sys.argv.index("--task") + 1] == "stack":
+    os.environ["WTR_TASK"] = "stack"
+
 import argparse
 import csv
 import json
-import os
-import sys
 import time
 from datetime import datetime
 from pathlib import Path
@@ -50,10 +55,16 @@ MAX_TRIES = 3
 TAIL_S = 1.5  # 성공 뒤 더 기록하는 시간 (데이터셋은 성공 1초 뒤까지 쓴다)
 
 
-def make_plan(n_layouts: int) -> dict:
+# 쌓기 과제(--task stack --session stack): M8과 같은 규칙(②·③ ABBA, 50개씩, 조건 가림, 3번까지)에 시드만 다르다.
+# 시간 제한은 사용자 시험 조종(docs/13-stacking-plan.md) 뒤 녹화 전에 확정한다.
+STACK_PLAN_SEED = PLAN_SEED + 200
+STACK_TIME_LIMIT_S = 120.0
+
+
+def make_plan(n_layouts: int, seed: int = PLAN_SEED, time_limit_s: float = TIME_LIMIT_S, session: str = "m8") -> dict:
     """블록마다 같은 배치 5개를 [먼저 할 조건 5개, 다른 조건 5개]로. 먼저 할 조건은 ABBA 반복:
     블록 0 A, 1 B, 2 B, 3 A, 4 A, 5 B, ... (A가 ②인지 ③인지는 시드로 정한다). 블록 안 배치 순서도 조건마다 섞는다."""
-    rng = np.random.default_rng(PLAN_SEED)
+    rng = np.random.default_rng(seed)
     order = rng.permutation(n_layouts)
     a, b = (2, 3) if rng.random() < 0.5 else (3, 2)
     units = []
@@ -63,8 +74,8 @@ def make_plan(n_layouts: int) -> dict:
         for cond in (first, second):
             for lay in rng.permutation(layouts):
                 units.append({"unit": len(units), "block": blk, "condition": cond, "layout": int(lay)})
-    return {"seed": PLAN_SEED, "block_size": BLOCK, "time_limit_s": TIME_LIMIT_S, "max_tries": MAX_TRIES,
-            "split": "train", "units": units}
+    return {"seed": seed, "session": session, "block_size": BLOCK, "time_limit_s": time_limit_s,
+            "max_tries": MAX_TRIES, "split": "train", "units": units}
 
 
 def make_plan_m8b(n_layouts: int) -> dict:
@@ -135,7 +146,8 @@ def load_state(out: Path, session: str = "m8", participant: int | None = None):
     if not plan_path.exists():
         n = len(load_layouts("train"))
         write_json(plan_path, make_plan_participant(n, participant) if session == "person"
-                   else make_plan_m8b(n) if session == "m8b" else make_plan(n))
+                   else make_plan_m8b(n) if session == "m8b"
+                   else make_plan(n, STACK_PLAN_SEED, STACK_TIME_LIMIT_S, "stack") if session == "stack" else make_plan(n))
         print(f"녹화 계획을 만들었어요: {plan_path}")
     plan = json.loads(plan_path.read_text(encoding="utf-8"))
     prog = json.loads(prog_path.read_text(encoding="utf-8")) if prog_path.exists() else {"units": {}}
@@ -181,16 +193,21 @@ def print_status(plan, prog) -> None:
 
 def main() -> None:
     p = argparse.ArgumentParser()
+    p.add_argument("--task", choices=["place", "stack"], default="place", help="과제 (stack = 큐브 쌓기)")
     p.add_argument("--camera", type=int, default=0)
     p.add_argument("--out", type=Path, default=OUT_DIR)
     p.add_argument("--status", action="store_true", help="진행 상황만 보고 끝내기")
-    p.add_argument("--session", choices=["m8", "m8b", "person"], default="m8",
+    p.add_argument("--session", choices=["m8", "m8b", "person", "stack"], default="m8",
                    help="m8b = 조건 ⑤(손목 마커) 50개 + ② 20개 / person = 다른 시범자(연습 5 + ②·③ 20개씩)")
     p.add_argument("--participant", type=int, default=None, help="--session person일 때 시범자 번호(2, 3, ...)")
     p.add_argument("--skip-practice", action="store_true",
                    help="연습 5개를 건너뛰고 바로 본 녹화(자유 연습으로 대신했을 때). 기록에 '건너뜀'으로 남는다")
     args = p.parse_args()
 
+    if (args.session == "stack") != (args.task == "stack"):
+        raise SystemExit("쌓기 녹화는 --task stack --session stack 을 같이 써 주세요")
+    if args.session == "stack" and args.out == OUT_DIR:
+        args.out = ROOT / "measurements" / "demos_stack"
     if args.session == "m8b" and args.out == OUT_DIR:
         args.out = ROOT / "measurements" / "demos_m8b"
     if args.session == "person":

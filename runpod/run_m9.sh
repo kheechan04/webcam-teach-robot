@@ -120,8 +120,11 @@ PY
 
     echo "=== $NAME 평가 시작 $(date) ==="
     T1=$(date +%s)
+    # 쌓기 과제(조건 이름이 stack으로 시작): 쌓기 장면·판정·배치로 평가. 제한 시간은 docs/13-stacking-plan.md에서 학습 전에 정한 값
+    TASK_ARGS=""
+    case "$COND" in stack*) TASK_ARGS="--task stack --max-s ${EVAL_MAX_S:?쌓기 평가 제한 시간 EVAL_MAX_S를 넣어 주세요}" ;; esac
     uv run python scripts/eval_policy.py "/workspace/outputs/$NAME/checkpoints/last/pretrained_model" \
-      --n 100 --workers "$WORKERS" --name "$NAME" --out-dir /workspace/eval || { echo "!!! $NAME 평가 실패"; continue; }
+      --n 100 --workers "$WORKERS" --name "$NAME" --out-dir /workspace/eval $TASK_ARGS || { echo "!!! $NAME 평가 실패"; continue; }
     echo "평가 시간(초): $(( $(date +%s) - T1 ))"
     J="/workspace/eval/${NAME}_eval100.json"
     uv run hf upload "$POLICY" "$J" "eval/$NAME.json" --private

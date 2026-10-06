@@ -15,6 +15,13 @@ M8 녹화(record_demos.py)에서 조건별로 (progress.json에서 성공으로 
     - 관측과 행동 짝: 기록 한 줄은 "명령을 보내고 물리를 진행한 뒤"의 상태라서, 행동 t는 한 줄 앞의 상태와 짝짓는다
 """
 
+import os
+import sys
+
+# 쌓기 과제: --task stack 이면 장면 모듈을 불러오기 전에 과제를 정한다(scene.TASK는 불러올 때 한 번 정해진다)
+if "--task" in sys.argv and sys.argv[sys.argv.index("--task") + 1] == "stack":
+    os.environ["WTR_TASK"] = "stack"
+
 import argparse
 import csv
 import json
@@ -27,7 +34,7 @@ import numpy as np
 from webcam_teach_robot.dataset import (FPS, Episode, SceneRenderer, default_cube_quat, features, resample,
                                         write_episode)
 from webcam_teach_robot.ik import SO101IK
-from webcam_teach_robot.scene import PlacementTracker, build_model, cube_pos, load_layouts, place, task_ids
+from webcam_teach_robot.scene import TASK, PlacementTracker, base_pos, base_quat, build_model, cube_pos, load_layouts, place, task_ids
 from webcam_teach_robot.scripted import CONTROL_HZ, plan, trajectory
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -53,20 +60,25 @@ def scripted_episodes(model, split: str, n: int | None):
         q_ik = data.qpos.copy()
         tracker = PlacementTracker()
         rec = {k: [] for k in ("qpos", "action", "cube_pos", "cube_quat")}
+        if TASK == "stack":
+            rec.update(base_pos=[], base_quat=[])
         for pos, grip in traj:
             rec["qpos"].append(data.qpos[:6].copy())  # 행동을 보내기 전 상태
             rec["cube_pos"].append(cube_pos(data, ids))
             rec["cube_quat"].append(data.qpos[ids.cube_qadr + 3:ids.cube_qadr + 7].copy())
+            if TASK == "stack":
+                rec["base_pos"].append(base_pos(data, ids))
+                rec["base_quat"].append(base_quat(data, ids))
             q_ik = ik.solve(pos, q_ik).q
             action = np.r_[q_ik[:5], grip]
             rec["action"].append(action)
             data.ctrl[:6] = action
             for _ in range(steps):
                 mujoco.mj_step(model, data)
-            tracker.update(cube_pos(data, ids), goal_xy, grip < 0.5, 1 / FPS)
+            tracker.update(cube_pos(data, ids), goal_xy, grip < 0.5, 1 / FPS, base_pos(data, ids))
         ok = tracker.succeeded
         yield Episode(**{k: np.array(v) for k, v in rec.items()}, goal_xy=goal_xy, success=ok,
-                      info={"source": "scripted", "split": split, "layout": i,
+                      info={"source": "scripted", "task": TASK, "split": split, "layout": i,
                             "cube_xy": cube_xy.tolist(), "goal_xy": goal_xy.tolist()})
 
 
@@ -76,6 +88,8 @@ def webcam_episodes(paths: list[Path], condition: int | None = None):
         meta_path = path.with_suffix(".json")
         meta = json.loads(meta_path.read_text(encoding="utf-8")) if meta_path.exists() else {}
         if condition is not None and meta.get("condition", 2) != condition:
+            continue
+        if meta.get("task", "place") != TASK:  # 다른 과제의 기록은 섞지 않는다
             continue
         if "plan_unit" in meta:  # record_demos.py 녹화: 녹화 화면이 성공으로 끝낸 시도만
             prog_path = path.parent / "progress.json"
@@ -97,9 +111,10 @@ def webcam_episodes(paths: list[Path], condition: int | None = None):
             tracker, succ = PlacementTracker(), np.zeros(len(R), bool)
             for k, r in enumerate(R):
                 dt = 0.0 if k == 0 else t_all[k] - t_all[k - 1]
+                base = np.array([float(r[f"base_{a}"]) for a in "xyz"]) if TASK == "stack" else None
                 succ[k] = tracker.update(np.array([float(r[f"cube_{a}"]) for a in "xyz"]),
                                          np.array([float(r["goal_x"]), float(r["goal_y"])]),
-                                         r["gripper_closed"] == "1", dt)
+                                         r["gripper_closed"] == "1", dt, base)
             if not eng.any() or not succ.any():
                 continue
             start = int(np.argmax(eng))
@@ -123,15 +138,20 @@ def webcam_episodes(paths: list[Path], condition: int | None = None):
                 quat = np.tile(default_cube_quat(cube[0, :2]), (len(Rk), 1))
                 quat_note = "approx (not logged; only valid while the cube is untouched)"
             # 행동 t ↔ 한 줄 앞의 상태
-            v = resample(t[1:], {"qpos": qpos[:-1], "action": ctrl[1:], "cube_pos": cube[:-1], "cube_quat": quat[:-1]})
+            cols = {"qpos": qpos[:-1], "action": ctrl[1:], "cube_pos": cube[:-1], "cube_quat": quat[:-1]}
+            if TASK == "stack":
+                cols["base_pos"] = np.stack([col(f"base_{a}", Rk) for a in "xyz"], 1)[:-1]
+                cols["base_quat"] = np.stack([col(f"base_q{a}", Rk) for a in "wxyz"], 1)[:-1]
+            v = resample(t[1:], cols)
             yield Episode(**v, goal_xy=goal, success=True,
-                          info={"source": "webcam", "log": path.name, "layout": layout,
+                          info={"source": "webcam", "task": TASK, "log": path.name, "layout": layout,
                                 "condition": meta.get("condition", 2), "plan_unit": meta.get("plan_unit"),
                                 "cube_quat": quat_note, "raw_rows": len(Rk)})
 
 
 def main() -> None:
     p = argparse.ArgumentParser()
+    p.add_argument("--task", choices=["place", "stack"], default="place", help="과제 (stack = 큐브 쌓기)")
     p.add_argument("source", choices=["scripted", "webcam"])
     p.add_argument("logs", nargs="*", type=Path)
     p.add_argument("--name", required=True)

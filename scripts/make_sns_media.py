@@ -79,7 +79,7 @@ def cmd_policy(args):
     import torch
 
     from webcam_teach_robot.dataset import FPS, SceneRenderer
-    from webcam_teach_robot.scene import PlacementTracker, build_model, cube_pos, load_layouts, place, task_ids
+    from webcam_teach_robot.scene import PlacementTracker, base_pos, build_model, cube_pos, load_layouts, place, task_ids
     spec = importlib.util.spec_from_file_location("ev", ROOT / "scripts" / "eval_policy.py")
     ev = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(ev)
@@ -104,7 +104,7 @@ def run_layout(lay, policy, pre, post, model, data, ids, cams, side, view, ev, a
     import torch
 
     from webcam_teach_robot.dataset import FPS
-    from webcam_teach_robot.scene import PlacementTracker, cube_pos, load_layouts, place
+    from webcam_teach_robot.scene import PlacementTracker, base_pos, cube_pos, load_layouts, place
     cube_xy, goal_xy = load_layouts("eval")[lay]
     mujoco.mj_resetData(model, data)
     data.qpos[:6] = ev.HOME_Q
@@ -124,7 +124,7 @@ def run_layout(lay, policy, pre, post, model, data, ids, cams, side, view, ev, a
         data.ctrl[:6] = a
         for _ in range(steps):
             mujoco.mj_step(model, data)
-        if tr.update(cube_pos(data, ids), goal_xy, a[5] < 0.5, 1 / FPS) and done is None:
+        if tr.update(cube_pos(data, ids), goal_xy, a[5] < 0.5, 1 / FPS, base_pos(data, ids)) and done is None:
             done = k / FPS
         side.update_scene(data, camera=view)
         sub = f"{k / FPS:4.1f}초" + ("   · 성공!" if done is not None else "")
@@ -307,7 +307,7 @@ def cmd_pair(args):
     import torch
 
     from webcam_teach_robot.dataset import FPS, SceneRenderer
-    from webcam_teach_robot.scene import PlacementTracker, build_model, cube_pos, load_layouts, place, task_ids
+    from webcam_teach_robot.scene import PlacementTracker, base_pos, build_model, cube_pos, load_layouts, place, task_ids
     spec = importlib.util.spec_from_file_location("ev", ROOT / "scripts" / "eval_policy.py")
     ev = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(ev)
@@ -347,7 +347,7 @@ def cmd_pair(args):
                 d.ctrl[:6] = a
                 for _ in range(steps):
                     mujoco.mj_step(model, d)
-                if trs[i].update(cube_pos(d, ids), goal_xy, a[5] < 0.5, 1 / FPS) and done[i] is None:
+                if trs[i].update(cube_pos(d, ids), goal_xy, a[5] < 0.5, 1 / FPS, base_pos(d, ids)) and done[i] is None:
                     done[i] = k / FPS
                 side.update_scene(d, camera=view)
                 im.paste(Image.fromarray(side.render()), (i * 540, 200))

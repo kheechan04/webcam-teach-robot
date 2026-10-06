@@ -1,4 +1,5 @@
 """웹캠 손 추적으로 시뮬레이션 SO-101을 조종해 큐브를 목표(초록 사각형)로 옮긴다. 영상은 저장하지 않는다.
+--task stack 이면 쌓기 과제: 빨간 큐브를 초록 받침 블록(4 cm) 위에 올린다(받침을 밀면 실패).
 
 실행:
     uv run python scripts/teleop.py
@@ -19,6 +20,13 @@
     엄지와 검지를 붙이기      → 집게 닫기 (딸깍 스위치: 붙이면 닫히고, 충분히 벌려야 열린다)
     손목 돌리기(roll)는 연결하지 않았다. 과제를 물체가 항상 같은 방향으로 놓이게 짜서 깊이 외 오차 원인을 줄인다.
 """
+
+import os
+import sys
+
+# 쌓기 과제: --task stack 이면 장면 모듈을 불러오기 전에 과제를 정한다(scene.TASK는 불러올 때 한 번 정해진다)
+if "--task" in sys.argv and sys.argv[sys.argv.index("--task") + 1] == "stack":
+    os.environ["WTR_TASK"] = "stack"
 
 import argparse
 import csv
@@ -43,6 +51,7 @@ LOG_DIR = ROOT / "measurements" / "teleop"
 
 def main() -> None:
     parser = argparse.ArgumentParser()
+    parser.add_argument("--task", choices=["place", "stack"], default="place", help="과제 (stack = 큐브 쌓기)")
     parser.add_argument("--camera", type=int, default=0)
     parser.add_argument("--fov", type=float, default=60.0, help="웹캠 가로 화각 가정값(도)")
     parser.add_argument("--depth", choices=["min", "width", "length"], default="min", help="깊이 추정에 쓸 손바닥 구간")

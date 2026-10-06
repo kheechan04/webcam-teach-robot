@@ -16,7 +16,7 @@ import torch
 from PIL import Image, ImageDraw, ImageFont
 
 from webcam_teach_robot.dataset import FPS, SceneRenderer
-from webcam_teach_robot.scene import PlacementTracker, build_model, cube_pos, load_layouts, place, task_ids
+from webcam_teach_robot.scene import PlacementTracker, base_pos, build_model, cube_pos, load_layouts, place, task_ids
 
 ROOT = Path(__file__).resolve().parent.parent
 FONT = Path("C:/Windows/Fonts/malgun.ttf")
@@ -69,7 +69,7 @@ def main() -> None:
         data.ctrl[:6] = a
         for _ in range(steps):
             mujoco.mj_step(model, data)
-        if tracker.update(cube_pos(data, ids), goal_xy, a[5] < 0.5, 1 / FPS) and done_at is None:
+        if tracker.update(cube_pos(data, ids), goal_xy, a[5] < 0.5, 1 / FPS, base_pos(data, ids)) and done_at is None:
             done_at = k / FPS
 
         side.update_scene(data, camera=view)

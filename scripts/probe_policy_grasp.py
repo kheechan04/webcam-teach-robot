@@ -24,7 +24,7 @@ from eval_policy import HOME_Q, load_policy  # noqa: E402
 
 from webcam_teach_robot.dataset import FPS, SceneRenderer  # noqa: E402
 from webcam_teach_robot.ik import SO101IK  # noqa: E402
-from webcam_teach_robot.scene import PlacementTracker, build_model, cube_pos, load_layouts, place, task_ids  # noqa: E402
+from webcam_teach_robot.scene import TASK_TEXT, PlacementTracker, base_pos, build_model, cube_pos, load_layouts, place, task_ids  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 MODELS = {c: [f"kheechan04/webcam-teach-robot-act-{c}-s{s}" for s in (1000, 2000, 3000)]
@@ -61,7 +61,7 @@ def run(job):
         obs = {"observation.state": torch.from_numpy(d.qpos[:6].astype(np.float32))}
         for key, img in imgs.items():
             obs[f"observation.images.{key}"] = torch.from_numpy(img).permute(2, 0, 1).float() / 255.0
-        obs["task"] = "Pick up the red cube and place it on the green square."
+        obs["task"] = TASK_TEXT
         with torch.inference_mode():
             a = w["post"](w["policy"].select_action(w["pre"](obs))).squeeze(0).cpu().numpy()
         closed = a[5] < 0.5
@@ -74,7 +74,7 @@ def run(job):
         d.ctrl[:6] = a
         for _ in range(steps):
             mujoco.mj_step(m, d)
-        if tr.update(cube_pos(d, ids), goal_xy, closed, 1 / FPS):
+        if tr.update(cube_pos(d, ids), goal_xy, closed, 1 / FPS, base_pos(d, ids)):
             return {"layout": i, "success": True, "closes": closes, "lifted": tr.was_lifted}
     return {"layout": i, "success": False, "closes": closes, "lifted": tr.was_lifted}
 

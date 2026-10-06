@@ -9,6 +9,13 @@ PlacementTracker. 카메라 화면은 데이터셋을 만들 때와 같은 Scene
 결과: experiments/eval/<이름>.json (에피소드별 성공·걸린 시간), --render면 outputs/에 재생 애니메이션.
 """
 
+import os
+import sys
+
+# 쌓기 과제: --task stack 이면 장면 모듈을 불러오기 전에 과제를 정한다(scene.TASK는 불러올 때 한 번 정해진다)
+if "--task" in sys.argv and sys.argv[sys.argv.index("--task") + 1] == "stack":
+    os.environ["WTR_TASK"] = "stack"
+
 import argparse
 import json
 import time
@@ -21,7 +28,7 @@ import torch
 from PIL import Image
 
 from webcam_teach_robot.dataset import CAMERAS, FPS, SceneRenderer
-from webcam_teach_robot.scene import PlacementTracker, build_model, cube_pos, load_layouts, place, task_ids
+from webcam_teach_robot.scene import TASK, TASK_TEXT, PlacementTracker, base_pos, build_model, cube_pos, load_layouts, place, task_ids
 
 ROOT = Path(__file__).resolve().parent.parent
 HOME_Q = np.array([0.0, -0.21, 0.346, 1.434, 0.0, 1.0])  # 시범과 같은 처음 자세
@@ -54,7 +61,7 @@ def run_episode(policy, pre, post, model, data, ids, renderer, cube_xy, goal_xy,
         obs = {"observation.state": torch.from_numpy(data.qpos[:6].astype(np.float32))}
         for key, img in imgs.items():
             obs[f"observation.images.{key}"] = torch.from_numpy(img).permute(2, 0, 1).float() / 255.0
-        obs["task"] = "Pick up the red cube and place it on the green square."
+        obs["task"] = TASK_TEXT
         with torch.inference_mode():
             action = post(policy.select_action(pre(obs)))
         a = action.squeeze(0).cpu().numpy()
@@ -63,7 +70,7 @@ def run_episode(policy, pre, post, model, data, ids, renderer, cube_xy, goal_xy,
             mujoco.mj_step(model, data)
         if frames is not None:
             frames.append(Image.fromarray(np.concatenate([imgs[k] for k in CAMERAS], 1)))
-        if tracker.update(cube_pos(data, ids), goal_xy, a[5] < 0.5, 1 / FPS):
+        if tracker.update(cube_pos(data, ids), goal_xy, a[5] < 0.5, 1 / FPS, base_pos(data, ids)):
             return True, (k + 1) / FPS, tracker.was_lifted
     return False, max_s, tracker.was_lifted
 
@@ -90,6 +97,7 @@ def _worker_run(job):
 
 def main() -> None:
     p = argparse.ArgumentParser()
+    p.add_argument("--task", choices=["place", "stack"], default="place", help="과제 (stack = 큐브 쌓기)")
     p.add_argument("policy", help="Hub 저장소 이름 또는 로컬 pretrained_model 폴더")
     p.add_argument("--split", default="eval")
     p.add_argument("--n", type=int, default=100)
@@ -143,7 +151,7 @@ def save(args, results, t0):
     n, ph, z = len(succ), succ.mean(), 1.96
     centre = (ph + z * z / (2 * n)) / (1 + z * z / n)
     half = z * np.sqrt(ph * (1 - ph) / n + z * z / (4 * n * n)) / (1 + z * z / n)
-    summary = {"policy": args.policy, "split": args.split, "n": n, "success_rate": float(ph),
+    summary = {"policy": args.policy, "task": TASK, "split": args.split, "n": n, "success_rate": float(ph),
                "wilson95": [float(centre - half), float(centre + half)],
                "lifted_rate": float(np.mean([r["lifted"] for r in results])),
                "mean_success_seconds": float(np.mean([r["seconds"] for r in results if r["success"]])) if succ.any() else None,

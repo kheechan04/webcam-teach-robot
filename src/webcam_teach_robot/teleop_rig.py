@@ -16,7 +16,7 @@ import numpy as np
 from webcam_teach_robot.depth_correction import DepthCorrection
 from webcam_teach_robot.hand_tracking import HAND_CONNECTIONS, HandObservation
 from webcam_teach_robot.ik import SO101IK
-from webcam_teach_robot.scene import PlacementTracker, build_model, cube_pos, place, task_ids
+from webcam_teach_robot.scene import TASK, PlacementTracker, base_pos, base_quat, build_model, cube_pos, place, task_ids
 from webcam_teach_robot.teleop_mapping import (GraspLock, GripperSwitch, HandFilter, camera_delta_to_robot,
                                                hand_point_camera)
 from webcam_teach_robot.teleop_view import draw_guides
@@ -45,7 +45,8 @@ LOG_COLUMNS = (["t_s", "engaged", "hand_found", "detect_ms", "ik_ms", "loop_ms",
                + [f"ctrl{i}" for i in range(6)]
                + ["layout", "cube_x", "cube_y", "cube_z", "goal_x", "goal_y", "placed_success"]
                + ["cube_qw", "cube_qx", "cube_qy", "cube_qz", "handedness", "grasp_locked"] + LANDMARK_COLUMNS
-               + ["marker_found", "marker_x", "marker_y", "marker_z", "marker_tilt_deg"])  # 손목 마커(조건 ⑤ 녹화 때만 값)
+               + ["marker_found", "marker_x", "marker_y", "marker_z", "marker_tilt_deg"]  # 손목 마커(조건 ⑤ 녹화 때만 값)
+               + ["base_x", "base_y", "base_z", "base_qw", "base_qx", "base_qy", "base_qz"])  # 쌓기 받침 블록(쌓기 과제 때만 값)
 
 
 @dataclass
@@ -65,7 +66,7 @@ def git_commit() -> str:
 
 def run_meta(settings: RigSettings, correction: DepthCorrection | None, frame_size, extra: dict) -> dict:
     """기록 CSV 옆에 남기는 실행 설정(나중에 같은 조건인지 확인하려고). 영상은 저장하지 않는다."""
-    return {**extra, "settings": vars(settings), "git_commit": git_commit(), "workspace_lo": WORKSPACE_LO.tolist(),
+    return {**extra, "task": TASK, "settings": vars(settings), "git_commit": git_commit(), "workspace_lo": WORKSPACE_LO.tolist(),
             "workspace_hi": WORKSPACE_HI.tolist(), "home_q": HOME_Q.tolist(), "frame_size": list(frame_size),
             "mirror": True, "condition": 3 if correction else 2,  # 조건 ⑤ 녹화는 호출하는 쪽에서 5로 덮어쓴다
             "depth_correction": json.loads(DepthCorrection.coef_text()) if correction else None}
@@ -174,7 +175,7 @@ class TeleopRig:
         while self.data.time < now - self.t_sim0:
             mujoco.mj_step(self.model, self.data)
             sim_dt += self.model.opt.timestep
-        done = self.placement.update(self.cube(), self.goal_xy, self.gripper_switch.closed, sim_dt)
+        done = self.placement.update(self.cube(), self.goal_xy, self.gripper_switch.closed, sim_dt, self.base())
         first = done and not self.success
         self.success = done
         return first
@@ -204,6 +205,9 @@ class TeleopRig:
     def cube_quat(self) -> np.ndarray:
         return self.data.qpos[self.ids.cube_qadr + 3:self.ids.cube_qadr + 7]
 
+    def base(self) -> np.ndarray | None:
+        return base_pos(self.data, self.ids)
+
     def tip(self) -> np.ndarray:
         return self.ik.tip(self.data.qpos.copy())[0]
 
@@ -217,7 +221,7 @@ class TeleopRig:
     def draw_frame(self, frame, obs: HandObservation | None) -> None:
         """웹캠 창에 2D 안내 그림과 손 마디를 그린다."""
         draw_guides(frame, self.tip(), self.gripper_switch.closed, self.cube(), self.cube_quat(), self.goal_xy,
-                    WORKSPACE_LO, WORKSPACE_HI)
+                    WORKSPACE_LO, WORKSPACE_HI, base=self.base())
         if obs is not None:
             pts = obs.pixels.astype(int)
             for a, b in HAND_CONNECTIONS:
@@ -240,7 +244,14 @@ class TeleopRig:
                 *[f"{v:.5f}" for v in self.data.qpos[:6]], *[f"{v:.5f}" for v in self.data.ctrl[:6]],
                 layout, *[f"{v:.5f}" for v in self.cube()], *[f"{v:.5f}" for v in self.goal_xy], int(self.success),
                 *[f"{v:.5f}" for v in self.cube_quat()], obs.handedness if obs else "",
-                int(self.locked and self.engaged), *landmark_values(obs), *marker_values(self.marker)]
+                int(self.locked and self.engaged), *landmark_values(obs), *marker_values(self.marker),
+                *base_values(self.base(), base_quat(self.data, self.ids))]
+
+
+def base_values(pos, quat) -> list[str]:
+    if pos is None:
+        return [""] * 7
+    return [f"{v:.5f}" for v in (*pos, *quat)]
 
 
 def marker_values(m) -> list[str]:

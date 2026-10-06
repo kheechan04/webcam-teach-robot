@@ -9,6 +9,7 @@ from dataclasses import dataclass
 
 import numpy as np
 
+from webcam_teach_robot.scene import STACK_Z, TASK
 from webcam_teach_robot.teleop_mapping import GRIPPER_CLOSED, GRIPPER_OPEN
 
 CONTROL_HZ = 30
@@ -21,6 +22,10 @@ GRASP_RADIAL_OFFSET = 0.0
 GRASP_Z = 0.012  # 집을 때 기준점 높이. 집게 끝이 바닥에서 약 1 cm 위
 HOVER_Z = 0.07  # 옮길 때 높이
 PLACE_Z = GRASP_Z + 0.003  # 내려놓을 때는 조금 높게(큐브가 바닥에 끼지 않게)
+# 쌓기: 받침(4 cm) 위에 놓는다. 큐브 중심 = 집게 기준점 + 0.3 cm(GRASP_Z와 같은 관계)이므로 기준점을 STACK_Z에 두면
+# 큐브 아랫면이 받침 윗면보다 0.3 cm 위에서 놓인다. 옮길 때는 큐브 아랫면이 받침보다 약 2 cm 높게(작업 상자 위 끝 8 cm 안).
+STACK_PLACE_Z = STACK_Z
+STACK_HOVER_Z = 0.075
 SPEED = 0.12  # 집게 끝 이동 속도 (m/s)
 GRIP_WAIT_S = 0.5  # 집게 여닫고 기다리는 시간
 
@@ -40,16 +45,17 @@ def plan(cube_xy: np.ndarray, target_xy: np.ndarray, start_pos: np.ndarray) -> l
     c = np.array([*cube_xy, 0.0]) + GRASP_RADIAL_OFFSET * radial(cube_xy)
     t = np.array([*target_xy, 0.0]) + GRASP_RADIAL_OFFSET * radial(target_xy)
     up = lambda p, z: np.array([p[0], p[1], z])
+    hover, place_z = (STACK_HOVER_Z, STACK_PLACE_Z) if TASK == "stack" else (HOVER_Z, PLACE_Z)
     return [
         Waypoint(start_pos, GRIPPER_OPEN),
-        Waypoint(up(c, HOVER_Z), GRIPPER_OPEN),
+        Waypoint(up(c, hover), GRIPPER_OPEN),
         Waypoint(up(c, GRASP_Z), GRIPPER_OPEN),
         Waypoint(up(c, GRASP_Z), GRIPPER_CLOSED, GRIP_WAIT_S),
-        Waypoint(up(c, HOVER_Z), GRIPPER_CLOSED),
-        Waypoint(up(t, HOVER_Z), GRIPPER_CLOSED),
-        Waypoint(up(t, PLACE_Z), GRIPPER_CLOSED),
-        Waypoint(up(t, PLACE_Z), GRIPPER_OPEN, GRIP_WAIT_S),
-        Waypoint(up(t, HOVER_Z), GRIPPER_OPEN),
+        Waypoint(up(c, hover), GRIPPER_CLOSED),
+        Waypoint(up(t, hover), GRIPPER_CLOSED),
+        Waypoint(up(t, place_z), GRIPPER_CLOSED),
+        Waypoint(up(t, place_z), GRIPPER_OPEN, GRIP_WAIT_S),
+        Waypoint(up(t, hover), GRIPPER_OPEN),
     ]
 
 

@@ -18,13 +18,12 @@ from pathlib import Path
 import mujoco
 import numpy as np
 
-from webcam_teach_robot.scene import TaskIds, yaw_facing_robot
+from webcam_teach_robot.scene import TASK_TEXT, TaskIds, yaw_facing_robot
 
 FPS = 30
 IMAGE_HW = (128, 128)
 CAMERAS = {"front": "front", "wrist": "wrist_cam"}
 JOINT_NAMES = ["shoulder_pan", "shoulder_lift", "elbow_flex", "wrist_flex", "wrist_roll", "gripper"]
-TASK_TEXT = "Pick up the red cube and place it on the green square."
 
 
 def features() -> dict:
@@ -49,6 +48,8 @@ class Episode:
     goal_xy: np.ndarray  # (2,)
     success: bool
     info: dict = field(default_factory=dict)  # 출처, 배치, 조건 등
+    base_pos: np.ndarray | None = None  # (T, 3) 쌓기 받침 블록 (쌓기 과제만)
+    base_quat: np.ndarray | None = None  # (T, 4)
 
 
 class SceneRenderer:
@@ -67,6 +68,10 @@ class SceneRenderer:
         d.mocap_pos[self.ids.target_mocap] = [ep.goal_xy[0], ep.goal_xy[1], 0.0005]
         yaw = yaw_facing_robot(ep.goal_xy)
         d.mocap_quat[self.ids.target_mocap] = [np.cos(yaw / 2), 0, 0, np.sin(yaw / 2)]
+        if self.ids.base_qadr >= 0:
+            b = self.ids.base_qadr
+            d.qpos[b:b + 3] = ep.base_pos[t]
+            d.qpos[b + 3:b + 7] = ep.base_quat[t]
         # 카메라 위치는 mj_kinematics가 아니라 mj_camlight에서 계산된다. 빼먹으면 카메라가 원점(로봇 받침대 안)에
         # 있는 것으로 그려진다(첫 시험 데이터셋에서 실제로 그랬다). mj_forward는 둘 다 한다.
         mujoco.mj_forward(self.model, d)

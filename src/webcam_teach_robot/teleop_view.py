@@ -9,7 +9,7 @@
 import cv2
 import numpy as np
 
-from webcam_teach_robot.scene import CUBE_HALF, TARGET_HALF, yaw_facing_robot
+from webcam_teach_robot.scene import BASE_HALF, CUBE_HALF, TARGET_HALF, yaw_facing_robot
 
 PANEL_W, PANEL_H = 210, 160
 PX_PER_M = PANEL_W / 0.32  # 위·옆 그림 모두 같은 축척(가로 32 cm). 축척이 다르면 정사각형 큐브가 찌그러져 보인다
@@ -46,7 +46,9 @@ def _side_px(x, z):
 
 
 def draw_guides(frame: np.ndarray, tip: np.ndarray, gripper_closed: bool, cube: np.ndarray,
-                cube_quat: np.ndarray, goal_xy: np.ndarray, workspace_lo: np.ndarray, workspace_hi: np.ndarray) -> None:
+                cube_quat: np.ndarray, goal_xy: np.ndarray, workspace_lo: np.ndarray, workspace_hi: np.ndarray,
+                base: np.ndarray | None = None) -> None:
+    """base: 쌓기 받침 블록 위치(쌓기 과제일 때만). 있으면 목표 사각형 대신 받침 블록을 그리고, 집은 뒤엔 받침 윗면까지 거리를 보여 준다."""
     h, w = frame.shape[:2]
     y0 = h - PANEL_H - 8
     top = np.zeros((PANEL_H, PANEL_W, 3), np.uint8)
@@ -56,7 +58,10 @@ def draw_guides(frame: np.ndarray, tip: np.ndarray, gripper_closed: bool, cube: 
     ws = np.array([[workspace_lo[0], workspace_lo[1]], [workspace_lo[0], workspace_hi[1]],
                    [workspace_hi[0], workspace_hi[1]], [workspace_hi[0], workspace_lo[1]]])
     cv2.polylines(top, [_top_px(ws)], True, GRAY, 1)
-    cv2.fillPoly(top, [_top_px(_square(goal_xy, TARGET_HALF, yaw_facing_robot(goal_xy)))], (40, 90, 40))
+    if base is None:
+        cv2.fillPoly(top, [_top_px(_square(goal_xy, TARGET_HALF, yaw_facing_robot(goal_xy)))], (40, 90, 40))
+    else:
+        cv2.fillPoly(top, [_top_px(_square(base[:2], BASE_HALF, yaw_facing_robot(base[:2])))], GREEN)
     cube_yaw = 2 * np.arctan2(cube_quat[3], cube_quat[0])
     cv2.fillPoly(top, [_top_px(_square(cube[:2], CUBE_HALF, cube_yaw))], RED)
     tp = tuple(_top_px(tip[:2]))
@@ -64,7 +69,11 @@ def draw_guides(frame: np.ndarray, tip: np.ndarray, gripper_closed: bool, cube: 
 
     # 옆에서 본 단면
     cv2.line(side, _side_px(SIDE_X_RANGE[0], 0), _side_px(SIDE_X_RANGE[1], 0), GRAY, 1)
-    cv2.line(side, _side_px(goal_xy[0] - TARGET_HALF, 0.001), _side_px(goal_xy[0] + TARGET_HALF, 0.001), GREEN, 4)
+    if base is None:
+        cv2.line(side, _side_px(goal_xy[0] - TARGET_HALF, 0.001), _side_px(goal_xy[0] + TARGET_HALF, 0.001), GREEN, 4)
+    else:
+        cv2.rectangle(side, _side_px(base[0] - BASE_HALF, base[2] + BASE_HALF),
+                      _side_px(base[0] + BASE_HALF, base[2] - BASE_HALF), GREEN, -1)
     cv2.rectangle(side, _side_px(cube[0] - CUBE_HALF, cube[2] + CUBE_HALF),
                   _side_px(cube[0] + CUBE_HALF, cube[2] - CUBE_HALF), RED, -1)
     sp = _side_px(tip[0], tip[2])
@@ -78,7 +87,9 @@ def draw_guides(frame: np.ndarray, tip: np.ndarray, gripper_closed: bool, cube: 
     frame[y0:y0 + PANEL_H, x1:x1 + PANEL_W] = cv2.addWeighted(frame[y0:y0 + PANEL_H, x1:x1 + PANEL_W], 0.25, side, 0.75, 0)
 
     # 지금 노리는 것(집기 전엔 큐브, 집은 뒤엔 목표)까지의 거리. 집게 기준점이 큐브 중심에 오면 0
-    ref = np.array([goal_xy[0], goal_xy[1], CUBE_HALF]) if gripper_closed else cube
+    goal_ref = (np.array([goal_xy[0], goal_xy[1], CUBE_HALF]) if base is None
+                else np.array([base[0], base[1], base[2] + BASE_HALF + CUBE_HALF]))  # 쌓기: 받침 윗면에 놓인 큐브 중심
+    ref = goal_ref if gripper_closed else cube
     d = (ref - tip) * 100
     name = "to GOAL" if gripper_closed else "to CUBE"
     words = [("FWD" if d[0] > 0 else "BACK", abs(d[0])), ("LEFT" if d[1] > 0 else "RIGHT", abs(d[1])),
