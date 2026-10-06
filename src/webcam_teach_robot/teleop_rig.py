@@ -16,7 +16,7 @@ import numpy as np
 from webcam_teach_robot.depth_correction import DepthCorrection
 from webcam_teach_robot.hand_tracking import HAND_CONNECTIONS, HandObservation
 from webcam_teach_robot.ik import SO101IK
-from webcam_teach_robot.scene import TASK, PlacementTracker, base_pos, base_quat, build_model, cube_pos, place, task_ids
+from webcam_teach_robot.scene import PUSH_TOL, TASK, PlacementTracker, base_pos, base_quat, build_model, cube_pos, place, task_ids
 from webcam_teach_robot.teleop_mapping import (GraspLock, GripperSwitch, HandFilter, camera_delta_to_robot,
                                                hand_point_camera)
 from webcam_teach_robot.teleop_view import draw_guides
@@ -227,6 +227,15 @@ class TeleopRig:
             for a, b in HAND_CONNECTIONS:
                 cv2.line(frame, tuple(pts[a]), tuple(pts[b]), (0, 200, 0), 2)
             cv2.circle(frame, tuple(obs.palm_center_px.astype(int)), 7, (0, 0, 255), -1)
+        # 쌓기: 받침이 1 cm 넘게 밀리면 이 판은 성공할 수 없다(판정 규칙). 2026-10-06 녹화 중 "쌓았는데 성공이 안 뜬다"는
+        # 소감이 나왔고, 기록을 보니 원인이 전부 받침 밀림이라 화면에 바로 알려 준다(표시만, 판정·기록은 그대로).
+        base = self.base()
+        if base is not None:
+            moved = float(np.linalg.norm(base[:2] - self.goal_xy)) * 100
+            if moved > PUSH_TOL * 100:
+                text = f"BLOCK MOVED {moved:.1f} cm (>1) - cannot succeed, press x"
+                cv2.putText(frame, text, (8, frame.shape[0] - 200), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 0), 4)
+                cv2.putText(frame, text, (8, frame.shape[0] - 200), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
 
     def status(self) -> str:
         return (("ENGAGED" if self.engaged else "PAUSED (space)") + ("  CLOSED" if self.gripper_switch.closed else "  open")
