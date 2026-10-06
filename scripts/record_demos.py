@@ -56,9 +56,9 @@ TAIL_S = 1.5  # 성공 뒤 더 기록하는 시간 (데이터셋은 성공 1초 
 
 
 # 쌓기 과제(--task stack --session stack): M8과 같은 규칙(②·③ ABBA, 50개씩, 조건 가림, 3번까지)에 시드만 다르다.
-# 시간 제한은 사용자 시험 조종(docs/13-stacking-plan.md) 뒤 녹화 전에 확정한다.
+# 시간 제한: 시험 조종 뒤 M8과 같은 90초로 확정(2026-10-06, docs/13-stacking-plan.md).
 STACK_PLAN_SEED = PLAN_SEED + 200
-STACK_TIME_LIMIT_S = 120.0
+STACK_TIME_LIMIT_S = 90.0
 
 
 def make_plan(n_layouts: int, seed: int = PLAN_SEED, time_limit_s: float = TIME_LIMIT_S, session: str = "m8") -> dict:
