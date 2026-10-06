@@ -74,7 +74,7 @@ uv run hf repo create "$RESULTS" --repo-type dataset --private --exist-ok || tru
     tr '\r' '\n' < "$LOG" | grep -v '^Training:' | tail -n 400 > /workspace/logs/latest.txt
     date -u >> /workspace/logs/latest.txt  # 내용이 같아도 매번 새로 올라가게
     uv run hf upload "$RESULTS" /workspace/logs/latest.txt "logs/latest${JOBS:+_${JOBS%.txt}}.txt" --repo-type dataset --private >/dev/null 2>&1
-  done ) &
+  done ) 9>&- &  # 잠금 파일을 물려받지 않게: 본 스크립트를 멈춰도 이 루프의 sleep이 잠금을 최대 10분 쥐고 있어 다시 시작이 막혔다(2026-10-06)
 
 # 할 일 목록: 기본은 M9(5조건 × 시드 1000~3000). JOBS=파일 이름을 주면 그 목록(줄마다 "조건 시드 스텝 [이름꼬리]")을 따른다.
 if [ -n "${JOBS:-}" ]; then
