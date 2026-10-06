@@ -1,0 +1,3 @@
+# 쌓기 네 번째 서버용: 첫 서버의 4번째(③ 2000)와 두 번째 서버의 6번째(③ 4000)를 미리 맡는다
+stack3-webcam-corrected 2000 60000 -60k
+stack3-webcam-corrected 4000 60000 -60k
