@@ -1,0 +1,4 @@
+# 쌓기 서버 1 (서로 겹치지 않게 나눈 목록, 이 서버는 이것만)
+stack2-webcam 1000 60000 -60k
+stack3-webcam-corrected 1000 60000 -60k
+stack2-webcam 2000 60000 -60k

@@ -1,0 +1,6 @@
+# 쌓기 서버 2
+stack1-scripted 1000 20000 -20k
+stack1-scripted 2000 20000 -20k
+stack1-scripted 3000 20000 -20k
+stack3-webcam-corrected 5000 60000 -60k
+stack2-webcam 5000 60000 -60k

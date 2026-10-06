@@ -1,0 +1,4 @@
+# 쌓기 서버 3
+stack2-webcam 3000 60000 -60k
+stack3-webcam-corrected 3000 60000 -60k
+stack2-webcam 4000 60000 -60k
