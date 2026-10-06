@@ -235,339 +235,972 @@
    ]
   },
   "18": {
-   "status": "todo",
+   "status": "success",
    "tries": [
     {
      "file": "u018_try1_20261006_191948.csv",
      "result": "timeout",
      "seconds_from_engage": 90.02,
      "seconds_total": 91.09
+    },
+    {
+     "file": "u018_try2_20261006_192956.csv",
+     "result": "success",
+     "seconds_from_engage": 25.64,
+     "seconds_total": 33.83
     }
    ]
   },
   "19": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u019_try1_20261006_193030.csv",
+     "result": "success",
+     "seconds_from_engage": 28.5,
+     "seconds_total": 31.45
+    }
+   ]
   },
   "20": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u020_try1_20261006_193101.csv",
+     "result": "success",
+     "seconds_from_engage": 24.55,
+     "seconds_total": 27.42
+    }
+   ]
   },
   "21": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u021_try1_20261006_193129.csv",
+     "result": "success",
+     "seconds_from_engage": 16.17,
+     "seconds_total": 19.2
+    }
+   ]
   },
   "22": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u022_try1_20261006_193148.csv",
+     "result": "abandoned",
+     "seconds_from_engage": 34.3,
+     "seconds_total": 35.32
+    },
+    {
+     "file": "u022_try2_20261006_193226.csv",
+     "result": "success",
+     "seconds_from_engage": 17.83,
+     "seconds_total": 20.15
+    }
+   ]
   },
   "23": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u023_try1_20261006_193247.csv",
+     "result": "success",
+     "seconds_from_engage": 16.68,
+     "seconds_total": 19.52
+    }
+   ]
   },
   "24": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u024_try1_20261006_193307.csv",
+     "result": "success",
+     "seconds_from_engage": 54.08,
+     "seconds_total": 56.53
+    }
+   ]
   },
   "25": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u025_try1_20261006_193405.csv",
+     "result": "success",
+     "seconds_from_engage": 15.14,
+     "seconds_total": 18.29
+    }
+   ]
   },
   "26": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u026_try1_20261006_193424.csv",
+     "result": "success",
+     "seconds_from_engage": 16.54,
+     "seconds_total": 19.38
+    }
+   ]
   },
   "27": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u027_try1_20261006_193444.csv",
+     "result": "success",
+     "seconds_from_engage": 15.67,
+     "seconds_total": 18.35
+    }
+   ]
   },
   "28": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u028_try1_20261006_193505.csv",
+     "result": "success",
+     "seconds_from_engage": 17.7,
+     "seconds_total": 20.91
+    }
+   ]
   },
   "29": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u029_try1_20261006_193527.csv",
+     "result": "success",
+     "seconds_from_engage": 17.94,
+     "seconds_total": 20.58
+    }
+   ]
   },
   "30": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u030_try1_20261006_193552.csv",
+     "result": "success",
+     "seconds_from_engage": 14.1,
+     "seconds_total": 82.79
+    }
+   ]
   },
   "31": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u031_try1_20261006_193716.csv",
+     "result": "success",
+     "seconds_from_engage": 25.91,
+     "seconds_total": 28.56
+    }
+   ]
   },
   "32": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u032_try1_20261006_193745.csv",
+     "result": "success",
+     "seconds_from_engage": 46.14,
+     "seconds_total": 51.48
+    }
+   ]
   },
   "33": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u033_try1_20261006_193837.csv",
+     "result": "abandoned",
+     "seconds_from_engage": 33.64,
+     "seconds_total": 39.03
+    },
+    {
+     "file": "u033_try2_20261006_193922.csv",
+     "result": "success",
+     "seconds_from_engage": 23.01,
+     "seconds_total": 27.67
+    }
+   ]
   },
   "34": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u034_try1_20261006_193950.csv",
+     "result": "success",
+     "seconds_from_engage": 17.74,
+     "seconds_total": 20.48
+    }
+   ]
   },
   "35": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u035_try1_20261006_194011.csv",
+     "result": "success",
+     "seconds_from_engage": 19.09,
+     "seconds_total": 136.06
+    }
+   ]
   },
   "36": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u036_try1_20261006_194227.csv",
+     "result": "success",
+     "seconds_from_engage": 17.37,
+     "seconds_total": 20.11
+    }
+   ]
   },
   "37": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u037_try1_20261006_194337.csv",
+     "result": "success",
+     "seconds_from_engage": 13.14,
+     "seconds_total": 16.16
+    }
+   ]
   },
   "38": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u038_try1_20261006_194354.csv",
+     "result": "success",
+     "seconds_from_engage": 12.78,
+     "seconds_total": 15.51
+    }
+   ]
   },
   "39": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u039_try1_20261006_194410.csv",
+     "result": "success",
+     "seconds_from_engage": 13.88,
+     "seconds_total": 16.55
+    }
+   ]
   },
   "40": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u040_try1_20261006_194427.csv",
+     "result": "success",
+     "seconds_from_engage": 13.24,
+     "seconds_total": 15.88
+    }
+   ]
   },
   "41": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u041_try1_20261006_194501.csv",
+     "result": "success",
+     "seconds_from_engage": 13.08,
+     "seconds_total": 16.11
+    }
+   ]
   },
   "42": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u042_try1_20261006_195745.csv",
+     "result": "success",
+     "seconds_from_engage": 18.48,
+     "seconds_total": 21.5
+    }
+   ]
   },
   "43": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u043_try1_20261006_195807.csv",
+     "result": "success",
+     "seconds_from_engage": 13.2,
+     "seconds_total": 16.08
+    }
+   ]
   },
   "44": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u044_try1_20261006_195824.csv",
+     "result": "success",
+     "seconds_from_engage": 14.84,
+     "seconds_total": 17.6
+    }
+   ]
   },
   "45": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u045_try1_20261006_195842.csv",
+     "result": "success",
+     "seconds_from_engage": 11.81,
+     "seconds_total": 14.32
+    }
+   ]
   },
   "46": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u046_try1_20261006_195856.csv",
+     "result": "success",
+     "seconds_from_engage": 10.85,
+     "seconds_total": 13.39
+    }
+   ]
   },
   "47": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u047_try1_20261006_195910.csv",
+     "result": "success",
+     "seconds_from_engage": 30.9,
+     "seconds_total": 33.61
+    }
+   ]
   },
   "48": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u048_try1_20261006_195944.csv",
+     "result": "success",
+     "seconds_from_engage": 11.47,
+     "seconds_total": 14.36
+    }
+   ]
   },
   "49": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u049_try1_20261006_195959.csv",
+     "result": "success",
+     "seconds_from_engage": 12.78,
+     "seconds_total": 15.56
+    }
+   ]
   },
   "50": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u050_try1_20261006_200015.csv",
+     "result": "abandoned",
+     "seconds_from_engage": 41.16,
+     "seconds_total": 42.34
+    },
+    {
+     "file": "u050_try2_20261006_200106.csv",
+     "result": "success",
+     "seconds_from_engage": 11.85,
+     "seconds_total": 14.3
+    }
+   ]
   },
   "51": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u051_try1_20261006_200121.csv",
+     "result": "success",
+     "seconds_from_engage": 14.68,
+     "seconds_total": 17.57
+    }
+   ]
   },
   "52": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u052_try1_20261006_200138.csv",
+     "result": "success",
+     "seconds_from_engage": 11.85,
+     "seconds_total": 14.69
+    }
+   ]
   },
   "53": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u053_try1_20261006_200154.csv",
+     "result": "success",
+     "seconds_from_engage": 12.0,
+     "seconds_total": 14.6
+    }
+   ]
   },
   "54": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u054_try1_20261006_200209.csv",
+     "result": "success",
+     "seconds_from_engage": 11.18,
+     "seconds_total": 13.85
+    }
+   ]
   },
   "55": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u055_try1_20261006_200223.csv",
+     "result": "success",
+     "seconds_from_engage": 16.81,
+     "seconds_total": 19.34
+    }
+   ]
   },
   "56": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u056_try1_20261006_200243.csv",
+     "result": "success",
+     "seconds_from_engage": 12.39,
+     "seconds_total": 15.15
+    }
+   ]
   },
   "57": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u057_try1_20261006_200258.csv",
+     "result": "success",
+     "seconds_from_engage": 12.95,
+     "seconds_total": 19.13
+    }
+   ]
   },
   "58": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u058_try1_20261006_200331.csv",
+     "result": "success",
+     "seconds_from_engage": 20.55,
+     "seconds_total": 23.97
+    }
+   ]
   },
   "59": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u059_try1_20261006_200356.csv",
+     "result": "success",
+     "seconds_from_engage": 11.88,
+     "seconds_total": 14.73
+    }
+   ]
   },
   "60": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u060_try1_20261006_200411.csv",
+     "result": "success",
+     "seconds_from_engage": 31.76,
+     "seconds_total": 34.57
+    }
+   ]
   },
   "61": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u061_try1_20261006_200446.csv",
+     "result": "success",
+     "seconds_from_engage": 11.73,
+     "seconds_total": 19.31
+    }
+   ]
   },
   "62": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u062_try1_20261006_200505.csv",
+     "result": "success",
+     "seconds_from_engage": 19.76,
+     "seconds_total": 22.34
+    }
+   ]
   },
   "63": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u063_try1_20261006_200528.csv",
+     "result": "success",
+     "seconds_from_engage": 16.61,
+     "seconds_total": 22.99
+    }
+   ]
   },
   "64": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u064_try1_20261006_200551.csv",
+     "result": "success",
+     "seconds_from_engage": 12.44,
+     "seconds_total": 29.95
+    }
+   ]
   },
   "65": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u065_try1_20261006_200622.csv",
+     "result": "success",
+     "seconds_from_engage": 10.82,
+     "seconds_total": 13.49
+    }
+   ]
   },
   "66": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u066_try1_20261006_200636.csv",
+     "result": "success",
+     "seconds_from_engage": 12.9,
+     "seconds_total": 15.55
+    }
+   ]
   },
   "67": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u067_try1_20261006_200652.csv",
+     "result": "success",
+     "seconds_from_engage": 36.09,
+     "seconds_total": 38.57
+    }
+   ]
   },
   "68": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u068_try1_20261006_200731.csv",
+     "result": "abandoned",
+     "seconds_from_engage": 51.67,
+     "seconds_total": 52.92
+    },
+    {
+     "file": "u068_try2_20261006_200825.csv",
+     "result": "success",
+     "seconds_from_engage": 12.5,
+     "seconds_total": 15.4
+    }
+   ]
   },
   "69": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u069_try1_20261006_200841.csv",
+     "result": "success",
+     "seconds_from_engage": 15.0,
+     "seconds_total": 17.61
+    }
+   ]
   },
   "70": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u070_try1_20261006_200859.csv",
+     "result": "success",
+     "seconds_from_engage": 13.17,
+     "seconds_total": 15.86
+    }
+   ]
   },
   "71": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u071_try1_20261006_200915.csv",
+     "result": "success",
+     "seconds_from_engage": 12.18,
+     "seconds_total": 14.78
+    }
+   ]
   },
   "72": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u072_try1_20261006_200933.csv",
+     "result": "abandoned",
+     "seconds_from_engage": 45.12,
+     "seconds_total": 46.66
+    },
+    {
+     "file": "u072_try2_20261006_201021.csv",
+     "result": "success",
+     "seconds_from_engage": 23.15,
+     "seconds_total": 26.18
+    }
+   ]
   },
   "73": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u073_try1_20261006_201048.csv",
+     "result": "success",
+     "seconds_from_engage": 13.97,
+     "seconds_total": 18.83
+    }
+   ]
   },
   "74": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u074_try1_20261006_201107.csv",
+     "result": "success",
+     "seconds_from_engage": 14.07,
+     "seconds_total": 16.62
+    }
+   ]
   },
   "75": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u075_try1_20261006_201124.csv",
+     "result": "success",
+     "seconds_from_engage": 10.98,
+     "seconds_total": 13.47
+    }
+   ]
   },
   "76": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u076_try1_20261006_201138.csv",
+     "result": "success",
+     "seconds_from_engage": 19.46,
+     "seconds_total": 22.03
+    }
+   ]
   },
   "77": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u077_try1_20261006_201201.csv",
+     "result": "success",
+     "seconds_from_engage": 11.8,
+     "seconds_total": 14.88
+    }
+   ]
   },
   "78": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u078_try1_20261006_201216.csv",
+     "result": "success",
+     "seconds_from_engage": 11.91,
+     "seconds_total": 29.45
+    }
+   ]
   },
   "79": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u079_try1_20261006_201246.csv",
+     "result": "success",
+     "seconds_from_engage": 14.55,
+     "seconds_total": 17.01
+    }
+   ]
   },
   "80": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u080_try1_20261006_201303.csv",
+     "result": "success",
+     "seconds_from_engage": 55.04,
+     "seconds_total": 57.38
+    }
+   ]
   },
   "81": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u081_try1_20261006_201401.csv",
+     "result": "abandoned",
+     "seconds_from_engage": 28.03,
+     "seconds_total": 344.97
+    },
+    {
+     "file": "u081_try2_20261006_201948.csv",
+     "result": "success",
+     "seconds_from_engage": 15.76,
+     "seconds_total": 18.48
+    }
+   ]
   },
   "82": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u082_try1_20261006_202007.csv",
+     "result": "success",
+     "seconds_from_engage": 15.99,
+     "seconds_total": 21.69
+    }
+   ]
   },
   "83": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u083_try1_20261006_202029.csv",
+     "result": "success",
+     "seconds_from_engage": 13.64,
+     "seconds_total": 16.11
+    }
+   ]
   },
   "84": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u084_try1_20261006_202046.csv",
+     "result": "success",
+     "seconds_from_engage": 11.41,
+     "seconds_total": 13.95
+    }
+   ]
   },
   "85": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u085_try1_20261006_202100.csv",
+     "result": "success",
+     "seconds_from_engage": 16.47,
+     "seconds_total": 19.16
+    }
+   ]
   },
   "86": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u086_try1_20261006_202120.csv",
+     "result": "success",
+     "seconds_from_engage": 12.88,
+     "seconds_total": 219.34
+    }
+   ]
   },
   "87": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u087_try1_20261006_202500.csv",
+     "result": "success",
+     "seconds_from_engage": 15.09,
+     "seconds_total": 17.67
+    }
+   ]
   },
   "88": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u088_try1_20261006_202518.csv",
+     "result": "success",
+     "seconds_from_engage": 14.61,
+     "seconds_total": 17.22
+    }
+   ]
   },
   "89": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u089_try1_20261006_202536.csv",
+     "result": "success",
+     "seconds_from_engage": 12.24,
+     "seconds_total": 14.69
+    }
+   ]
   },
   "90": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u090_try1_20261006_202551.csv",
+     "result": "success",
+     "seconds_from_engage": 11.87,
+     "seconds_total": 14.75
+    }
+   ]
   },
   "91": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u091_try1_20261006_202606.csv",
+     "result": "abandoned",
+     "seconds_from_engage": 47.57,
+     "seconds_total": 48.48
+    },
+    {
+     "file": "u091_try2_20261006_202656.csv",
+     "result": "success",
+     "seconds_from_engage": 29.54,
+     "seconds_total": 32.43
+    }
+   ]
   },
   "92": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u092_try1_20261006_202728.csv",
+     "result": "success",
+     "seconds_from_engage": 22.47,
+     "seconds_total": 25.02
+    }
+   ]
   },
   "93": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u093_try1_20261006_202755.csv",
+     "result": "success",
+     "seconds_from_engage": 11.85,
+     "seconds_total": 36.02
+    }
+   ]
   },
   "94": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u094_try1_20261006_202831.csv",
+     "result": "success",
+     "seconds_from_engage": 30.53,
+     "seconds_total": 41.0
+    }
+   ]
   },
   "95": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u095_try1_20261006_202913.csv",
+     "result": "abandoned",
+     "seconds_from_engage": 39.42,
+     "seconds_total": 41.0
+    },
+    {
+     "file": "u095_try2_20261006_202955.csv",
+     "result": "abandoned",
+     "seconds_from_engage": 28.84,
+     "seconds_total": 30.08
+    },
+    {
+     "file": "u095_try3_20261006_203033.csv",
+     "result": "success",
+     "seconds_from_engage": 45.09,
+     "seconds_total": 47.75
+    }
+   ]
   },
   "96": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u096_try1_20261006_203121.csv",
+     "result": "success",
+     "seconds_from_engage": 14.77,
+     "seconds_total": 17.52
+    }
+   ]
   },
   "97": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u097_try1_20261006_203139.csv",
+     "result": "abandoned",
+     "seconds_from_engage": 28.99,
+     "seconds_total": 30.2
+    },
+    {
+     "file": "u097_try2_20261006_203211.csv",
+     "result": "success",
+     "seconds_from_engage": 17.36,
+     "seconds_total": 22.24
+    }
+   ]
   },
   "98": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u098_try1_20261006_203234.csv",
+     "result": "success",
+     "seconds_from_engage": 14.95,
+     "seconds_total": 17.87
+    }
+   ]
   },
   "99": {
-   "status": "todo",
-   "tries": []
+   "status": "success",
+   "tries": [
+    {
+     "file": "u099_try1_20261006_203252.csv",
+     "result": "success",
+     "seconds_from_engage": 17.0,
+     "seconds_total": 19.97
+    }
+   ]
   }
  }
 }
