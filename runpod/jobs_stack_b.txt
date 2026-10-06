@@ -1,0 +1,4 @@
+# 쌓기 B: ③ 시드 1000~3000, 6만 스텝
+stack3-webcam-corrected 1000 60000 -60k
+stack3-webcam-corrected 2000 60000 -60k
+stack3-webcam-corrected 3000 60000 -60k

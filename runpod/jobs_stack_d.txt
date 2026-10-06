@@ -1,0 +1,4 @@
+# 쌓기 D: ③ 시드 4000·5000 + ① 시드 3000(2만 스텝)
+stack3-webcam-corrected 4000 60000 -60k
+stack3-webcam-corrected 5000 60000 -60k
+stack1-scripted 3000 20000 -20k

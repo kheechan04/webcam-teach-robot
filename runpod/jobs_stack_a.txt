@@ -1,0 +1,4 @@
+# 쌓기 A: ② 시드 1000~3000, 6만 스텝 (docs/13-stacking-plan.md)
+stack2-webcam 1000 60000 -60k
+stack2-webcam 2000 60000 -60k
+stack2-webcam 3000 60000 -60k
