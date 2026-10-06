@@ -1,0 +1,14 @@
+# 쌓기 전체를 서버 한 대로 (docs/13-stacking-plan.md). ②·③을 같은 시드끼리 번갈아: 중간에 멈춰도 끝난 시드는 짝이 맞는다. ①은 마지막
+stack2-webcam 1000 60000 -60k
+stack3-webcam-corrected 1000 60000 -60k
+stack2-webcam 2000 60000 -60k
+stack3-webcam-corrected 2000 60000 -60k
+stack2-webcam 3000 60000 -60k
+stack3-webcam-corrected 3000 60000 -60k
+stack2-webcam 4000 60000 -60k
+stack3-webcam-corrected 4000 60000 -60k
+stack2-webcam 5000 60000 -60k
+stack3-webcam-corrected 5000 60000 -60k
+stack1-scripted 1000 20000 -20k
+stack1-scripted 2000 20000 -20k
+stack1-scripted 3000 20000 -20k
