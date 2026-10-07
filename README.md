@@ -78,7 +78,12 @@ uv run python scripts/eval_policy.py <Hub 모델 또는 로컬 폴더> --n 100  
 
 ## 라이선스
 
-개발 중이라 아직 라이선스를 정하지 않았다(모든 권리 보유: 코드를 볼 수는 있지만 복사·수정·재배포는 허락하지 않는다). 공개할 때 코드는 Apache-2.0, 데이터셋은 CC BY 4.0으로 바꿀 예정이다. `third_party/` 안의 SO-101 모델과 내려받아 쓰는 모델은 각자의 라이선스(Apache-2.0)를 따른다.
+- **코드:** Apache License 2.0 ([LICENSE](LICENSE)).
+- **데이터:** 저장소의 측정·실험 기록(`measurements/`, `experiments/`)과 Hugging Face Hub 데이터셋은 CC BY 4.0이다([LICENSE-DATA.md](LICENSE-DATA.md)). 웹캠 영상이나 사람 이미지는 없고, 숫자와 그 숫자로 다시 그린 시뮬레이션 화면뿐이다.
+- **학습한 모델:** Hub의 최종 비교 모델 35개(옮기기 10만 스텝 22개, 쌓기 13개)는 Apache-2.0으로 공개했다.
+- `third_party/` 안의 SO-101 모델과 내려받아 쓰는 손 추적 모델은 각자의 라이선스(Apache-2.0)를 따른다.
+
+공개 데이터셋 (Hub, `kheechan04/webcam-teach-robot-<이름>`): `cond1-scripted`, `cond2-webcam`, `cond3-webcam-corrected`, `cond4-depth-error`, `cond4z-no-error`, `cond4h-error-half`, `cond4d-error-double`, `cond5-webcam-marker`, `cond2-p2`, `cond3-p2`, `stack1-scripted`, `stack2-webcam`, `stack3-webcam-corrected`, 평가 결과·서버 기록 `m9-results`.
 
 ## 출처
 
