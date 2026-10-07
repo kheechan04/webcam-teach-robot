@@ -6,10 +6,17 @@ eval_policy.py와 같은 평가(같은 배치·같은 렌더·같은 판정)를 
 
     uv run python scripts/probe_policy_grasp.py --n 30 --workers 8
     uv run python scripts/probe_policy_grasp.py --set 100k --n 30 --workers 4   # 10만 스텝 ②·③, 시드 5개
+    uv run python scripts/probe_policy_grasp.py --set stack --n 30 --workers 4  # 쌓기 ②·③ 6만 스텝, 시드 5개 (docs/13 보조 분석)
 결과: experiments/policy_grasp_probe.json (10만 스텝은 policy_grasp_probe_100k.json)
 """
 
 import argparse
+import os
+import sys
+
+# 쌓기 모델(--set stack)은 장면 모듈을 불러오기 전에 과제를 정한다
+if "--set" in sys.argv and sys.argv[sys.argv.index("--set") + 1] == "stack":
+    os.environ["WTR_TASK"] = "stack"
 import json
 import multiprocessing as mp
 import sys
@@ -29,6 +36,8 @@ from webcam_teach_robot.scene import TASK_TEXT, PlacementTracker, base_pos, buil
 ROOT = Path(__file__).resolve().parent.parent
 MODELS = {c: [f"kheechan04/webcam-teach-robot-act-{c}-s{s}" for s in (1000, 2000, 3000)]
           for c in ("cond2-webcam", "cond3-webcam-corrected", "cond4-depth-error", "cond4z-no-error", "cond5-webcam-marker")}
+MODELS_STACK = {c: [f"kheechan04/webcam-teach-robot-act-{c}-s{s}-60k" for s in (1000, 2000, 3000, 4000, 5000)]
+                for c in ("stack2-webcam", "stack3-webcam-corrected")}
 MODELS_100K = {c: [f"kheechan04/webcam-teach-robot-act-{c}-s{s}-100k" for s in (1000, 2000, 3000, 4000, 5000)]
                for c in ("cond2-webcam", "cond3-webcam-corrected")}
 MAX_S = 60.0
@@ -83,12 +92,12 @@ def main() -> None:
     p = argparse.ArgumentParser()
     p.add_argument("--n", type=int, default=30)
     p.add_argument("--workers", type=int, default=8)
-    p.add_argument("--set", choices=["20k", "100k"], default="20k")
+    p.add_argument("--set", choices=["20k", "100k", "stack"], default="20k")
     args = p.parse_args()
-    models = MODELS_100K if args.set == "100k" else MODELS
+    models = {"100k": MODELS_100K, "stack": MODELS_STACK}.get(args.set, MODELS)
     layouts = load_layouts("eval")[:args.n]
     jobs = [(i, c, g) for i, (c, g) in enumerate(layouts)]
-    out_path = ROOT / "experiments" / ("policy_grasp_probe_100k.json" if args.set == "100k" else "policy_grasp_probe.json")
+    out_path = ROOT / "experiments" / {"100k": "policy_grasp_probe_100k.json", "stack": "policy_grasp_probe_stack.json"}.get(args.set, "policy_grasp_probe.json")
     out = json.loads(out_path.read_text(encoding="utf-8")) if out_path.exists() else {}
     for cond, paths in models.items():
         for path in paths:
