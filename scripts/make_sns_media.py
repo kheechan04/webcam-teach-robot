@@ -3,6 +3,7 @@
     uv run python scripts/make_sns_media.py policy <Hub 모델> [--layout N]   # 학습한 로봇 혼자 (mp4)
     uv run python scripts/make_sns_media.py replay <조종 기록 csv>           # 웹캠 조종 시범 다시 그리기 (mp4)
     uv run python scripts/make_sns_media.py charts                          # 그래프 png
+    --task stack 을 붙이면 쌓기 과제 장면으로 그린다 (policy·replay)
 → outputs/sns/ (git에 안 올림)
 """
 
@@ -158,10 +159,14 @@ def cmd_replay(args):
         data.mocap_pos[ids.target_mocap] = [goal[0], goal[1], 0.0005]
         yaw = yaw_facing_robot(goal)
         data.mocap_quat[ids.target_mocap] = [np.cos(yaw / 2), 0, 0, np.sin(yaw / 2)]
+        if ids.base_qadr >= 0 and r.get("base_x"):
+            b = ids.base_qadr
+            data.qpos[b:b + 3] = [float(r[f"base_{a}"]) for a in "xyz"]
+            data.qpos[b + 3:b + 7] = [float(r[f"base_q{a}"]) for a in "wxyz"]
         mujoco.mj_forward(model, data)
         side.update_scene(data, camera=view)
-        frames.append(card(side.render(), "웹캠으로 조종한 시범", f"{g - t[0]:4.1f}초  ({args.speed:g}배속)",
-                           None, "웹캠 영상 없이, 기록된 관절 각도·큐브 위치로 다시 그림"))
+        frames.append(card(side.render(), args.title or "웹캠으로 조종한 시범", f"{g - t[0]:4.1f}초  ({args.speed:g}배속)",
+                           None, "웹캠 영상 없이, 기록된 관절 각도·물체 위치로 다시 그림"))
     OUT.mkdir(parents=True, exist_ok=True)
     write_mp4(frames, OUT / f"replay_{Path(args.target).stem}.mp4")
 
@@ -280,23 +285,42 @@ def cmd_charts(args):
     fig.savefig(OUT / "chart3_correction.png", facecolor=fig.get_facecolor())
     plt.close(fig)
 
+    # 5. 쌓기 재현: 시드별 ③ − ②, 두 과제
+    st = json.loads((ROOT / "experiments" / "stack_summary.json").read_text(encoding="utf-8"))
+    cube = [int(round(sc(f"cond3-webcam-corrected-s{s}-100k") - sc(f"cond2-webcam-s{s}-100k"))) for s in seeds]
+    stack = st["h1"]["diffs_3_minus_2"]
+    fig, ax = sq("다른 과제에서는 재현되지 않았다", "보정한 시범(③) 성공률에서 보정 안 한 시범(②)을 뺀 값 · 같은 시드끼리")
+    for i, (name, d_) in enumerate((("큐브 옮기기|(먼저 한 실험)", cube), ("큐브 쌓기|(미리 계획한 재현)", stack))):
+        xs = i + np.linspace(-0.18, 0.18, len(d_))
+        ax.scatter(xs, d_, s=90, color=["#2a78d6" if v > 0 else "#eb6834" for v in d_], zorder=3)
+        m = float(np.mean(d_))
+        ax.plot([i - 0.3, i + 0.3], [m, m], color="#17171d", lw=3)
+        ax.text(i + 0.33, m, f"평균 {m:+.1f}%p", va="center", fontsize=14, fontweight="bold")
+    ax.axhline(0, color="#52514e", lw=1)
+    ax.set_xticks([0, 1], ["큐브 옮기기" + chr(10) + "(먼저 한 실험)", "큐브 쌓기" + chr(10) + "(미리 계획한 재현)"], fontsize=12)
+    ax.set_xlim(-0.6, 1.9)
+    ax.set_ylabel("성공률 차이 (%p, 점 하나 = 시드 하나)", fontsize=11)
+    fig.text(0.07, 0.03, "옮기기에선 다섯 시드 모두 보정 쪽이 높았고, 쌓기에선 다섯 중 넷이 낮았다 · 합치면 효과 없음", fontsize=10.5, color="#eb6834")
+    fig.savefig(OUT / "chart5_stack_replication.png", facecolor=fig.get_facecolor())
+    plt.close(fig)
+
     # 4. 직접 한 측정·녹화 요약 카드
     im = Image.new("RGB", (S, S), (252, 252, 251))
     d = ImageDraw.Draw(im)
     d.text((70, 70), "직접 몸으로 한 것", font=font(54), fill=(23, 23, 29))
     d.text((70, 150), "웹캠 영상은 하나도 저장하지 않고, 손 마디 좌표 숫자만", font=font(26, False), fill=(80, 80, 94))
-    rows = [("깊이 측정", "줄자로 잰 참값과 비교 · 10 + 70 + 24단계"), ("웹캠 시범 녹화", "시범자 1: 170개 (시도 175번)"),
+    rows = [("깊이 측정", "줄자로 잰 참값과 비교 · 120단계"), ("웹캠 시범 녹화", "시범자 1: 270개 (옮기기 170 · 쌓기 100)"),
             ("", "시범자 2: 34개 + 짧은 깊이 측정"), ("녹화 규칙 수정", "3번 고치고 그때마다 처음부터 다시"),
-            ("조건 가리기", "지금이 어느 조건인지 화면에 안 보이게"), ("학습", "GPU 대여 서버 · 학습 71번")]
+            ("조건 가리기", "지금이 어느 조건인지 화면에 안 보이게"), ("학습", "GPU 대여 서버 · 학습 84번")]
     y = 260
     for k, v in rows:
         if k:
             d.text((70, y), k, font=font(34), fill=(42, 120, 214))
         d.text((420, y + 4), v, font=font(30, False), fill=(23, 23, 29))
         y += 105
-    d.text((70, S - 90), "시범 1개 = 웹캠으로 로봇을 조종해 큐브를 목표에 옮긴 한 번", font=font(24, False), fill=(125, 125, 140))
+    d.text((70, S - 90), "시범 1개 = 웹캠으로 로봇을 조종해 과제를 한 번 해낸 기록", font=font(24, False), fill=(125, 125, 140))
     im.save(OUT / "card_effort.png")
-    print(f"→ {OUT}/chart1~4, chart_final_results, card_effort.png")
+    print(f"→ {OUT}/chart1~5, chart_final_results, card_effort.png")
 
 
 def cmd_pair(args):
@@ -380,7 +404,10 @@ def main() -> None:
     p.add_argument("--title", default=None)
     p.add_argument("--layouts", default="7,8,13,20,25,36,40,42,44,47")
     p.add_argument("--allow-unpushed", action="store_true", help="②가 큐브를 밀지 않고 실패해도 받기")
+    p.add_argument("--task", choices=["place", "stack"], default="place")
     a = p.parse_args()
+    import os
+    os.environ["WTR_TASK"] = a.task  # 장면 모듈은 각 명령 안에서 불러오므로 여기서 정하면 된다
     {"policy": cmd_policy, "replay": cmd_replay, "charts": cmd_charts, "pair": cmd_pair}[a.what](a)
 
 
