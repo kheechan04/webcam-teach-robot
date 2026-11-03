@@ -36,7 +36,8 @@ Collecting robot demonstrations with nothing but a laptop webcam is cheap, but a
 We measure what this error does to imitation learning.
 A human operator teleoperates a simulated SO-101 arm in MuJoCo from a webcam using MediaPipe hand landmarks, and ACT policies are trained on the resulting demonstrations.
 On a pick-and-place task we compare six demonstration sources: scripted, webcam, webcam with a learned pose-dependent depth correction, a virtual operator running the same teleoperation code with and without injected measured depth error, and webcam with a wrist fiducial marker that measures depth directly.
-With training length matched, webcam demonstrations yield \lossMean{} percentage points (pp) lower success than scripted ones (95\% CI [\lossLo, \lossHi]); at a fixed, shorter training length the gap appears twice as large (\lossShortMean{}~pp).
+At equal training steps (100k), the success of webcam demonstrations differs from that of scripted ones by \lossMean{} percentage points (pp; 95\% CI [\lossLo, \lossHi]); at a shorter 20k steps the gap appears twice as large (\lossShortMean{}~pp).
+Webcam demonstrations are longer, so equal steps mean fewer passes over the data: at similar epochs the difference is \lossEpochMean{}~pp (CI [\lossEpochLo, \lossEpochHi]), at five times the training steps.
 Injecting only the measured depth error into otherwise identical virtual-operator demonstrations lowers success in every seed (\depthvirtMean{}~pp, CI [\depthvirtLo, \depthvirtHi]), and success falls monotonically as the error is scaled up.
 A CPU-only correction improved success on the placing task (\corrMean{}~pp over five seeds, exploratory), but a replication on a stacking task, with the analysis fixed before recording, did not reproduce it (\stackCorrMean{}~pp, CI [\stackCorrLo, \stackCorrHi]).
 A post-hoc analysis suggests that the correction was applied outside the range of hand poses it was fitted on.
@@ -64,7 +65,7 @@ We ask three questions:
 Our contributions are measurements rather than a new method:
 (i) a pose-by-distance measurement of webcam depth error against tape-measured ground truth, showing a consistent pose-dependent bias of about 10--12~cm for the grasping hand pose;
 (ii) a set of controlled demonstration conditions that separate depth error from other properties of human demonstrations, including a virtual operator that replays measured depth error through the identical teleoperation code and a dose-response sweep;
-(iii) evidence that matching training length changes the conclusion substantially;
+(iii) evidence that what is held equal in training, steps or epochs, changes the conclusion substantially;
 (iv) a pre-registered replication on a second task, which did not reproduce the effect of the correction, reported as it came out.
 
 % ---------------------------------------------------------------
@@ -100,6 +101,13 @@ Citation databases may miss recent work, so ``we did not find'' should be read w
 % ---------------------------------------------------------------
 \section{System}
 
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/system.pdf}
+\caption{Pipeline and where each condition enters. \condII{} uses the path as drawn; blue boxes show what the other conditions add or replace.}
+\label{fig:system}
+\end{figure}
+
 \paragraph{Simulation and task.}
 We use the SO-101 model from MuJoCo Menagerie~\citep{zakka2022menagerie} in MuJoCo~\citep{todorov2012mujoco}.
 In the placing task the robot picks a 3~cm cube and places it on a marked target.
@@ -126,7 +134,7 @@ Each policy is evaluated on the same 100 held-out layouts with a 60~s episode li
 
 \paragraph{Measurement.}
 With the camera fixed, the operator held the hand at 35, 45, 55 and 65~cm (tape-measured along the optical axis) in four poses (open/pinch $\times$ frontal/tilted by about 45$^\circ$) at two heights, twice, in shuffled order, plus lateral positions (70 steps in total).
-Table~\ref{tab:depth} shows the mean signed error.
+Table~\ref{tab:depth} and Fig.~\ref{fig:depth} show the mean signed error.
 The pose used when reaching for the cube, a pinch with a tilted palm, is read \depthPinchtiltCam{} and \depthPinchtiltLow{}~cm too far on average, always in the same direction.
 Because the teleoperation follows relative motion, a constant offset is harmless; what matters is that changing hand shape at a fixed distance moves the estimate, and therefore the robot, along the camera axis.
 
@@ -145,6 +153,13 @@ pinch, tilted & \depthPinchtiltCam & \depthPinchtiltLow \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.55\linewidth]{figures/depth_error.pdf}
+\caption{Mean signed depth error by true distance and hand pose, averaged over heights and repeats.}
+\label{fig:depth}
+\end{figure}
 
 \paragraph{Correction (\condIII).}
 Following RootNet~\citep{moon2019rootnet}, we multiply the pinhole distance by a learned factor,
@@ -170,10 +185,10 @@ In \condIV{} the hand depth carries measured error: the pose-dependent bias pred
 \item \condV{} \emph{webcam + marker}: the operator teleoperates with marker depth.
 \end{itemize}
 \condIV{} $-$ \condVz{} isolates depth error without a human; \condV{} $-$ \condII{} measures it within human demonstrations; \condV{} $-$ \condI{} is the loss that remains when depth is accurate.
-A dose-response sweep scales the injected error by 0, 0.5, 1 and 2 (in log space, both bias and jitter); at scale 2 the virtual operator failed on 4 layouts, leaving 46 demonstrations.
+A dose-response sweep scales the injected error by 0, 0.5, 1 and 2 (in log space, both bias and jitter); layouts the virtual operator failed to complete are left out (Table~\ref{tab:dose}).
 
 \paragraph{Recording.}
-Each condition has 50 demonstrations on the training layouts.
+Each condition has 50 demonstrations on the training layouts, except \condIV{} (\demosCFour{}, because the virtual operator failed to complete two layouts); Table~\ref{tab:datasets} lists dataset sizes.
 The operator (the author) recorded \condII{} and \condIII{} in alternating blocks to balance practice effects, and the condition was not shown on screen.
 At recording time, \condII{} and \condIII{} did not differ: all 50 layouts were completed in both, with \recPlaceTwoTries{} and \recPlaceThreeTries{} attempts and a median of \recPlaceTwoMed{} and \recPlaceThreeMed{}~s to success.
 \condV{} was recorded on the following day, interleaved with 20 additional \condII{} demonstrations that were used only to check for a change in operator skill and are not in the training data.
@@ -208,10 +223,14 @@ For the correction we also report an exact sign-flip test over seeds; with five 
 \end{table}
 
 \paragraph{Training length changes the picture.}
-Webcam demonstrations are much longer than scripted ones (median about 23--26~s vs.\ about 6~s), so at a fixed 20k steps a webcam demonstration is seen about 4 times versus 17.6 times for a scripted one.
+Webcam demonstrations are much longer than scripted ones (median about 23--26~s vs.\ about 6~s), so at a fixed 20k steps a \condII{} demonstration is seen about \epochCTwoShort{} times versus \epochCOneShort{} times for a scripted one.
 At 20k steps webcam demonstrations looked \lossShortMean{}~pp worse than scripted (CI [\lossShortLo, \lossShortHi]).
-At 100k steps (about 18 epochs for the webcam conditions) every condition improves (Table~\ref{tab:main}, Fig.~\ref{fig:length}) and the gap is \lossMean{}~pp (CI [\lossLo, \lossHi]).
+At 100k steps (\epochCTwo{}, \epochCThree{} and \epochCFive{} epochs for \condII{}, \condIII{} and \condV{}) every condition improves (Table~\ref{tab:main}, Fig.~\ref{fig:length}) and the gap is \lossMean{}~pp (CI [\lossLo, \lossHi]).
 Most of the apparent 20k-step loss was under-training.
+
+Equal steps still give \condI{} far more passes over its data (about \epochCOneLong{} epochs).
+Compared at similar epochs, \condI{} at 20k and \condII{} at 100k, the difference is \lossEpochMean{}~pp (CI [\lossEpochLo, \lossEpochHi], \lossEpochN{} seeds; Table~\ref{tab:epoch}).
+The answer to the first question therefore depends on what is held equal: for the same number of gradient steps, webcam demonstrations lose about 17~pp; for the same number of passes over the data, the loss cannot be distinguished from zero, at five times the training steps.
 
 \begin{figure}[t]
 \centering
@@ -275,11 +294,12 @@ A linear correction extrapolated outside its fitted range is a plausible reason 
 
 Depth error from a webcam measurably lowers imitation-learning success, and its effect grows with its size.
 A lightweight correction helped on one task and hurt on another, so we do not claim that it improves policies in general.
-The comparison that changed most during the study was training length: equal step counts penalise long human demonstrations, and the 20k-step comparison roughly doubled the apparent loss.
+The comparison that changed most during the study was training length: equal step counts penalise long human demonstrations, the 20k-step comparison roughly doubled the apparent loss, and at similar epochs the loss could not be distinguished from zero.
+Studies that compare demonstration sources should report both steps and epochs.
 
 Limitations:
 \begin{itemize}
-\item \emph{Operator.} The main operator is the author, who knew the hypothesis. The condition was hidden during recording and blocks alternated, but expectation effects cannot be excluded. A second demonstrator (20 \condII{} and 20 \condIII{} demonstrations, five seeds at 50k steps) showed no difference (\ptwoTwo{} vs.\ \ptwoThree{} successes); that person's depth bias was small, and the correction fitted to the first operator's hand added bias.
+\item \emph{Operator.} The main operator is the author, who knew the hypothesis. The condition was hidden during recording and blocks alternated, but expectation effects cannot be excluded. A second demonstrator (20 layouts per condition, of which \ptwoDemosTwo{} and \ptwoDemosThree{} succeeded and form the datasets; five seeds at 50k steps) showed no difference (\ptwoTwo{} vs.\ \ptwoThree{} successes; Table~\ref{tab:second}); that person's depth bias was small, and the correction fitted to the first operator's hand added bias.
 \item \emph{Scope.} Simulation only, two tasks, one camera, right hands.
 \item \emph{Seeds.} Three to five seeds per condition; several intervals touch zero.
 \item \emph{Exploratory analysis.} The placing-task stage involved decisions made after seeing results (Appendix~\ref{app:posthoc}); only the stacking replication was pre-registered.
@@ -325,5 +345,47 @@ Stacking failure stages, grasp probe, feature range & understand the non-replica
 \end{table}
 
 All results of added experiments are reported, including unfavourable ones. Adding seeds after seeing results risks optional stopping, which is why the placing-task correction effect is treated as borderline and the conclusion rests on the pre-registered replication.
+
+\section{Additional Tables}
+
+\begin{table}[!ht]
+\centering
+\caption{Comparisons at similar epochs (pp): \condI{} at 20k steps (\epochCOneShort{} epochs) against webcam conditions at 100k steps.}
+\label{tab:epoch}
+\small
+\input{tables/comparisons_epoch.tex}
+\end{table}
+
+\begin{table}[!ht]
+\centering
+\caption{Paired comparisons at 20k steps (pp), five seeds.}
+\label{tab:comp20k}
+\small
+\input{tables/comparisons_20k.tex}
+\end{table}
+
+\begin{table}[!ht]
+\centering
+\caption{Dataset sizes and training length.}
+\label{tab:datasets}
+\small
+\input{tables/datasets.tex}
+\end{table}
+
+\begin{table}[!ht]
+\centering
+\caption{Dose-response: virtual-operator success by injected depth-error scale (20k steps).}
+\label{tab:dose}
+\small
+\input{tables/dose.tex}
+\end{table}
+
+\begin{table}[!ht]
+\centering
+\caption{Second demonstrator. At recording, \condII{} and \condIII{} took \recPtwoTwoTries{} and \recPtwoThreeTries{} attempts, with a median of \recPtwoTwoMed{} and \recPtwoThreeMed{}~s to success.}
+\label{tab:second}
+\small
+\input{tables/second_demo.tex}
+\end{table}
 
 \end{document}

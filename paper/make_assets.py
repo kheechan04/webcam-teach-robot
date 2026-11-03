@@ -26,7 +26,6 @@ NUM: dict[str, str] = {}
 
 plt.rcParams.update({"font.family": "DejaVu Sans", "font.size": 8.5, "axes.spines.top": False, "axes.spines.right": False,
                      "pdf.fonttype": 42, "axes.titlesize": 9})
-C = {"1": "#7f7f7f", "40": "#2f8a5b", "4": "#8fbf9f", "5": "#b77a00", "3": "#2a6fc4", "2": "#c2502a"}
 
 
 def succ(path: Path) -> np.ndarray:
@@ -136,16 +135,81 @@ def main() -> None:
     num("lossShortLo", f1(r20["lo"]))
     num("lossShortHi", f1(r20["hi"]))
 
+    # 에폭이 비슷한 비교: C1 2만 스텝(약 17.6에폭) vs C2 10만 스텝(약 18에폭)
+    re_ = paired(short["1"], long_["2"])
+    num("lossEpochMean", signed1(re_["mean"]))
+    num("lossEpochLo", f1(re_["lo"]))
+    num("lossEpochHi", f1(re_["hi"]))
+    num("lossEpochN", re_["n"])
+    res5 = paired(short["1"], long_["5"])
+    res3 = paired(short["1"], long_["3"])
+
+    # ---- 부록: 2만 스텝 비교 ----
+    rows = []
+    for a, b, label, expr, key in comps:
+        r = paired(short[a], short[b])
+        rows.append(f"{label} & {expr} & {', '.join(signed(d) for d in r['diffs'])} & {signed1(r['mean'])} & "
+                    f"[{f1(r['lo'])}, {f1(r['hi'])}] \\\\")
+    (P / "tables" / "comparisons_20k.tex").write_text(
+        "\\begin{tabular}{llllr}\n\\toprule\nComparison & & per seed & mean & 95\\% CI \\\\\n\\midrule\n"
+        + "\n".join(rows) + "\n\\bottomrule\n\\end{tabular}\n", encoding="utf-8")
+
+    # ---- 부록: 에폭이 비슷한 비교 ----
+    rows = [f"{name} & {', '.join(signed(d) for d in r['diffs'])} & {signed1(r['mean'])} & [{f1(r['lo'])}, {f1(r['hi'])}] \\\\"
+            for name, r in ((r"\condII{} (100k) $-$ \condI{} (20k)", re_), (r"\condIII{} (100k) $-$ \condI{} (20k)", res3),
+                            (r"\condV{} (100k) $-$ \condI{} (20k)", res5))]
+    (P / "tables" / "comparisons_epoch.tex").write_text(
+        "\\begin{tabular}{lllr}\n\\toprule\nComparison & per seed & mean & 95\\% CI \\\\\n\\midrule\n"
+        + "\n".join(rows) + "\n\\bottomrule\n\\end{tabular}\n", encoding="utf-8")
+
+    # ---- 부록: 데이터셋 크기와 학습량 (data/lerobot/*/meta/info.json) ----
+    def info(name):
+        d = json.loads((ROOT / "data" / "lerobot" / name / "meta" / "info.json").read_text(encoding="utf-8"))
+        return d["total_episodes"], d["total_frames"]
+    table = [("Placing", r"\condI{}", "cond1_scripted", (20, 100)), ("", r"\condII{}", "cond2_webcam", (20, 100)),
+             ("", r"\condIII{}", "cond3_webcam_corrected", (20, 100)), ("", r"\condVz{}", "cond4z_no_error", (20, 100)),
+             ("", r"\condIV{}", "cond4_depth_error", (20, 100)), ("", r"\condV{}", "cond5_webcam_marker", (20, 100)),
+             ("Second demonstrator", r"\condII{}", "cond2_p2", (50,)), ("", r"\condIII{}", "cond3_p2", (50,)),
+             ("Stacking", r"\condI{}", "stack1_scripted", (20,)), ("", r"\condII{}", "stack2_webcam", (60,)),
+             ("", r"\condIII{}", "stack3_webcam_corrected", (60,))]
+    rows = []
+    for task, cond, name, steps in table:
+        ep, fr_ = info(name)
+        eps = ", ".join(f"{k}k: {k * 1000 * 8 / fr_:.1f}" for k in steps)
+        rows.append(f"{task} & {cond} & {ep} & {fr_:,} & {eps} \\\\")
+    (P / "tables" / "datasets.tex").write_text(
+        "\\begin{tabular}{lrrrl}\n\\toprule\nTask & Condition & Demos & Frames & Steps: epochs (batch 8) \\\\\n\\midrule\n"
+        + "\n".join(rows) + "\n\\bottomrule\n\\end{tabular}\n", encoding="utf-8")
+    num("epochCTwo", f"{100000 * 8 / info('cond2_webcam')[1]:.1f}")
+    num("epochCThree", f"{100000 * 8 / info('cond3_webcam_corrected')[1]:.1f}")
+    num("epochCFive", f"{100000 * 8 / info('cond5_webcam_marker')[1]:.1f}")
+    num("epochCOneLong", f"{100000 * 8 / info('cond1_scripted')[1]:.0f}")
+    num("epochCOneShort", f"{20000 * 8 / info('cond1_scripted')[1]:.1f}")
+    num("epochCTwoShort", f"{20000 * 8 / info('cond2_webcam')[1]:.1f}")
+    num("demosCFour", info("cond4_depth_error")[0])
+    num("ptwoDemosTwo", info("cond2_p2")[0])
+    num("ptwoDemosThree", info("cond3_p2")[0])
+
     # ---- 용량-반응 ----
     dose = [("0", "cond4z-no-error"), ("0.5", "cond4h-error-half"), ("1", "cond4-depth-error"), ("2", "cond4d-error-double")]
     dv = [np.mean([m9(c, s).sum() for s in (1000, 2000, 3000)]) for _, c in dose]
     for (lab, _), v in zip(dose, dv):
         num("dose" + lab.replace(".", "p"), f"{v:.1f}")
+    rows = [f"{lab} & {', '.join(str(int(m9(c, s).sum())) for s in (1000, 2000, 3000))} & {v:.1f} & {info(n)[0]} \\\\"
+            for (lab, c), v, n in zip(dose, dv, ("cond4z_no_error", "cond4h_error_half", "cond4_depth_error", "cond4d_error_double"))]
+    (P / "tables" / "dose.tex").write_text(
+        "\\begin{tabular}{lllr}\n\\toprule\nError scale & per seed & mean & Demos \\\\\n\\midrule\n"
+        + "\n".join(rows) + "\n\\bottomrule\n\\end{tabular}\n", encoding="utf-8")
 
     # ---- 시범자 2 (5만 스텝) ----
     p2 = {c: {s: m9(f"{c}-p2", s, "-50k") for s in SEEDS} for c in ("cond2", "cond3")}
     num("ptwoTwo", f"{np.mean([v.sum() for v in p2['cond2'].values()]):.1f}")
     num("ptwoThree", f"{np.mean([v.sum() for v in p2['cond3'].values()]):.1f}")
+    rows = [f"{lab} & {', '.join(str(int(p2[c][s].sum())) for s in SEEDS)} & {np.mean([v.sum() for v in p2[c].values()]):.1f} \\\\"
+            for lab, c in ((r"\condII{} webcam", "cond2"), (r"\condIII{} webcam + correction", "cond3"))]
+    (P / "tables" / "second_demo.tex").write_text(
+        "\\begin{tabular}{llr}\n\\toprule\nCondition (50k steps) & per seed & mean \\\\\n\\midrule\n"
+        + "\n".join(rows) + "\n\\bottomrule\n\\end{tabular}\n", encoding="utf-8")
 
     # ---- 쌓기 ----
     st2 = {s: stack("stack2-webcam", s, "-60k") for s in SEEDS}
@@ -231,13 +295,11 @@ def main() -> None:
     s_ = [np.mean([v.sum() for v in short[k].values()]) for k in order]
     l_ = [np.mean([v.sum() for v in long_[k].values()]) for k in order]
     ax.bar(x - 0.2, s_, 0.38, color="#cfcfcf", label="20k steps")
-    ax.bar(x + 0.2, l_, 0.38, color=[C[k] for k in order], label="100k steps")
+    ax.bar(x + 0.2, l_, 0.38, color="#2a6fc4", label="100k steps")
     ax.set_xticks(x, [labels[k] for k in order])
     ax.set_ylabel("successes / 100")
     ax.set_ylim(0, 100)
-    ax.legend(handles=[matplotlib.patches.Patch(color="#cfcfcf", label="20k steps"),
-                       matplotlib.patches.Patch(color="#555555", label="100k steps (colored)")],
-              frameon=False, fontsize=7, loc="lower center", bbox_to_anchor=(0.5, 1.0), ncol=2)
+    ax.legend(frameon=False, fontsize=7, loc="lower center", bbox_to_anchor=(0.5, 1.0), ncol=2)
     fig.tight_layout()
     fig.savefig(P / "figures" / "training_length.pdf")
     plt.close(fig)
@@ -274,6 +336,64 @@ def main() -> None:
         for h in ("cam", "low"):
             v = np.mean([r["min3d_assumed_err"] for r in st if r["pose"] == pose and r["height"] == h])
             num("depth" + pose.replace("_", "").capitalize() + h.capitalize(), signed1(float(v)))
+    fig, ax = plt.subplots(figsize=(3.5, 2.4))
+    style = {"pinch_tilt": ("#c2502a", "o", "pinch, tilted"), "open_tilt": ("#2a6fc4", "s", "open, tilted"),
+             "pinch_flat": ("#b77a00", "^", "pinch, frontal"), "open_flat": ("#2f8a5b", "D", "open, frontal")}
+    dists = sorted({r["distance_cm"] for r in st})
+    ax.axhline(0, color="#999999", lw=0.8)
+    for pose, (col, mk, lab) in style.items():
+        ys = [np.mean([r["min3d_assumed_err"] for r in st if r["pose"] == pose and r["distance_cm"] == d]) for d in dists]
+        ax.plot(dists, ys, color=col, marker=mk, ms=4, lw=1.5, label=lab)
+    ax.set_xticks(dists)
+    ax.set_xlabel("true distance (cm)")
+    ax.set_ylabel("depth error (cm)")
+    ax.legend(frameon=False, fontsize=7, loc="upper left")
+    fig.tight_layout()
+    fig.savefig(P / "figures" / "depth_error.pdf")
+    plt.close(fig)
+
+    # ---- 시스템 개요 그림 ----
+    fig, ax = plt.subplots(figsize=(6.5, 2.75))
+    ax.set_xlim(0, 100)
+    ax.set_ylim(0, 44)
+    ax.axis("off")
+
+    def box(x0, y0, w, h, text, fc="#f4f3ef", ec="#55544f", fs=7):
+        ax.add_patch(matplotlib.patches.FancyBboxPatch((x0, y0), w, h, boxstyle="round,pad=0,rounding_size=1.2", fc=fc, ec=ec, lw=0.8))
+        ax.text(x0 + w / 2, y0 + h / 2, text, ha="center", va="center", fontsize=fs, color="#111111")
+
+    def arrow(a, b, color="#55544f", ls="-"):
+        ax.annotate("", xy=b, xytext=a, arrowprops=dict(arrowstyle="-|>", color=color, lw=0.9, ls=ls, shrinkA=0, shrinkB=0))
+
+    w, h, y1, y2 = 16, 8, 21, 2
+    xs = [1, 21, 41, 61, 81]
+    for x0, t in zip(xs, ("Webcam\n(video not stored)", "MediaPipe\nhand landmarks", "Hand depth\npinhole, palm size",
+                          "Teleoperation\nclutch, filter, IK", "MuJoCo\nSO-101")):
+        box(x0, y1, w, h, t)
+    for a, b in zip(xs, xs[1:]):
+        arrow((a + w, y1 + h / 2), (b, y1 + h / 2))
+    xs2 = [81, 56, 31, 6]
+    for x0, t in zip(xs2, ("Logged states", "Dataset\nre-rendered images", "ACT training\n3 to 5 seeds",
+                           "Evaluation\n100 unseen layouts")):
+        box(x0, y2, w if x0 != 56 else w + 3, h, t)
+    arrow((89, y1), (89, y2 + h))
+    arrow((81, y2 + h / 2), (75, y2 + h / 2))
+    arrow((56, y2 + h / 2), (47, y2 + h / 2))
+    arrow((31, y2 + h / 2), (22, y2 + h / 2))
+    # 조건별 입력
+    top = 35
+    cond = "#e8f0fa"
+    box(31, top, 12, 7, "C3 learned\ncorrection", fc=cond, ec="#2a6fc4")
+    box(45, top, 12, 7, "C5 wrist\nmarker", fc=cond, ec="#2a6fc4")
+    box(61, top, 16, 7, "C4, C4$_0$ virtual\noperator", fc=cond, ec="#2a6fc4")
+    box(81, top, 16, 7, "C1 scripted\nexpert", fc=cond, ec="#2a6fc4")
+    arrow((37, top), (46, y1 + h), "#2a6fc4")
+    arrow((51, top), (50, y1 + h), "#2a6fc4")
+    arrow((69, top), (69, y1 + h), "#2a6fc4")
+    arrow((89, top), (89, y1 + h), "#2a6fc4")
+    fig.tight_layout(pad=0.1)
+    fig.savefig(P / "figures" / "system.pdf")
+    plt.close(fig)
 
     # ---- 녹화 ----
     def rec(folder, conds_=(2, 3)):
@@ -281,7 +401,7 @@ def main() -> None:
         prog = json.loads((folder / "progress.json").read_text(encoding="utf-8"))["units"]
         out = {}
         for c in conds_:
-            us = [u for u in plan["units"] if u["condition"] == c]
+            us = [u for u in plan["units"] if u["condition"] == c and not u.get("practice")]
             tr = [t for u in us for t in prog[str(u["unit"])]["tries"] if t["result"] != "interrupted"]
             ok = [t for u in us for t in prog[str(u["unit"])]["tries"] if t["result"] == "success"]
             out[c] = {"n": len(us), "tries": len(tr), "succ": len(ok),
@@ -289,7 +409,8 @@ def main() -> None:
         return out
     r8 = rec(ROOT / "measurements" / "demos_m8")
     rst = rec(ROOT / "measurements" / "demos_stack")
-    for tag, r in (("Place", r8), ("Stack", rst)):
+    rp2 = rec(ROOT / "measurements" / "demos_p2")
+    for tag, r in (("Place", r8), ("Stack", rst), ("Ptwo", rp2)):
         for c in (2, 3):
             num(f"rec{tag}{'Two' if c == 2 else 'Three'}Tries", r[c]["tries"])
             num(f"rec{tag}{'Two' if c == 2 else 'Three'}Med", f"{r[c]['med']:.1f}")
@@ -297,7 +418,7 @@ def main() -> None:
     lines = ["% 자동 생성: paper/make_assets.py — 직접 고치지 말 것"]
     lines += [f"\\newcommand{{\\{k}}}{{{v}}}" for k, v in sorted(NUM.items())]
     (P / "numbers.tex").write_text("\n".join(lines) + "\n", encoding="utf-8")
-    print(f"numbers.tex {len(NUM)}개, 표 4개, 그림 3개")
+    print(f"numbers.tex {len(NUM)}개, 표 {len(list((P / 'tables').glob('*.tex')))}개, 그림 {len(list((P / 'figures').glob('*.pdf')))}개")
 
 
 if __name__ == "__main__":
