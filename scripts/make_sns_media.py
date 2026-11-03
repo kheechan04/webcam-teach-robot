@@ -229,10 +229,10 @@ def cmd_charts(args):
     seeds = (1000, 2000, 3000, 4000, 5000)
     lo = [np.mean([sc(f"{c}-s{s}") for s in seeds if have(f"{c}-s{s}")]) for c, _ in conds]
     hi = [np.mean([sc(f"{c}-s{s}-100k") for s in seeds if have(f"{c}-s{s}-100k")]) for c, _ in conds]
-    fig, ax = sq("학습을 충분히 시키자 이야기가 달라졌다", "같은 시범, 학습량만 다름 (처음 보는 배치 100개, 시드 3~5개 평균)")
+    fig, ax = sq("학습을 늘리자 이야기가 달라졌다", "같은 시범, 학습 스텝만 다름 (처음 보는 배치 100개, 시드 3~5개 평균)")
     x = np.arange(4)
-    ax.bar(x - 0.2, lo, 0.38, color="#c9c7c1", label="짧게 학습 (2만 스텝)")
-    ax.bar(x + 0.2, hi, 0.38, color=["#9a9893", "#1baf7a", "#2a78d6", "#eb6834"], label="충분히 학습 (10만 스텝)")
+    ax.bar(x - 0.2, lo, 0.38, color="#c9c7c1", label="2만 스텝")
+    ax.bar(x + 0.2, hi, 0.38, color=["#9a9893", "#1baf7a", "#2a78d6", "#eb6834"], label="10만 스텝")
     for i, (a_, b_) in enumerate(zip(lo, hi)):
         ax.text(i - 0.2, a_ + 1.5, f"{a_:.0f}", ha="center", fontsize=11, color="#7d7d8c")
         ax.text(i + 0.2, b_ + 1.5, f"{b_:.0f}", ha="center", fontsize=13, fontweight="bold")
@@ -240,7 +240,7 @@ def cmd_charts(args):
     ax.set_ylim(0, 105)
     ax.set_ylabel("성공 (100개 중)", fontsize=11)
     ax.legend(frameon=False, fontsize=11, loc="upper right")
-    fig.text(0.07, 0.03, "짧게 학습하면 웹캠 손해가 부풀어 보인다 · 충분히 학습해도 보정·마커와 약 8~9%p 차이가 남는다",
+    fig.text(0.07, 0.03, "2만 스텝에서는 웹캠 손해가 부풀어 보인다 · 10만 스텝에서도 보정·마커와 약 8~9%p 차이가 남는다",
              fontsize=10.5, color="#2a78d6")
     fig.savefig(OUT / "chart_final_results.png", facecolor=fig.get_facecolor())
     plt.close(fig)
