@@ -50,7 +50,8 @@ Low-cost arms such as the SO-100/101 are usually taught with a second ``leader''
 Hand tracking from an ordinary webcam would remove that hardware, and open-source pipelines that go from webcam hand tracking to simulated teleoperation to ACT~\citep{zhao2023act} training already exist~\citep{handrobot}.
 The weak link is depth: with one camera, distance to the hand must be inferred from the hand's apparent size, and the hand's apparent size changes with its pose.
 
-Prior work has shown that monocular teleoperation is slower and less accurate than teleoperation with depth sensing~\citep{qin2023anyteleop,teleopbench2025}, and in surgical robotics, policies trained on demonstrations estimated from monocular video succeed less often than policies trained on ground-truth demonstrations~\citep{chen2025surgipose}.
+Prior work has shown that monocular teleoperation is slower and more error-prone than teleoperation with depth sensing or dedicated hardware~\citep{qin2023anyteleop,teleopbench2025}.
+In surgical robotics, policies trained on kinematics estimated from monocular video have been compared with policies trained on ground-truth kinematics: success was 7/10 vs.\ 10/10 and 6/10 vs.\ 8/10, which the authors describe as comparable~\citep{chen2025surgipose}.
 Within the literature we searched (Section~\ref{sec:related}), we did not find a controlled measurement of how much of the imitation-learning loss from webcam hand demonstrations is due to depth error specifically, or a test of whether a lightweight correction recovers it on more than one task.
 
 We ask three questions:
@@ -71,18 +72,21 @@ Our contributions are measurements rather than a new method:
 \label{sec:related}
 
 \paragraph{Vision-based teleoperation.}
-AnyTeleop~\citep{qin2023anyteleop} supports RGB-only operation and reports that a single RGB camera is slower and more error-prone than RGB-D in a teleoperation task.
-TeleOpBench~\citep{teleopbench2025} compares four teleoperation modalities, including monocular hand tracking, across 30 simulated bimanual tasks and finds monocular tracking the slowest.
-Both evaluate teleoperation performance; neither trains policies on the collected demonstrations.
-\citet{chiche2026shadowing} teleoperate an SO-ARM101 with RGB-D hand tracking and inverse kinematics.
-The handrobot project~\citep{handrobot} implements a webcam-to-MuJoCo-to-ACT pipeline for SO-101; its reported policy success rates come from scripted demonstrations, a deliberate choice that makes them reproducible without a camera.
+AnyTeleop~\citep{qin2023anyteleop} supports RGB-only operation. In a piano-key task with one trained operator, a single RGB camera was slower and more error-prone than a single RGB-D camera (109~s and 28.1\% vs.\ 87~s and 21.8\%).
+It also trains imitation-learning policies on collected demonstrations, but to compare teleoperation systems, using a single RGB-D camera; it does not compare policies trained on RGB and RGB-D demonstrations.
+TeleOpBench~\citep{teleopbench2025} provides 30 simulated bimanual tasks and evaluates four teleoperation modalities, including monocular hand tracking, on 10 of them in simulation and on real hardware; the simulation study had four participants.
+Monocular tracking generally takes the longest. The benchmark logs data for downstream imitation learning but does not train policies.
+\citet{chiche2026shadowing} convert recorded egocentric RGB-D video of a hand into SO-ARM101 trajectories offline with inverse kinematics; the policies they compare against are trained on leader--follower demonstrations.
+The handrobot project~\citep{handrobot} implements a webcam-to-MuJoCo-to-ACT pipeline for the Franka Panda and SO-101 arms; its reported policy success rates come from scripted demonstrations, a deliberate choice that makes them reproducible without a camera.
 
 \paragraph{Demonstration quality and modality.}
 \citet{mandlekar2021robomimic} and \citet{belkhale2023dataquality} show that demonstration quality strongly affects imitation learning, and \citet{li2025modality} compare kinesthetic, VR and spacemouse demonstrations.
 Webcam hand tracking was not among the compared modalities.
 
 \paragraph{Monocular demonstrations and policy success.}
-SurgiPose~\citep{chen2025surgipose} estimates surgical tool pose from monocular video and trains policies on the estimates; these succeed less often than policies trained on ground-truth kinematics, and the estimation error is largest along the depth axis.
+SurgiPose~\citep{chen2025surgipose} estimates surgical tool pose from monocular video and trains ACT policies on the estimates.
+With 10 trials per condition, success was 7/10 vs.\ 10/10 (tissue lifting) and 6/10 vs.\ 8/10 (needle pickup) against ground-truth kinematics, which the authors describe as comparable.
+Estimation error was largest along the depth axis, and the authors link failures in which the robot pushed the tissue away instead of lifting it to depth inaccuracy.
 They do not isolate the share of the loss due to depth error.
 
 \paragraph{Monocular distance estimation.}
