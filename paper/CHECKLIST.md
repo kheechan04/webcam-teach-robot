@@ -5,7 +5,7 @@
 ## 제출 전에 사람이 직접 할 것
 
 - [ ] **인용 전부 원문 대조.** `refs.bib`의 제목·저자·학회·연도를 논문 페이지(arXiv·학회)에서 하나씩 확인한다. 2026-11-03에 TeleOpBench·SurgiPose·Chiche·AnyTeleop은 원문 PDF로, Li et al. 저자는 검색으로 채웠지만 사람의 확인은 아직이다. arXiv는 확인하지 않은 AI 생성 내용을 문제 삼는다.
-- [ ] 본문이 각 논문을 정확하게 요약했는지(특히 AnyTeleop·TeleOpBench·SurgiPose·handrobot) 원문과 비교. 번역은 `outputs/papers/index.html`(공부용). 2026-11-03에 Claude가 다섯 자료를 읽고 틀린 요약 5곳을 고쳤다.
+- [ ] 본문이 각 논문을 정확하게 요약했는지(특히 AnyTeleop·TeleOpBench·SurgiPose·handrobot) 원문과 비교. 번역은 `outputs/papers/index.html`(공부용). 2026-11-03에 Claude가 다섯 자료를 읽고 틀린 요약 5곳을 고쳤다. 나머지 5개(Li et al., Belkhale, robomimic, RootNet, ACT)는 `outputs/papers/citation_check.html`에 대조표를 만들었다. 2장의 데이터 품질 문장은 고치기 권장, 사용자 결정 대기.
 - [ ] 소속 표기, 날짜 (저자 이름은 Heechan Kim으로 넣음, arXiv 계정 이름과 맞는지 확인).
 - [ ] AI 사용 문단이 실제와 맞는지 (2026-10-08 사실대로 고침: AI가 코드·설계 제안·글 초안 대부분, 저자는 측정·녹화·방향 결정·검토·책임). 인용 확인을 마치면 문단 끝 TODO를 채운다.
 - [ ] 영어 문장 읽어 보기 — 이해 안 되는 문장은 고친다(설명할 수 없는 문장은 내지 않는다).
