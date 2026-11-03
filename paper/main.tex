@@ -81,7 +81,9 @@ Monocular tracking generally takes the longest. The benchmark logs data for down
 The handrobot project~\citep{handrobot} implements a webcam-to-MuJoCo-to-ACT pipeline for the Franka Panda and SO-101 arms; its reported policy success rates come from scripted demonstrations, a deliberate choice that makes them reproducible without a camera.
 
 \paragraph{Demonstration quality and modality.}
-\citet{mandlekar2021robomimic} and \citet{belkhale2023dataquality} show that demonstration quality strongly affects imitation learning, and \citet{li2025modality} compare kinesthetic, VR and spacemouse demonstrations.
+\citet{mandlekar2021robomimic} report that performance depends on demonstration quality, by an amount that varies with the algorithm and task.
+\citet{belkhale2023dataquality} formalize data quality for imitation learning through action divergence and transition diversity, and observe that higher action variance and longer horizons often accompany lower success in human datasets.
+\citet{li2025modality} compare kinesthetic, VR and spacemouse demonstrations.
 Webcam hand tracking was not among the compared modalities.
 
 \paragraph{Monocular demonstrations and policy success.}

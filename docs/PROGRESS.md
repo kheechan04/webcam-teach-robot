@@ -9,7 +9,7 @@
 - **논문 초안 시작 (2026-10-08):** `paper/` — 영어 초안 `main.tex`(8쪽, Tectonic으로 빌드), 숫자·표·그림은 `paper/make_assets.py`가 결과 파일에서 생성(부트스트랩은 analyze_m9과 같은 방법, 결과 문서의 숫자와 대조 완료). 같은 날 AI 사용 문단을 사실대로 고치고(AI가 코드·설계 제안·글 초안 대부분, 저자는 측정·녹화·방향 결정·검토·책임), 한국어 대조판 생성기 `paper/make_ko.py`(→ `outputs/paper/논문_한국어_대조.html`, 로컬만)를 만들었다.
 - **▶ 다음 세션은 여기서 시작 (논문, 시험 기간이라 천천히):** 돌고 있는 작업 없음, 저장소 푸시 완료. 순서:
   0. (2026-11-03) 선행 자료 5개(SurgiPose, AnyTeleop, TeleOpBench, Chiche et al., handrobot)를 전문 번역(`outputs/papers/index.html`, 로컬만)하며 원문과 대조했다. 틀린 요약 5곳을 논문·README·소개서·문서·포트폴리오 상세판에서 고치고, `refs.bib`의 TODO를 채웠다. 사람의 인용 확인은 아직이다.
-  0-1. (2026-11-03) 사용자가 초안을 다 읽음. 나머지 5개 자료는 Claude가 원문과 대조해 `outputs/papers/citation_check.html`(로컬만)을 만듦: 본문 7개 문장 중 6개 맞음, 2장의 "demonstration quality strongly affects" 문장은 원문보다 세서 고치기 권장, 사용자 결정 대기. 사용자의 직접 대조가 끝나야 AI 문단 TODO를 채울 수 있다.
+  0-1. (2026-11-03) 사용자가 초안을 다 읽음. 나머지 5개 자료는 Claude가 원문과 대조해 `outputs/papers/citation_check.html`(로컬만)을 만듦: 본문 7개 문장 중 6개 맞음, 2장의 "demonstration quality strongly affects" 문장은 원문보다 세서 사용자 승인으로 고쳤다. ACT DOI, Li et al. 쪽·DOI 추가. 사용자의 직접 대조가 끝나야 AI 문단 TODO를 채울 수 있다. 초안을 읽고 사실과 다르거나 불편한 곳이 있었는지(특히 AI 사용 문단)는 아직 답을 못 받았으니 다음에 먼저 묻는다.
   1. 사용자에게 진행 상황 물어보기 — 번역·대조판을 읽다 이해 안 된 문단, 인용 원문 대조 결과, 저자 영문 이름.
   2. 받은 내용으로 `refs.bib`·본문 고치기 → `uv run python paper/make_assets.py` → `tectonic paper/main.tex` → `uv run python paper/make_ko.py`.
   3. 시스템 개요 그림, 깊이 측정 그림, 부록 B 표 (완료, 2026-11-03, 10쪽). 함께 고침: C4 시범 48개, 시범자 2 데이터셋 17·16개. 에폭 비교 추가: C1 2만 스텝 vs C2 10만 스텝 −4.2 [−13.6, +5.8], 시드 5개 → 논문은 −16.7을 "같은 스텝" 결과로 적고 둘 다 보고한다. README·소개서·`docs/11`도 "같은 스텝" 기준으로 고쳐 반영했다(2026-11-03). 포트폴리오에도 반영했다(그림 `final-results.png` 문구 포함).
